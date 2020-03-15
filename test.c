@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 13:32:38 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/15 15:47:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int main(int amt, char **args)
 {
 	if (amt == 2)
 	{
-		
+		ft_printf("Totally parsing %s rn\n", args[1]);
 	}
 	else
 	{
