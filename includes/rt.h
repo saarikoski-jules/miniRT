@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 13:35:20 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 15:43:31 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/15 16:40:10 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,8 @@ typedef struct	s_light
 	t_color			color;
 	struct s_light *next;
 }				t_light;
+
+void get_input(char *path);
+void parse_line(char *line);
 
 #endif
