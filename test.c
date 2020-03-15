@@ -6,24 +6,25 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 15:47:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/15 16:51:47 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mlx.h"
-#include "libft/libft.h"
+#include "libft.h"
+#include "rt.h"
 
 int main(int amt, char **args)
 {
 	if (amt == 2)
 	{
 		ft_printf("Totally parsing %s rn\n", args[1]);
+		get_input(args[1]);
 	}
 	else
 	{
 		ft_printf("ERROR\noops, bad args\n");
 	}
-	
 	return (0);
 }
 
