@@ -6,14 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 14:53:21 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 15:33:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/17 14:52:12 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef OBJECT_H
 # define OBJECT_H
 # include "rt.h"
-
 
 /*
 ** OBJECT STRUCTS
@@ -81,7 +80,6 @@ typedef enum	e_identifier
 
 typedef struct	s_obj
 {
-	
 	t_identifier	type;
 	t_color			color;
 	t_type			object;

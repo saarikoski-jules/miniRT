@@ -6,20 +6,18 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 18:49:24 by jvisser       ########   odam.nl         */
+/*   Updated: 2020/03/17 14:51:36 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mlx.h"
 #include "error.h"
 #include "libft.h"
-#include "rt.h"
 
-int main(int amt, char **args)
+int main(int ac, char **av)
 {
-	if (amt == 2)
+	if (ac == 2)
 	{
-		ft_printf("Totally parsing %s rn\n", args[1]);
+		ft_printf("Totally parsing %s rn\n", av[1]);
 	}
 	else
 		error_exit_msg(C_FEW_ARGUMENTS, E_FEW_ARGUMENTS);
