@@ -6,13 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 17:54:07 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/18 14:47:44 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "rt.h"
 #include "error.h"
+#include "parse.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
