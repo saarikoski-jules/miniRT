@@ -19,6 +19,7 @@ double get_float(char *line, size_t *i)
 {
 	double val;
 
+	ft_printf("'%s', i: %d\n", line, *i);
 	validate_float(line + *i);
 	val = ft_atof(line + *i);
 	if (ft_strchr("+-", line[(*i)]))
@@ -42,7 +43,7 @@ void skip_comma(char *line, size_t *i)
 		error_exit_msg(C_PARSE_NO_COMMA, E_PARSE_NO_COMMA);	
 }
 
-t_color *set_color(char *line, int *i)
+t_color *set_color(char *line, size_t *i)
 {
 	t_color *rgb;
 
