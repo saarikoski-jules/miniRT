@@ -6,24 +6,21 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 15:47:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/17 14:51:36 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mlx.h"
-#include "libft/libft.h"
+#include "error.h"
+#include "libft.h"
 
-int main(int amt, char **args)
+int main(int ac, char **av)
 {
-	if (amt == 2)
+	if (ac == 2)
 	{
-		ft_printf("Totally parsing %s rn\n", args[1]);
+		ft_printf("Totally parsing %s rn\n", av[1]);
 	}
 	else
-	{
-		ft_printf("ERROR\noops, bad args\n");
-	}
-	
+		error_exit_msg(C_FEW_ARGUMENTS, E_FEW_ARGUMENTS);
 	return (0);
 }
 
@@ -48,5 +45,4 @@ int main(int amt, char **args)
 	// }
 	// mlx_loop(mlx_ptr);
 	// img_ptr = mlx_new_image(mlx_ptr, 12, 12);
-	
 // }
