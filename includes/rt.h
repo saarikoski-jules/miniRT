@@ -45,7 +45,7 @@ typedef struct	s_resolution
 typedef struct	s_ambiance
 {
 	double		ratio;
-	t_color		color;
+	t_color		*color;
 }				t_ambiance;
 
 typedef struct	s_camera
@@ -60,7 +60,7 @@ typedef struct	s_light
 {
 	t_vec			pos;
 	int				brightness;
-	t_color			color;
+	t_color			*color;
 	struct s_light *next;
 }				t_light;
 
@@ -70,6 +70,6 @@ void	parse_line(char *line);
 int		get_int(char *line, int *i);
 double	get_float(char *line, int *i);
 void	skip_comma(char *line, int *i);
-void	set_color(char *line, int *i, t_color *rgb);
+t_color	*set_color(char *line, int *i);
 
 #endif

@@ -36,11 +36,15 @@ void skip_comma(char *line, int *i)
 		error_exit_msg(C_PARSE, E_PARSE);	
 }
 
-void set_color(char *line, int *i, t_color *rgb)
+t_color *set_color(char *line, int *i)
 {
+	t_color *rgb;
+
+	rgb = malloc(sizeof(t_color));
 	rgb->r = get_int(line, i);
 	skip_comma(line, i);
 	rgb->g = get_int(line, i);
 	skip_comma(line, i);
 	rgb->b = get_int(line, i);
+	return (rgb);
 }

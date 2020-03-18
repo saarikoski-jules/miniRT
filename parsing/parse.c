@@ -40,9 +40,19 @@ void get_ambiance(char *line)
 	i = ft_strmatch(line, " ");
 	amb->ratio = get_float(line, &i);
 	i += ft_strmatch(line + i, " ");
-	set_color(line, &i, &(amb->color));
-	ft_printf("ratio: %f\nr: %d\ng: %d\nb: %d\n", amb->ratio, amb->color.r, amb->color.g, amb->color.b);
+	amb->color = set_color(line, &i);
+	ft_printf("ratio: %f\nr: %d\ng: %d\nb: %d\n", amb->ratio, amb->color->r, amb->color->g, amb->color->b);
 }
+
+// void get_light(char *line)
+// {
+// 	t_light *light;
+// 	int i;
+
+// 	light = malloc(sizeof(light));
+// 	i = 0;
+// 	ft_strmatch(line + i)
+// }
 
 void parse_line(char *line)
 {
@@ -51,6 +61,8 @@ void parse_line(char *line)
 		get_resolution(line + 1);
 	if (line[0] == 'A')
 		get_ambiance(line + 1);
+	// if (line[0] == 'l')
+		// get_light(line + 1);
 }
 
 void get_input(char *path)
