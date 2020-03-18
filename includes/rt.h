@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 13:35:20 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/15 16:40:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/03/18 14:45:56 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ typedef struct	s_ambiance
 
 typedef struct	s_camera
 {
-	t_vec			pos;
-	t_vec			orien;
+	t_vec			*pos;
+	t_vec			*orien;
 	int				fov;
 	struct s_camera *next;
 }				t_camera;
@@ -66,10 +66,5 @@ typedef struct	s_light
 
 void	get_input(char *path);
 void	parse_line(char *line);
-
-int		get_int(char *line, int *i);
-double	get_float(char *line, int *i);
-void	skip_comma(char *line, int *i);
-t_color	*set_color(char *line, int *i);
 
 #endif
