@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/18 14:47:44 by jvisser       ########   odam.nl         */
+/*   Updated: 2020/03/18 15:04:54 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 
 void get_resolution(char *line)
 {
-	t_resolution *res;
-	int i;
+	t_resolution	*res;
+	size_t			i;
 
 	res = malloc(sizeof(t_resolution));
 	i = ft_strmatch(line, " ");
@@ -37,8 +37,8 @@ void get_resolution(char *line)
 
 void get_ambiance(char *line)
 {
-	t_ambiance *amb;
-	int i;
+	t_ambiance	*amb;
+	size_t		i;
 
 	amb = malloc(sizeof(t_ambiance));
 	i = ft_strmatch(line, " ");
@@ -69,8 +69,8 @@ void parse_line(char *line)
 		get_resolution(line + 1);
 	if (line[0] == 'A')
 		get_ambiance(line + 1);
-	// if (line[0] == 'l')
-		// get_light(line + 1);
+	else if (line[0] == 'c')
+		get_camera(line + 1);
 }
 
 void get_input(char *path)

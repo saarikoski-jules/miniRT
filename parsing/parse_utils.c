@@ -2,7 +2,7 @@
 #include "error.h"
 #include "rt.h"
 
-int get_int(char *line, int *i)
+int get_int(char *line, size_t *i)
 {
 	int val;
 
@@ -15,7 +15,7 @@ int get_int(char *line, int *i)
 	return (val);
 }
 
-double get_float(char *line, int *i)
+double get_float(char *line, size_t *i)
 {
 	double val;
 
@@ -33,7 +33,7 @@ double get_float(char *line, int *i)
 	return (val);
 }
 
-void skip_comma(char *line, int *i)
+void skip_comma(char *line, size_t *i)
 {
 	ft_printf("line: '%s', i %d\n", line, *i);
 	if (line[*i] == ',')

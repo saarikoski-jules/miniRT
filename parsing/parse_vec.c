@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   parse.h                                            :+:    :+:            */
+/*   parse_vec.c                                        :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/18 14:45:21 by jvisser        #+#    #+#                */
-/*   Updated: 2020/03/18 15:46:53 by jvisser       ########   odam.nl         */
+/*   Created: 2020/03/18 14:37:18 by jvisser        #+#    #+#                */
+/*   Updated: 2020/03/18 15:34:47 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-# define PARSE_H
+#include "rt.h"
+#include "error.h"
+#include "libft.h"
+#include "parse.h"
 
-typedef struct s_color	t_color;
+t_vec	*get_vec(char *line, size_t *i)
+{
+	t_vec	*vec;
 
-int		get_int(char *line, size_t *i);
-double	get_float(char *line, size_t *i);
-t_vec	*get_vec(char *line, size_t *i);
-void	get_camera(char *line);
-void	skip_comma(char *line, size_t *i);
-void	set_color(char *line, size_t *i, t_color *rgb);
-
-void	validate_fov(int fov);
-void	validate_orien(t_vec *orien);
-
-#endif
+	vec = (t_vec*)ft_calloc(1, sizeof(t_vec));
+	if (vec == NULL)
+		error_exit_errno();
+	(*i) += ft_strmatch(&line[*i], " ");
+	vec->x = get_float(line, i);
+	skip_comma(line, i);
+	vec->y = get_float(line, i);
+	skip_comma(line, i);
+	vec->z = get_float(line, i);
+	return (vec);
+}
