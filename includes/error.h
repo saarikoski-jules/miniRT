@@ -16,6 +16,9 @@
 # define C_FEW_ARGUMENTS 10
 # define E_FEW_ARGUMENTS "Too few arguments given. 1 needed."
 
+# define C_PARSE 11
+# define E_PARSE "Invalid .rt file"
+
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
 
 #endif

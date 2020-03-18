@@ -18,7 +18,10 @@
 int main(int ac, char **av)
 {
 	if (ac == 2)
+	{
 		ft_printf("Totally parsing %s rn\n", av[1]);
+		get_input(av[1]);
+	}
 	else
 		error_exit_msg(C_FEW_ARGUMENTS, E_FEW_ARGUMENTS);
 	return (0);
