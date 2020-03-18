@@ -64,7 +64,12 @@ typedef struct	s_light
 	struct s_light *next;
 }				t_light;
 
-void get_input(char *path);
-void parse_line(char *line);
+void	get_input(char *path);
+void	parse_line(char *line);
+
+int		get_int(char *line, int *i);
+double	get_float(char *line, int *i);
+void	skip_comma(char *line, int *i);
+void	set_color(char *line, int *i, t_color *rgb);
 
 #endif

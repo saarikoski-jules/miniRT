@@ -10,9 +10,12 @@
 #                                                                              #
 # **************************************************************************** #
 
+PARSE_DIR = parsing/
 RT_SRCS =	test.c \
 			error.c \
-			parse.c \
+			\
+			$(PARSE_DIR)parse.c \
+			$(PARSE_DIR)parse_utils.c \
 
 all:
 	@make -C libft
