@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   parse.h                                            :+:    :+:            */
+/*   parse_validation.c                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/18 14:45:21 by jvisser        #+#    #+#                */
-/*   Updated: 2020/03/18 15:46:53 by jvisser       ########   odam.nl         */
+/*   Created: 2020/03/18 15:46:03 by jvisser        #+#    #+#                */
+/*   Updated: 2020/03/18 15:46:23 by jvisser       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-# define PARSE_H
+#include "rt.h"
+#include "error.h"
 
-typedef struct s_color	t_color;
+void	validate_orien(t_vec *orien)
+{
+	if (orien->x < -1 || orien->x > 1
+	|| orien->y < -1 || orien->y > 1
+	|| orien->z < -1 || orien->z > 1)
+		error_exit_msg(C_INVALID_ORIEN_VEC, E_INVALID_ORIEN_VEC);
+}
 
-int		get_int(char *line, size_t *i);
-double	get_float(char *line, size_t *i);
-t_vec	*get_vec(char *line, size_t *i);
-void	get_camera(char *line);
-void	skip_comma(char *line, size_t *i);
-void	set_color(char *line, size_t *i, t_color *rgb);
-
-void	validate_fov(int fov);
-void	validate_orien(t_vec *orien);
-
-#endif
+void	validate_fov(int fov)
+{
+	if (fov < 0 || fov > 180)
+		error_exit_msg(C_INVALID_FOV, E_INVALID_FOV);
+}
