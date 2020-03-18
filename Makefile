@@ -11,11 +11,15 @@
 # **************************************************************************** #
 
 RT_SRCS =	test.c \
-			parse.c
+			parse.c \
 
 all:
 	@make -C libft
 	@gcc -Iincludes -Ilibft $(RT_SRCS) libft/libft.a -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
+
+windows:
+	@make -C libft
+	@gcc -Iincludes -Ilibft $(RT_SRCS) libft/libft.a -Imlx
 
 fclean:
 	@rm -rf a.out
