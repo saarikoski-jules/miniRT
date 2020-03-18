@@ -27,17 +27,16 @@ void	get_camera(char *line)
 	cam->pos = get_vec(line, &i);
 	cam->orien = get_vec(line, &i);
 	validate_orien(cam->orien);
-	i += ft_strmatch(&line[i], " ");
 	cam->fov = get_int(line, &i);
 	i += ft_strmatch(&line[i], " ");
-	if (line[i] && line[i + 1])
+	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
 
-	ft_printf("Camera:\n\
+	// ft_printf("Camera:\n\
 	Pos:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
 	Orient:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
-	Fov: %d\n",
-	cam->pos->x, cam->pos->y, cam->pos->z,
-	cam->orien->x, cam->orien->y, cam->orien->z,
-	cam->fov);
+	Fov: %d\n\n",
+	// cam->pos->x, cam->pos->y, cam->pos->z,
+	// cam->orien->x, cam->orien->y, cam->orien->z,
+	// cam->fov);
 }

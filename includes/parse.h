@@ -20,9 +20,13 @@ double	get_float(char *line, size_t *i);
 t_vec	*get_vec(char *line, size_t *i);
 void	get_camera(char *line);
 void	skip_comma(char *line, size_t *i);
-t_color	*set_color(char *line, size_t *i);
+t_color	*get_color(char *line, size_t *i);
 
 void	validate_fov(int fov);
 void	validate_orien(t_vec *orien);
+void	validate_color(t_color *color);
+
+void	validate_int(char *line);
+void	validate_float(char *line);
 
 #endif

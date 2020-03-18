@@ -16,23 +16,29 @@
 # define C_MAIN_FEW_ARGUMENTS 132
 # define E_MAIN_FEW_ARGUMENTS "Too few arguments given. 1 needed."
 # define C_PARSE 133
-# define E_PARSE "Invalid .rt file"
+# define E_PARSE "Invalid .rt file."
 # define C_PARSE_INVALID_INT 134
-# define E_PARSE_INVALID_INT "Can't parse int"
+# define E_PARSE_INVALID_INT "Can't parse int."
 # define C_PARSE_INVALID_FLOAT 135
-# define E_PARSE_INVALID_FLOAT "Can't parse float"
+# define E_PARSE_INVALID_FLOAT "Can't parse float."
 # define C_PARSE_NO_COMMA 136
-# define E_PARSE_NO_COMMA "Comma not found"
+# define E_PARSE_NO_COMMA "Comma not found."
 # define C_INVALID_ORIEN_VEC 137
 # define E_INVALID_ORIEN_VEC "Invalid format for orientation vector."
 # define C_INVALID_FOV 138
 # define E_INVALID_FOV "Invalid format for fov."
 # define C_INVALID_CAM 139
 # define E_INVALID_CAM "Invalid format for camera."
+# define C_INVALID_LIGHT 140
+# define E_INVALID_LIGHT "Invalid format for light."
+# define C_INVALID_COLOR 141
+# define E_INVALID_COLOR "Invalid format for color."
+# define C_INVALID_RES 142
+# define E_INVALID_RES "Invalid format for resolution."
+# define C_INVALID_AMB 143
+# define E_INVALID_AMB "Invalid format for ambiance."
 
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
-void	validate_int(char *line);
-void	validate_float(char *line);
 
 #endif

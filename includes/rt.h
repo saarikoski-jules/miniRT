@@ -58,8 +58,8 @@ typedef struct	s_camera
 
 typedef struct	s_light
 {
-	t_vec			pos;
-	int				brightness;
+	t_vec			*pos;
+	double			brightness;
 	t_color			*color;
 	struct s_light *next;
 }				t_light;
