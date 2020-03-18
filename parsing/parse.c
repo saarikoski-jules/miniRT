@@ -29,7 +29,10 @@ void get_resolution(char *line)
 	res->res_x = get_int(line, &i);
 	i += ft_strmatch(line + i, " ");
 	res->res_y = get_int(line, &i);
-	ft_printf("res_x %d, res_y %d\n", res->res_x, res->res_y);
+	i += ft_strmatch(line + i, " ");
+	if (line[i] != '\0')
+		error_exit_msg(C_PARSE, E_PARSE);
+	// ft_printf("res_x %d, res_y %d\n", res->res_x, res->res_y);
 }
 
 void get_ambiance(char *line)
@@ -41,7 +44,11 @@ void get_ambiance(char *line)
 	i = ft_strmatch(line, " ");
 	amb->ratio = get_float(line, &i);
 	i += ft_strmatch(line + i, " ");
+	ft_printf("before color: %d\n", i);
 	amb->color = set_color(line, &i);
+	i += ft_strmatch(line + i, " ");
+	if (line[i] != '\0')
+		error_exit_msg(C_PARSE, E_PARSE);
 	ft_printf("ratio: %f\nr: %d\ng: %d\nb: %d\n", amb->ratio, amb->color->r, amb->color->g, amb->color->b);
 }
 

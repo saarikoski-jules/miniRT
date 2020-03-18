@@ -18,6 +18,6 @@ typedef struct s_color	t_color;
 int		get_int(char *line, int *i);
 double	get_float(char *line, int *i);
 void	skip_comma(char *line, int *i);
-void	set_color(char *line, int *i, t_color *rgb);
+t_color	*set_color(char *line, int *i);
 
 #endif

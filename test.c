@@ -23,7 +23,7 @@ int main(int ac, char **av)
 		get_input(av[1]);
 	}
 	else
-		error_exit_msg(C_FEW_ARGUMENTS, E_FEW_ARGUMENTS);
+		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);
 	return (0);
 }
 

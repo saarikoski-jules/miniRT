@@ -13,12 +13,23 @@
 #ifndef ERROR_H
 # define ERROR_H
 
-# define C_FEW_ARGUMENTS 10
-# define E_FEW_ARGUMENTS "Too few arguments given. 1 needed."
+# define C_MAIN_FEW_ARGUMENTS 132
+# define E_MAIN_FEW_ARGUMENTS "Too few arguments given. 1 needed."
 
-# define C_PARSE 11
+# define C_PARSE 133
 # define E_PARSE "Invalid .rt file"
 
+# define C_PARSE_INVALID_INT 134
+# define E_PARSE_INVALID_INT "Can't parse int"
+
+# define C_PARSE_INVALID_FLOAT 135
+# define E_PARSE_INVALID_FLOAT "Can't parse float"
+
+# define C_PARSE_NO_COMMA 136
+# define E_PARSE_NO_COMMA "Comma not found"
+
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
+void	validate_int(char *line);
+void	validate_float(char *line);
 
 #endif
