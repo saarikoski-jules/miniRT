@@ -50,7 +50,7 @@ t_color *get_color(char *line, size_t *i)
 {
 	t_color *color;
 
-	// ft_printf("get_color: %d\n", *i);
+	// ft_printf("get_color: %d, '%s'\n", *i, line + *i);
 	*i += ft_strmatch(line + *i, " ");
 	color = (t_color*)malloc(sizeof(t_color));
 	color->r = get_int(line, i);

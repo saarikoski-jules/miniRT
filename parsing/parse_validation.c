@@ -12,6 +12,7 @@
 
 #include "error.h"
 #include "rt.h"
+#include "libft.h"
 
 void	validate_orien(t_vec *orien)
 {
@@ -33,4 +34,21 @@ void	validate_color(t_color *color)
 	||	(color->g > 255 || color->g < 0)
 	||	(color->b > 255 || color->b < 0))
 		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
+}
+
+void	validate_file(char *path)
+{
+	char **split;
+	char *extension;
+	size_t i;
+
+	i = 0;
+	split = ft_split(path, '.');
+	while (split[i] != NULL)
+	{
+		extension = split[i];
+		i++;
+	}
+	if (ft_strncmp(extension, "rt", 3) != 0)
+		error_exit_msg(C_INVALID_FILE, E_INVALID_FILE);
 }

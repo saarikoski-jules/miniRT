@@ -20,36 +20,36 @@
 
 typedef struct	s_sp
 {
-	t_vec			pos;
-	unsigned int	dia;
+	t_vec			*pos;
+	double			dia;
 }				t_sp;
 
 typedef struct	s_pl
 {
-	t_vec			pos;
-	t_vec			orien;
+	t_vec			*pos;
+	t_vec			*orien;
 }				t_pl;
 
 typedef struct	s_sq
 {
-	t_vec			pos;
-	t_vec			orien;
-	unsigned int	side;
+	t_vec			*pos;
+	t_vec			*orien;
+	double			side;
 }				t_sq;
 
 typedef struct	s_cy
 {
-	t_vec			pos;
-	t_vec			orien;
-	unsigned int	dia;
-	unsigned int	h;
+	t_vec			*pos;
+	t_vec			*orien;
+	double			dia;
+	double			h;
 }				t_cy;
 
 typedef struct	s_tr
 {
-	t_vec	point1;	
-	t_vec	point2;	
-	t_vec	point3;	
+	t_vec	*point1;	
+	t_vec	*point2;	
+	t_vec	*point3;	
 }				t_tr;
 
 /*
@@ -58,11 +58,11 @@ typedef struct	s_tr
 
 typedef union	u_type
 {
-	t_sp	sp;
-	t_pl	pl;
-	t_sq	sq;
-	t_cy	cy;
-	t_tr	tr;
+	t_sp	*sp;
+	t_pl	*pl;
+	t_sq	*sq;
+	t_cy	*cy;
+	t_tr	*tr;
 }				t_type;
 
 typedef enum	e_identifier
@@ -80,10 +80,10 @@ typedef enum	e_identifier
 
 typedef struct	s_obj
 {
-	t_identifier	type;
-	t_color			color;
-	t_type			object;
-	s_obj			*next;
+	t_identifier	id;
+	t_color			*color;
+	t_type			type;
+	struct s_obj	*next;
 }				t_obj;
 
 #endif

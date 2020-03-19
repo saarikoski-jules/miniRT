@@ -28,7 +28,6 @@ void	get_camera(char *line)
 	cam->orien = get_vec(line, &i);
 	validate_orien(cam->orien);
 	cam->fov = get_int(line, &i);
-	i += ft_strmatch(&line[i], " ");
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
 
