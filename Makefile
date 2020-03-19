@@ -18,7 +18,6 @@ RT_SRCS =	test.c \
 			$(PARSE_DIR)parse_environment.c \
 			$(PARSE_DIR)parse_obj.c \
 			$(PARSE_DIR)get_objects.c \
-			$(PARSE_DIR)parse_vec.c \
 			$(PARSE_DIR)parse_utils.c \
 			$(PARSE_DIR)parse_validation.c \
 

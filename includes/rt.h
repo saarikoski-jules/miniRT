@@ -17,19 +17,11 @@
 ** GENERAL
 */
 
-typedef struct	s_vec
-{
-	double x;
-	double y;
-	double z;
-}				t_vec;
 
-typedef struct	s_color
-{
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-}				t_color;
+# include "vec.h"//
+# include "color.h"//
+# include "object.h"//
+// # include "parse.h"//
 
 /*
 ** DATA STRUCTS
@@ -64,7 +56,17 @@ typedef struct	s_light
 	struct s_light *next;
 }				t_light;
 
-void	get_input(char *path);
-void	parse_line(char *line);
+typedef struct	s_rt_scene
+{
+	t_resolution	*res;
+	t_ambiance		*amb;
+	t_camera		*cam;
+	t_light			*light;
+	t_obj			*obj;
+}				t_rt_scene;
+
+t_rt_scene	*get_scene(char *path);
+// void		get_input(char *path, t_rt_scene **scene);
+// void		parse_line(char *line, t_rt_scene **scene);
 
 #endif

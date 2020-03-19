@@ -12,8 +12,9 @@
 
 #ifndef OBJECT_H
 # define OBJECT_H
-# include "rt.h"
 
+# include "vec.h"
+# include "color.h"
 /*
 ** OBJECT STRUCTS
 */

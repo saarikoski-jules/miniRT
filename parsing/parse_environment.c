@@ -7,13 +7,14 @@
 
 // #include <stdlib.h>
 
-void get_resolution(char *line)
+t_resolution	*get_resolution(char *line)
 {
 	t_resolution	*res;
 	size_t			i;
 
 	i = 0;
 	res = (t_resolution*)malloc(sizeof(t_resolution));
+	ft_printf("resolution: '%s'\n", line);
 	res->res_x = get_int(line, &i);
 	res->res_y = get_int(line, &i);
 	if (res->res_x < 0 || res->res_y < 0)
@@ -21,9 +22,10 @@ void get_resolution(char *line)
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_RES, E_INVALID_RES);
 	// ft_printf("Resolution:\nres_x %d, res_y %d\n\n", res->res_x, res->res_y);
+	return (res);
 }
 
-void get_ambiance(char *line)
+t_ambiance	*get_ambiance(char *line)
 {
 	t_ambiance	*amb;
 	size_t		i;
@@ -37,9 +39,10 @@ void get_ambiance(char *line)
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_AMB, E_INVALID_AMB);
 	// ft_printf("Ambiance:\nratio: %f\nr: %d\ng: %d\nb: %d\n\n", amb->ratio, amb->color->r, amb->color->g, amb->color->b);
+	return (amb);
 }
 
-void get_light(char *line)
+t_light *get_light(char *line)
 {
 	size_t		i;
 	t_light	*light;
@@ -55,10 +58,31 @@ void get_light(char *line)
 	light->color = get_color(line, &i);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_LIGHT, E_INVALID_LIGHT);
+	light->next = NULL;
 	// ft_printf("Light:\ncoords, x: %f, y: %f, z: %f\nbrightness: %f\ncolor: r: %d, g: %d, b: %d\n\n", light->pos->x, light->pos->y,  light->pos->z, light->brightness, light->color->r, light->color->g, light->color->b);
 }
 
-void	get_camera(char *line)
+t_light		*add_light(char *line, t_light *first_light)
+{
+	t_light *new_light;
+	t_light *cur;
+
+	cur = first_light;
+	new_light = get_light(line);
+	if (first_light == NULL)
+		first_light = new_light;
+	else
+	{
+		while (cur->next != NULL)
+		{
+			cur = cur->next;
+		}
+		cur->next = new_light;
+	}
+	return (first_light);
+}
+
+t_camera	*get_camera(char *line)
 {
 	size_t		i;
 	t_camera	*cam;
@@ -73,7 +97,7 @@ void	get_camera(char *line)
 	cam->fov = get_int(line, &i);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
-
+	cam->next = NULL;
 	// ft_printf("Camera:\n\
 	Pos:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
 	Orient:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
@@ -83,3 +107,22 @@ void	get_camera(char *line)
 	// cam->fov);
 }
 
+t_camera		*add_camera(char *line, t_camera *first_camera)
+{
+	t_camera *new_cam;
+	t_camera *cur;
+
+	cur = first_camera;
+	new_cam = get_camera(line);
+	if (first_camera == NULL)
+		first_camera = new_cam;
+	else
+	{
+		while (cur->next != NULL)
+		{
+			cur = cur->next;
+		}
+		cur->next = new_cam;
+	}
+	return (first_camera);
+}

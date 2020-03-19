@@ -28,13 +28,13 @@ void	validate_fov(int fov)
 		error_exit_msg(C_INVALID_FOV, E_INVALID_FOV);
 }
 
-void	validate_color(t_color *color)
-{
-	if ((color->r > 255 || color->r < 0)
-	||	(color->g > 255 || color->g < 0)
-	||	(color->b > 255 || color->b < 0))
-		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
-}
+// void	validate_color(t_color *color)
+// {
+// 	if ((color->r > 255 || color->r < 0)
+// 	||	(color->g > 255 || color->g < 0)
+// 	||	(color->b > 255 || color->b < 0))
+// 		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
+// }
 
 void	validate_file(char *path)
 {

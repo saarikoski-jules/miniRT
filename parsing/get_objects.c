@@ -43,7 +43,7 @@ void	get_object_type(char *line, size_t *i, t_obj **obj)
 	}
 }
 
-void	get_object(char *line)
+t_obj	*get_object(char *line)
 {
 	t_obj *obj;
 	size_t i;
@@ -57,5 +57,26 @@ void	get_object(char *line)
 	// ft_printf("color: (%d, %d, %d)\n\n", obj->color->r, obj->color->g, obj->color->b);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_OBJ, E_INVALID_OBJ);
+	obj->next = NULL;
+	return (obj);
 }
 
+t_obj	*add_object(char *line, t_obj *first_obj)
+{
+	t_obj *new_obj;
+	t_obj *cur;
+
+	cur = first_obj;
+	new_obj = get_object(line);
+	if (first_obj == NULL)
+		first_obj = new_obj;
+	else
+	{
+		while (cur->next != NULL)
+		{
+			cur = cur->next;
+		}
+		cur->next = new_obj;
+	}
+	return (first_obj);
+}
