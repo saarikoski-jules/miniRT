@@ -14,7 +14,7 @@ t_resolution	*get_resolution(char *line)
 
 	i = 0;
 	res = (t_resolution*)malloc(sizeof(t_resolution));
-	ft_printf("resolution: '%s'\n", line);
+	// ft_printf("resolution: '%s'\n", line);
 	res->res_x = get_int(line, &i);
 	res->res_y = get_int(line, &i);
 	if (res->res_x < 0 || res->res_y < 0)

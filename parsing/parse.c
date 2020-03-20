@@ -89,6 +89,12 @@ t_rt_scene *get_scene(char *path)
 	scene->cam = NULL;
 	scene->obj = NULL;
 	get_input(path, &scene);
+	if (scene->res == NULL)
+		error_exit_msg(C_NO_RES, E_NO_RES);
+	if (scene->amb == NULL)
+		error_exit_msg(C_NO_AMB, E_NO_AMB);
+	if (scene->cam == NULL)
+		error_exit_msg(C_NO_CAM, E_NO_CAM);
 	return (scene);
 }
 
@@ -96,3 +102,4 @@ t_rt_scene *get_scene(char *path)
 //TODO vector validation for commas, spaces and overflow
 //TODO check if im getting resolution or ambiance twice
 //TODO overflow for values
+//TODO if resolution/ambiance/camera aren't set at all, assign default values?

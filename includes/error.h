@@ -47,6 +47,13 @@
 # define E_INVALID_SQ "Invalid format for square."
 # define C_INVALID_CY 148
 # define E_INVALID_CY "Invalid format for cylinder."
+# define C_NO_RES 149
+# define E_NO_RES "Resolution not defined."
+# define C_NO_AMB 150
+# define E_NO_AMB "Ambiance not defined."
+# define C_NO_CAM 151
+# define E_NO_CAM "No cameras defined."
+
 
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);

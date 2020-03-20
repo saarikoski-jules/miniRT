@@ -21,13 +21,18 @@ RT_SRCS =	test.c \
 			$(PARSE_DIR)parse_utils.c \
 			$(PARSE_DIR)parse_validation.c \
 
+MLXFLAGS_W = -lmlx -lXext -lX11
+MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread
+MLXFLAGS_M = -lmlx -framework OpenGL -framework AppKit
+
+
 all:
 	@make -C libft
 	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
 
 windows:
 	@make -C libft
-	@gcc -Iincludes -Ilibft $(RT_SRCS) libft/libft.a -Imlx
+	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Iminilibx_linux -Lminilibx_linux $(MLX_FLAGS_W)
 
 fclean:
 	@rm -rf a.out

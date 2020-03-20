@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mlx.h"
+#include "minilibx_linux/mlx.h"//
+// #include "mlx.h"
 #include "error.h"
 #include "libft.h"
 #include "rt.h"
@@ -90,6 +91,29 @@ void print_scene(t_rt_scene *scene)
 	
 }
 
+void trace_them_rays()
+{
+	void *mlx_ptr;
+	void *win_ptr;
+	void *img_ptr;
+	int y;
+	int color;
+
+	y = 100;
+	color = 0xff0000;
+	mlx_ptr = mlx_init();
+	ft_printf("%p\n", mlx_ptr);
+	win_ptr = mlx_new_window(mlx_ptr, 500, 500, "title");
+	while(y < 300)
+	{
+		mlx_pixel_put(mlx_ptr, win_ptr, 100, y, color);
+		color += 1;
+		y++;
+	}
+	mlx_loop(mlx_ptr);
+	img_ptr = mlx_new_image(mlx_ptr, 12, 12);
+}
+
 int main(int ac, char **av)
 {
 	t_rt_scene	*scene;
@@ -99,28 +123,7 @@ int main(int ac, char **av)
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);
 	
 	// print_scene(scene);
+
+	// trace_them_rays();
 	return (0);
 }
-
-// void trace_them_rays()
-// {
-	// void *mlx_ptr;
-	// void *win_ptr;
-	// void *img_ptr;
-	// int y;
-	// int color;
-
-	// y = 100;
-	// color = 0x000000;
-	// mlx_ptr = mlx_init();
-	// ft_printf("%p\n", mlx_ptr);
-	// win_ptr = mlx_new_window(mlx_ptr, 500, 500, "title");
-	// while(y < 300)
-	// {
-		// mlx_pixel_put(mlx_ptr, win_ptr, 100, y, color);
-		// color += 1;
-		// y++;
-	// }
-	// mlx_loop(mlx_ptr);
-	// img_ptr = mlx_new_image(mlx_ptr, 12, 12);
-// }
