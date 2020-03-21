@@ -91,28 +91,29 @@ void print_scene(t_rt_scene *scene)
 	
 }
 
-void trace_them_rays()
-{
-	void *mlx_ptr;
-	void *win_ptr;
-	void *img_ptr;
-	int y;
-	int color;
+// void trace_them_rays(t_rt_scene *scene)
+// {
+// 	void *mlx_ptr;
+// 	void *win_ptr;
+// 	void *img_ptr;
+// 	int y;
+// 	int color;
 
-	y = 100;
-	color = 0xff0000;
-	mlx_ptr = mlx_init();
-	ft_printf("%p\n", mlx_ptr);
-	win_ptr = mlx_new_window(mlx_ptr, 500, 500, "title");
-	while(y < 300)
-	{
-		mlx_pixel_put(mlx_ptr, win_ptr, 100, y, color);
-		color += 1;
-		y++;
-	}
-	mlx_loop(mlx_ptr);
-	img_ptr = mlx_new_image(mlx_ptr, 12, 12);
-}
+// 	y = 100;
+// 	color = 0xff0000;
+// 	mlx_ptr = mlx_init();
+// 	if (!mlx_ptr)
+// 		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT);
+// 	win_ptr = mlx_new_window(mlx_ptr, scene->res->res_x, scene->res->res_y, "title");
+// 	while(y < 300)
+// 	{
+// 		mlx_pixel_put(mlx_ptr, win_ptr, 100, y, color);
+// 		color += 1;
+// 		y++;
+// 	}
+// 	mlx_loop(mlx_ptr);
+// 	img_ptr = mlx_new_image(mlx_ptr, 12, 12);
+// }
 
 int main(int ac, char **av)
 {
@@ -124,6 +125,6 @@ int main(int ac, char **av)
 	
 	// print_scene(scene);
 
-	// trace_them_rays();
+	trace_them_rays(scene);
 	return (0);
 }

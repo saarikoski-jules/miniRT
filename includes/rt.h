@@ -66,6 +66,7 @@ typedef struct	s_rt_scene
 }				t_rt_scene;
 
 t_rt_scene	*get_scene(char *path);
+void		trace_them_rays(t_rt_scene *scene);
 // void		get_input(char *path, t_rt_scene **scene);
 // void		parse_line(char *line, t_rt_scene **scene);
 

@@ -11,6 +11,7 @@
 # **************************************************************************** #
 
 PARSE_DIR = parsing/
+RENDER_DIR = rendering/
 RT_SRCS =	test.c \
 			error.c \
 			\
@@ -20,6 +21,9 @@ RT_SRCS =	test.c \
 			$(PARSE_DIR)get_objects.c \
 			$(PARSE_DIR)parse_utils.c \
 			$(PARSE_DIR)parse_validation.c \
+			\
+			$(RENDER_DIR)render.c \
+			$(RENDER_DIR)render_utils.c \
 
 MLXFLAGS_W = -lmlx -lXext -lX11
 MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread

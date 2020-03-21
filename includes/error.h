@@ -53,7 +53,8 @@
 # define E_NO_AMB "Ambiance not defined."
 # define C_NO_CAM 151
 # define E_NO_CAM "No cameras defined."
-
+# define C_NO_CONNECT 152
+# define E_NO_CONNECT "Wasn't able to establish connection to graphics server."
 
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
