@@ -55,3 +55,13 @@ void	error_exit_errno(void)
 	ft_printf("MiniRT(%d): %s\n", errno, strerror(errno));
 	exit(errno);
 }
+
+void *e_malloc(size_t size)
+{
+	void *ptr;
+
+	ptr = malloc(size);
+	if (!ptr)
+		error_exit_errno();
+	return (ptr);
+}

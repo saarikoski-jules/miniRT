@@ -13,6 +13,8 @@
 #ifndef ERROR_H
 # define ERROR_H
 
+#include <stdlib.h>//for size_t
+
 # define C_MAIN_FEW_ARGUMENTS 132
 # define E_MAIN_FEW_ARGUMENTS "Too few arguments given. 1 needed."
 # define C_INVALID_FILE 133
@@ -58,5 +60,6 @@
 
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
+void	*e_malloc(size_t size);
 
 #endif
