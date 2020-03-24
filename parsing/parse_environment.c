@@ -93,6 +93,7 @@ t_camera	*get_camera(char *line)
 	i = 0;
 	cam->pos = get_vec(line, &i);
 	cam->orien = get_vec(line, &i);
+	//if orientation 0,0,0, fail
 	validate_orien(cam->orien);
 	cam->fov = get_int(line, &i);
 	if (line[i] != '\0')

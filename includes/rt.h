@@ -27,6 +27,7 @@
 ** DATA STRUCTS
 */
 
+
 typedef struct	s_resolution
 {
 	unsigned int res_x;

@@ -3,6 +3,7 @@
 #include "libft.h"//
 #include "error.h"
 #include <stdlib.h>//
+#include "render.h"
 #include <math.h>
 
 int translate_color(t_color *color)
@@ -58,4 +59,14 @@ t_vec *set_vec_len(t_vec *vector, double len)
 	new_vec->z = (vector->z / vec_len) * len;
 	// ft_printf("%f\n", det_len_vec(new_vec));
 	return (new_vec);
+}
+
+int within_grid(t_vec *pos, t_grid *grid)
+{
+	// ft_printf("min->x: %f, pos->x: %f, max->x: %f\n", grid->up_left->x, pos->x, grid->up_right->x);
+	if (pos->x >= grid->up_left->x && pos->x <= grid->up_right->x
+	&& pos->y <= grid->up_left->y && pos->y >= grid->down_left->y
+	&& pos->z <= grid->up_left->y && pos->y >= grid->down_left->y)
+		return (1);
+	return (0);
 }
