@@ -32,6 +32,45 @@ t_vec *determine_vector(t_vec *pos1, t_vec *pos2)
 	return (vector);
 }
 
+t_vec *add_vectors(t_vec *vec1, t_vec *vec2)
+{
+	t_vec *vector;
+
+	vector = gen_coord(vec1->x + vec2->x, vec1->y + vec2->y, vec1->z + vec2->z);
+	return (vector);
+}
+
+t_vec *substract_vectors(t_vec *vec1, t_vec *vec2)
+{
+	t_vec *vector;
+
+	vector = gen_coord(vec1->x - vec2->x, vec1->y - vec2->y, vec1->z - vec2->z);
+	return (vector);
+}
+
+// t_vec *multiply_vectors(t_vec *vec1, t_vec *vec2)
+// {
+// 	t_vec *vector;
+
+// 	vector = gen_coord(vec1->x + vec2->x, vec1->y + vec2->y, vec1->z + vec2->z);
+// 	return (vector);
+// }
+
+double get_dot_product(t_vec *vec1, t_vec *vec2)
+{
+	double x;
+	double y;
+	double z;
+	double sum;
+
+	x = vec1->x * vec2->x;
+	y = vec1->y * vec2->y;
+	z = vec1->z * vec2->z;
+	// ft_printf("vec1->z %f, vec2->z %f\n", vec1->z, vec2->z);
+	// ft_printf("getting dot product: x: %f, y: %f, z: %f\n", x, y, z);
+	sum = x + y + z;
+	return (sum);
+}
 
 double det_len_vec(t_vec *vector)
 {
@@ -60,6 +99,8 @@ t_vec *set_vec_len(t_vec *vector, double len)
 	// ft_printf("%f\n", det_len_vec(new_vec));
 	return (new_vec);
 }
+
+
 
 int within_grid(t_vec *pos, t_grid *grid)
 {
