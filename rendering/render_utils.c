@@ -5,6 +5,7 @@
 #include <stdlib.h>//
 #include "render.h"
 #include <math.h>
+#include <stdio.h>
 
 int translate_color(t_color *color)
 {
@@ -61,6 +62,7 @@ double get_dot_product(t_vec *vec1, t_vec *vec2)
 	double x;
 	double y;
 	double z;
+	double sum1;
 	double sum;
 
 	x = vec1->x * vec2->x;
@@ -68,7 +70,12 @@ double get_dot_product(t_vec *vec1, t_vec *vec2)
 	z = vec1->z * vec2->z;
 	// ft_printf("vec1->z %f, vec2->z %f\n", vec1->z, vec2->z);
 	// ft_printf("getting dot product: x: %f, y: %f, z: %f\n", x, y, z);
+	// printf("%f, %f, %f\n", x, y, z);
 	sum = x + y + z;
+	// sum = sum1 + y;
+	// ft_p
+	// printf("sum: %f\n", sum);
+
 	return (sum);
 }
 

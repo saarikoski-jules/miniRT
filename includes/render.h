@@ -12,6 +12,13 @@ typedef struct	s_grid
 	t_vec	*down_right;
 }				t_grid;
 
+typedef struct	s_cam_info
+{
+	double	aspect_ratio;
+	double	fov_ratio;
+	double	len_x;
+	double	len_y;
+}				t_cam_info;
 
 int		translate_color(t_color *color);
 t_vec	*determine_vector(t_vec *pos1, t_vec *pos2);

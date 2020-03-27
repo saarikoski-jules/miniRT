@@ -4,6 +4,7 @@
 #include "error.h"
 #include "libft.h"//
 #include <math.h>
+#include <stdio.h>//
 
 #define DIST 1 //choose: determine camera distance from grid
 #define FOV_VERT 60 //choose: determine vertical fov
@@ -116,66 +117,153 @@
 // }
 
 
-int cast(t_rt_scene *scene, t_vec *vector)
+double circle(t_rt_scene *scene, t_obj *sp, t_vec *ray)
 {
-	//calculate some_vec = origin of vector - center of circle
-	//calculate some_vec_l = length (some_vec)
-	//new_vec = pow(some_vec_l, 2)
-	//sub = new_vec - (pow(r, 2))
-	//dir_u = set_vec_len(vector, 1.0)
-	//sub_from = pow(dir_u * some_vec, 2)
-	//sub_from - sub
-
-
-	// t_vec *tmp = substract_vectors(scene->cam->pos, scene->obj->type.sp->pos);
-	// double tmp_len = det_len_vec(tmp);
-
-
-//BETTER METHOD?
-
-	// ft_printf("cam pos: (%f, %f, %f), sphere pos: (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z, scene->obj->type.sp->pos->x, scene->obj->type.sp->pos->y, scene->obj->type.sp->pos->z);
-	// t_vec *c_o = substract_vectors(scene->obj->type.sp->pos, scene->cam->pos);
-	// ft_printf("centre - origo: (%f, %f, %f)\n", c_o->x, c_o->y, c_o->z);
-	// ft_printf("ray direction: (%f, %f, %f)\n", vector->x, vector->y, vector->z);
-	// t_vec *dir_u = set_vec_len(vector, 1.0);
-	// ft_printf("ray direction: (%f, %f, %f)\n", dir_u->x, dir_u->y, dir_u->z);
-	// double c_o_dir_dot = get_dot_product(c_o, dir_u);
-	// ft_printf("new c->o vector and direction dot product: %f\n", c_o_dir_dot);
-	// double c_o_dot = get_dot_product(c_o, c_o);
-	// double powco_dir = pow(c_o_dir_dot, 2);
-	// double powco = pow(c_o_dot, 2);
-	// ft_printf("%f - %f\n", powco, powco_dir);
-	// double intersect = powco - powco_dir;
-	// ft_printf("closest to circle center: %f, radius: %f\n", intersect, (scene->obj->type.sp->dia / 2.0));
-	// ft_printf("c_o: (%f, %f, %f), co_dir: %f\n", c_o->x, c_o->y, c_o->z, c_o_dir);
-
-	t_vec *L = substract_vectors(scene->obj->type.sp->pos, scene->cam->pos);
-	// ft_printf("L: (%f, %f, %f)\n", L->x, L->y, L->z);
+	t_vec *L = substract_vectors(scene->cam->pos, sp->type.sp->pos);
 	double dot_L = get_dot_product(L, L);
-	// ft_printf("dot product of L with itself: %f\n", dot_L);
-	double r_pow = pow(scene->obj->type.sp->dia / 2.0, 2);
-	// ft_printf("r: %f, r_pow: %f\n", scene->obj->type.sp->dia / 2.0, r_pow);
-	t_vec *dir_u = set_vec_len(vector, 1.0);
+	double r_pow = pow(sp->type.sp->dia / 2.0, 2);
+	
+	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	t_vec *dir_u = set_vec_len(ray, 1.0);
+	// ft_printf("ray_unit: (%f, %f, %f)\n", dir_u->x, dir_u->y, dir_u->z);
 	double dot_dir_L = get_dot_product(dir_u, L);
-	// ft_printf("dit dot L: %f\n", dot_dir_L);
-
-	double a = get_dot_product(dir_u, dir_u);
-	// ft_printf("a: %f\n", a);
+	// ft_printf("DOT PRODUCT FOR A: \n");
+	// double a = get_dot_product(dir_u, dir_u);
+	double a = 1.0;
+	// ft_printf("\n\n");
 	double b = 2.0 * dot_dir_L;
-	// ft_printf("b: %f\n", b);
 	double c = dot_L - r_pow;
-	// ft_printf("c: %f\n", c);
-
+	// ft_printf("a: %f, b: %f, c: %f\n", a, b, c);
+	// ft_printf("%f\n", dir_u);
+	ft_printf("%f, 4 *%f * %f = %f\n", pow(b, 2), a, c, 4 * a * c);
 	double disc = pow(b, 2) - 4 * a * c;
+	// ft_printf("a: %f\n", a);
+	// ft_printf("disc: %f\n", disc);
+	ft_printf("%f\n", disc);
+	if (disc < 0)
+		return (-1.0);
+	//if intersections are found, get distance from camera
 
-	if (disc >= 0)
-		return (1);
-	else
+	if (disc > 0)
+	{
+		// ft_printf("b: %f\n", b);
+		// ft_printf("a: %f, b: %f, c: %f\n", a, b, c);
+		//calculate (-b - disc) / 2a and (-b + disk) / 2a
+		// printf("-b: %f\n", -1 * b);
+		// printf("disc: %f, sqrt(disc): %f\n", disc, sqrt(disc));
+		double d1 = (((-1 * b) - sqrt(disc)) / 2);
+		double d2 = (((-1 * b) + sqrt(disc)) / 2);
+		if (d1 < d2)
+			return (d1);
+		else
+			return (d2);
+		// if (d1 > d2)
+			// printf("d1: %f\n", d1);
+		// else
+			// printf("d2: %f\n", d2);
+	}
+	else if (disc == 0)
+	{
+		double d = (-1 * b) / (2 * a);
+		return (d);
+	}
+	return (0);
+	// if (disc >= 0 && b >= 0)
+	// 	return (translate_color(sp->color));
+	// else
+	// 	return (0);
+}
+
+double plane(t_rt_scene *scene, t_obj *pl, t_vec *ray)
+{
+	double d;
+	//p0 = pl->type.pl->pos;
+	//l0 = scene->cam->pos;
+	//n = pl->type.pl->orien;
+	//l = ray
+
+	// t_vec *n = substract_vectors(pl->type.pl->pos, pl->type.pl->orien);
+	double ln = get_dot_product(ray, pl->type.pl->pos);
+	if (ln == 0.0)
+		return (-1);
+	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	// ft_printf("ln: %f\n", ln);
+	t_vec *cam_pl = substract_vectors(pl->type.pl->pos, scene->cam->pos);
+	// ft_printf("cam_pl: (%f, %f, %f)\n", cam_pl->x, cam_pl->y, cam_pl->z);
+	double cam_pl_n = get_dot_product(cam_pl, pl->type.pl->orien);
+	// if (p0 - l0)n == 0 (cam_pl_n == 0)camera is inside the object
+	// ft_printf("%f, %f\n", cam_pl_n, ln);
+	double tmp = cam_pl_n / ln;
+	t_vec *halp = gen_coord(ray->x * tmp, ray->y * tmp, ray->z *tmp);
+	// ft_printf("halp: (%f, %f, %f)\n", halp->x, halp->y, halp->z);
+	t_vec *sub = add_vectors(scene->cam->pos, halp);
+	d = det_len_vec(sub);
+	return (d);
+	// ft_printf("d: %f\n", d)
+
+	// ft_printf("d: %f\n", d);
+
+
+	return (-1);
+}
+
+int cast(t_rt_scene *scene, t_vec *ray)
+{
+	//iterate objects
+
+	t_obj *tmp;
+	double d;
+	double d_tmp;
+	int	color;
+
+	color = 0;
+	d = -1.0;
+	tmp = scene->obj;
+	if (tmp == NULL)
 		return (0);
+	while(tmp != NULL)
+	{
+		// ft_printf("goooo\n");
+		//save the closest value to the camera and return that
+		if (tmp != NULL)
+		{
+			if (tmp->id == sp)
+			{
+				// ft_printf("circle\n");
+				d_tmp = circle(scene, tmp, ray);
+				// ft_printf("d temp: %f, circle\n", d_tmp);
+				// printf("distance: %f\n", d_tmp);
+				if (d_tmp > d)
+				{
+					d = d_tmp;
+					color = translate_color(scene->obj->color);
+					// ft_printf("circle, color %x\n", color);
+				}
+			//fix when sphere is on top of me
+			}
+			else if (tmp->id == pl)
+			{
+				d_tmp = plane(scene, tmp, ray);
+				// ft_printf("d temp: %f, plane\n", d_tmp);
+				if (d_tmp > d)
+				{
+					d = d_tmp;
+					color = translate_color(scene->obj->color);
+					// ft_printf("plane, color %x\n", color);
+				}
+			// ft_printf("plane?\n");
+			}
+		}
+		// printf("%p\n", tmp->next);
+		tmp = tmp->next;
+	}
+	// ft_printf("\nwinning color: %x\n\n\n", color);
+	return (color);
+
 
 	// ft_printf("pow b: %f, rest: %f, solved: %f\n", pow(b, 2),  4 * a * c, pow(b, 2) - 4 * a * c);
 
-	// ft_printf("unit direction vector of ray: (%f, %f, %f)\ndir's dot product a: %f\n", dir_u->x, dir_u->y, dir_u->z, a);
+	// ft_printf("unit direction ray of ray: (%f, %f, %f)\ndir's dot product a: %f\n", dir_u->x, dir_u->y, dir_u->z, a);
 	// double dot_centre_origo_dir = get_dot_product(L, dir_u);
 	// ft_printf("dot product of L with dir_u: %f\n", dot_L);
 
@@ -193,16 +281,21 @@ int cast(t_rt_scene *scene, t_vec *vector)
 //get screen space
 //I can shoot rays from here and return them so I can then draw pixels from the previous function
 //I still need to account for direction
-int remap_coord(t_rt_scene *scene, t_vec *pos)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data)
 {
-	float aspect_ratio = scene->res->res_x / scene->res->res_y; //account for non square res
-	float fov_y = tan(FOV_VERT / 2 * M_PI / 180);
-	float fov_x = tan(scene->cam->fov / 2 * M_PI / 180);
-	float PixelScreenx = ((pos->x * 2) - 1) * aspect_ratio * fov_x;
-	float PixelScreeny = (1 - (pos->y * 2)) * fov_y;
-	t_vec *vector = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction vector
-	// ft_printf("vector: (%f, %f, %f), len: %f\n", vector->x, vector->y, vector->z, det_len_vec(vector));
-	return (cast(scene, vector));
+
+	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
+	// double aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y; //account for non square res
+	// double fov_a_ratio = (double)scene->cam->fov / (double)FOV_VERT; //maybe bad, please double check
+	// ft_printf("aspect ratio: %f\n", aspect_ratio);
+	// double fov_y = tan(FOV_VERT / 2 * M_PI / 180);
+	// double fov_x = tan(scene->cam->fov / 2 * M_PI / 180);
+	double PixelScreenx = ((pos->x * 2) - 1) * cam_data.aspect_ratio * cam_data.len_x;
+	double PixelScreeny = (1 - (pos->y * 2)) * cam_data.len_y * cam_data.fov_ratio; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
+	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
+	t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
+	// ft_printf("ray: (%f, %f, %f), len: %f\n", ray->x, ray->y, ray->z, det_len_vec(ray));
+	return (cast(scene, ray));
 }
 
 //get ndc space
@@ -213,6 +306,12 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	double inc_x;
 	double inc_y;
 	t_vec *pos;
+	t_cam_info cam_data;
+
+	cam_data.aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
+	cam_data.fov_ratio = (double)scene->cam->fov / (double)FOV_VERT; //changing maybe
+	cam_data.len_x = tan(scene->cam->fov / 2 * M_PI / 180);
+	cam_data.len_y = tan(FOV_VERT / 2 * M_PI / 180);
 
 	i = 1;
 	j = 1;
@@ -223,26 +322,28 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	pos->x = inc_x / 2;
 	pos->y = inc_y / 2;
 	// ft_printf("%f, %f\n", inc_x, inc_y);
-	// while (j <= 1)
+
+	// while (j <= 2)
 	while (j <= scene->res->res_y)
 	{
-		// while (i <= 1)
+		// while (i <= 2)
 		while (i <= scene->res->res_x)
 		{
 			//get coord here.
 			// ft_printf("pix:\t(%d, %d)\tndc:\t(%f, %f, %f)\n", i, j, pos->x, pos->y,pos->z);
 			// if (i == 250 && j == 250)
 			// {
-			if (remap_coord(scene, pos))
-			{
-				ft_printf("true\n");
-				mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0xff0000);
-			}
-			else
-			{
-				ft_printf("false\n");
-				mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
-			}
+			
+			// if (remap_coord(scene, pos))
+			// {
+				// ft_printf("true\n");
+				mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data));
+			// }
+			// else
+			// {
+				// ft_printf("false\n");
+				// mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
+			// }
 			if (i != scene->res->res_x)
 			{
 				pos->x += inc_x;
