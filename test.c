@@ -123,7 +123,7 @@ int main(int ac, char **av)
 	else
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);
 	
-	print_scene(scene);
+	// print_scene(scene);
 
 	trace_them_rays(scene);
 	return (0);

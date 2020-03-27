@@ -123,6 +123,8 @@ double circle(t_rt_scene *scene, t_obj *sp, t_vec *ray)
 	double dot_L = get_dot_product(L, L);
 	double r_pow = pow(sp->type.sp->dia / 2.0, 2);
 	
+	// ft_printf("circle dia: %f, circle pos: (%f, %f, %f)\n", sp->type.sp->dia, sp->type.sp->pos->x, sp->type.sp->pos->y, sp->type.sp->pos->z);
+
 	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
 	t_vec *dir_u = set_vec_len(ray, 1.0);
 	// ft_printf("ray_unit: (%f, %f, %f)\n", dir_u->x, dir_u->y, dir_u->z);
@@ -132,14 +134,15 @@ double circle(t_rt_scene *scene, t_obj *sp, t_vec *ray)
 	double a = 1.0;
 	// ft_printf("\n\n");
 	double b = 2.0 * dot_dir_L;
+	// ft_printf("%f\n", b);
 	double c = dot_L - r_pow;
 	// ft_printf("a: %f, b: %f, c: %f\n", a, b, c);
 	// ft_printf("%f\n", dir_u);
-	ft_printf("%f, 4 *%f * %f = %f\n", pow(b, 2), a, c, 4 * a * c);
 	double disc = pow(b, 2) - 4 * a * c;
+	// ft_printf("%f - 4 *%f * %f = %f\n", pow(b, 2), a, c, disc);
 	// ft_printf("a: %f\n", a);
 	// ft_printf("disc: %f\n", disc);
-	ft_printf("%f\n", disc);
+	// ft_printf("%f\n", disc);
 	if (disc < 0)
 		return (-1.0);
 	//if intersections are found, get distance from camera
@@ -227,16 +230,25 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		//save the closest value to the camera and return that
 		if (tmp != NULL)
 		{
+			// ft_printf("go\n");
 			if (tmp->id == sp)
 			{
 				// ft_printf("circle\n");
+				// ft_printf("%d\n", tmp);
+
+				// ft_printf("\tsphere position:\t(%f, %f, %f)\n\tsphere diameter:\t%f\n", tmp->type.sp->pos->x, tmp->type.sp->pos->y, tmp->type.sp->pos->z, tmp->type.sp->dia);
+
+					// ft_printf("circle dia: %f, circle pos: (%f, %f, %f) color: (%d, %d, %d)\n", tmp->type.sp->dia, tmp->type.sp->pos->x, tmp->type.sp->pos->y, tmp->type.sp->pos->z, tmp->color->r, tmp->color->g, tmp->color->b);
 				d_tmp = circle(scene, tmp, ray);
 				// ft_printf("d temp: %f, circle\n", d_tmp);
 				// printf("distance: %f\n", d_tmp);
-				if (d_tmp > d)
+				if (d_tmp > d && d_tmp > 0.0)
 				{
 					d = d_tmp;
-					color = translate_color(scene->obj->color);
+					// if (d != -1.0)
+						// ft_printf("%f\n", d);
+					color = translate_color(tmp->color);
+					// ft_printf("assign color circle %x\n", color);
 					// ft_printf("circle, color %x\n", color);
 				}
 			//fix when sphere is on top of me
@@ -245,10 +257,11 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 				d_tmp = plane(scene, tmp, ray);
 				// ft_printf("d temp: %f, plane\n", d_tmp);
-				if (d_tmp > d)
+				if (d_tmp > d && d_tmp > 0.0)
 				{
+					// ft_printf("assign color plane\n");
 					d = d_tmp;
-					color = translate_color(scene->obj->color);
+					color = translate_color(tmp->color);
 					// ft_printf("plane, color %x\n", color);
 				}
 			// ft_printf("plane?\n");
@@ -337,7 +350,8 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 			// if (remap_coord(scene, pos))
 			// {
 				// ft_printf("true\n");
-				mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data));
+				// if (i == 250 && j == 250)
+					mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data));
 			// }
 			// else
 			// {
