@@ -2,6 +2,7 @@
 #include "rt.h"
 #include "mlx.h"
 #include "error.h"
+#include "quaternion.h"
 #include "libft.h"//
 #include <math.h>
 #include <stdio.h>//
@@ -291,10 +292,15 @@ int cast(t_rt_scene *scene, t_vec *ray)
 //Translate remapped coords to real world space with transformation matrix
 
 
+t_vec *orient_ray(double x, double y, double z, t_qua *q)
+{
+	return (gen_coord(x, y, z));
+}
+
 //get screen space
 //I can shoot rays from here and return them so I can then draw pixels from the previous function
 //I still need to account for direction
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -306,10 +312,16 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data)
 	double PixelScreenx = ((pos->x * 2) - 1) * cam_data.aspect_ratio * cam_data.len_x;
 	double PixelScreeny = (1 - (pos->y * 2)) * cam_data.len_y * cam_data.fov_ratio; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
-	t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
+	
+	
+	t_vec *ray = orient_ray(PixelScreenx, PixelScreeny, -1, q);
+	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
+	
+	
 	// ft_printf("ray: (%f, %f, %f), len: %f\n", ray->x, ray->y, ray->z, det_len_vec(ray));
 	return (cast(scene, ray));
 }
+
 
 //get ndc space
 void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
@@ -332,47 +344,58 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	inc_y = 1.0/scene->res->res_y;
 	pos = (t_vec*)e_malloc(sizeof(t_vec));
 	pos->z = -1; //we'll need to find the real number for this
-	pos->x = inc_x / 2;
-	pos->y = inc_y / 2;
+	// pos->x = inc_x / 2;
+	// pos->y = inc_y / 2;
+
+	pos->x = 0;//
+	pos->y = 0;//
+
+	t_qua *q = determine_quaternion(scene->cam->orien);
+	
+	ft_printf("quaternion: (%f, %f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+	
+	t_vec *v_c = conjugate_vector(q, pos);
+
+
 	// ft_printf("%f, %f\n", inc_x, inc_y);
 
 	// while (j <= 2)
-	while (j <= scene->res->res_y)
-	{
-		// while (i <= 2)
-		while (i <= scene->res->res_x)
-		{
-			//get coord here.
-			// ft_printf("pix:\t(%d, %d)\tndc:\t(%f, %f, %f)\n", i, j, pos->x, pos->y,pos->z);
-			// if (i == 250 && j == 250)
-			// {
+	// while (j <= scene->res->res_y)
+	// {
+	// 	// while (i <= 2)
+	// 	while (i <= scene->res->res_x)
+	// 	{
+	// 		//get coord here.
+	// 		// ft_printf("pix:\t(%d, %d)\tndc:\t(%f, %f, %f)\n", i, j, pos->x, pos->y,pos->z);
+	// 		// if (i == 250 && j == 250)
+	// 		// {
 			
-			// if (remap_coord(scene, pos))
-			// {
-				// ft_printf("true\n");
-				// if (i == 250 && j == 250)
-					mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data));
-			// }
-			// else
-			// {
-				// ft_printf("false\n");
-				// mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
-			// }
-			if (i != scene->res->res_x)
-			{
-				pos->x += inc_x;
-			}
-			i++;
-		}
-		i = 1;
-		pos->x = inc_x /2;
-		// ft_printf("if %f < 1.0\n", pos->y + inc_y);
-		if (j != scene->res->res_y)
-		{
-			pos->y += inc_y;
-		}
-		j++;
-	}
+	// 		// if (remap_coord(scene, pos))
+	// 		// {
+	// 			// ft_printf("true\n");
+	// 			// if (i == 250 && j == 250)
+	// 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data, q));
+	// 		// }
+	// 		// else
+	// 		// {
+	// 			// ft_printf("false\n");
+	// 			// mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
+	// 		// }
+	// 		if (i != scene->res->res_x)
+	// 		{
+	// 			pos->x += inc_x;
+	// 		}
+	// 		i++;
+	// 	}
+	// 	i = 1;
+	// 	pos->x = inc_x /2;
+	// 	// ft_printf("if %f < 1.0\n", pos->y + inc_y);
+	// 	if (j != scene->res->res_y)
+	// 	{
+	// 		pos->y += inc_y;
+	// 	}
+	// 	j++;
+	// }
 	// ft_printf("done\n");
 }
 

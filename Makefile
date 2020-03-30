@@ -24,6 +24,8 @@ RT_SRCS =	test.c \
 			\
 			$(RENDER_DIR)render.c \
 			$(RENDER_DIR)render_utils.c \
+			$(RENDER_DIR)vector_utils.c \
+			$(RENDER_DIR)quaternion_utils.c \
 
 MLXFLAGS_W = -lmlx -lXext -lX11
 MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread
