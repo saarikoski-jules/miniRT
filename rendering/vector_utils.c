@@ -1,6 +1,7 @@
 #include "vec.h"
 #include <math.h>
 #include "error.h"
+#include <stdio.h>//
 
 t_vec *gen_coord(double x, double y, double z)
 {
@@ -50,10 +51,13 @@ t_vec *get_cross_product(t_vec *vec1, t_vec *vec2)
 	t_vec *vec;
 
 	vec = (t_vec*)e_malloc(sizeof(t_vec));
+	// printf("v1: (%f, %f, %f)\n", vec1->x, vec1->y, vec1->z);
+	// printf("v2: (%f, %f, %f)\n", vec2->x, vec2->y, vec2->z);
+	
 	vec->x = (vec1->y * vec2->z) - (vec1->z * vec2->y);
 	vec->y = (vec1->z * vec2->x) - (vec1->x * vec2->z);
 	vec->z = (vec1->x * vec2->y) - (vec1->y * vec2->x);
-	// ft_printf("cross product: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
+	// printf("cross product: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
 	return (vec);
 }
 

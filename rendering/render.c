@@ -353,7 +353,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	t_qua *q = determine_quaternion(scene->cam->orien);
 	
 	ft_printf("quaternion: (%f, %f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
-	
+
 	t_vec *v_c = conjugate_vector(q, pos);
 
 
