@@ -168,7 +168,7 @@ double circle(t_rt_scene *scene, t_obj *sp, t_vec *ray)
 	}
 	else if (disc == 0)
 	{
-		double d = (-1 * b) / (2 * a);
+		double d = (-1 * b) / (2 * a); //should be the same as d = -0.5 * b
 		return (d);
 	}
 	return (0);
@@ -202,6 +202,7 @@ double plane(t_rt_scene *scene, t_obj *pl, t_vec *ray)
 	// ft_printf("halp: (%f, %f, %f)\n", halp->x, halp->y, halp->z);
 	t_vec *sub = add_vectors(scene->cam->pos, halp);
 	d = det_len_vec(sub);
+	ft_printf("%f\n", d);
 	return (d);
 	// ft_printf("d: %f\n", d)
 
@@ -221,7 +222,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	int	color;
 
 	color = 0;
-	d = -1.0;
+	d = 1.0/0.0; 
 	tmp = scene->obj;
 	if (tmp == NULL)
 		return (0);
@@ -243,12 +244,14 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				d_tmp = circle(scene, tmp, ray);
 				// ft_printf("d temp: %f, circle\n", d_tmp);
 				// printf("distance: %f\n", d_tmp);
-				if (d_tmp > d && d_tmp > 0.0)
+				if (d_tmp < d && d_tmp > 0.0)
 				{
 					d = d_tmp;
 					// if (d != -1.0)
 						// ft_printf("%f\n", d);
 					color = translate_color(tmp->color);
+					// ft_printf("circle: color: %x distance: %f\n", color, d);
+
 					// ft_printf("assign color circle %x\n", color);
 					// ft_printf("circle, color %x\n", color);
 				}
@@ -258,11 +261,12 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 				d_tmp = plane(scene, tmp, ray);
 				// ft_printf("d temp: %f, plane\n", d_tmp);
-				if (d_tmp > d && d_tmp > 0.0)
+				if (d_tmp < d && d_tmp > 0.0)
 				{
 					// ft_printf("assign color plane\n");
 					d = d_tmp;
 					color = translate_color(tmp->color);
+					// ft_printf("plane: color: %x distance: %f\n", color, d);
 					// ft_printf("plane, color %x\n", color);
 				}
 			// ft_printf("plane?\n");
@@ -272,6 +276,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		tmp = tmp->next;
 	}
 	// ft_printf("\nwinning color: %x\n\n\n", color);
+	// ft_printf("returning %x\n\n", color);
 	return (color);
 
 
@@ -292,10 +297,10 @@ int cast(t_rt_scene *scene, t_vec *ray)
 //Translate remapped coords to real world space with transformation matrix
 
 
-t_vec *orient_ray(double x, double y, double z, t_qua *q)
-{
-	return (gen_coord(x, y, z));
-}
+// t_vec *orient_ray(double x, double y, double z, t_qua *q)
+// {
+	// return (gen_coord(x, y, z));
+// }
 
 //get screen space
 //I can shoot rays from here and return them so I can then draw pixels from the previous function
@@ -313,8 +318,8 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	double PixelScreeny = (1 - (pos->y * 2)) * cam_data.len_y * cam_data.fov_ratio; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
-	
-	t_vec *ray = orient_ray(PixelScreenx, PixelScreeny, -1, q);
+	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, -1);
+	t_vec *ray = orient_vector(q, vec);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
 	
 	
@@ -352,50 +357,50 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 
 	t_qua *q = determine_quaternion(scene->cam->orien);
 	
-	ft_printf("quaternion: (%f, %f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+	// ft_printf("quaternion: (%f, %f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
 
-	t_vec *v_c = conjugate_vector(q, pos);
+	// t_vec *v_c = conjugate_vector(q, pos);
 
 
 	// ft_printf("%f, %f\n", inc_x, inc_y);
 
 	// while (j <= 2)
-	// while (j <= scene->res->res_y)
-	// {
-	// 	// while (i <= 2)
-	// 	while (i <= scene->res->res_x)
-	// 	{
-	// 		//get coord here.
-	// 		// ft_printf("pix:\t(%d, %d)\tndc:\t(%f, %f, %f)\n", i, j, pos->x, pos->y,pos->z);
-	// 		// if (i == 250 && j == 250)
-	// 		// {
+	while (j <= scene->res->res_y)
+	{
+		// while (i <= 2)
+		while (i <= scene->res->res_x)
+		{
+			//get coord here.
+			// ft_printf("pix:\t(%d, %d)\tndc:\t(%f, %f, %f)\n", i, j, pos->x, pos->y,pos->z);
+			// if (i == 250 && j == 250)
+			// {
 			
-	// 		// if (remap_coord(scene, pos))
-	// 		// {
-	// 			// ft_printf("true\n");
-	// 			// if (i == 250 && j == 250)
-	// 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data, q));
-	// 		// }
-	// 		// else
-	// 		// {
-	// 			// ft_printf("false\n");
-	// 			// mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
-	// 		// }
-	// 		if (i != scene->res->res_x)
-	// 		{
-	// 			pos->x += inc_x;
-	// 		}
-	// 		i++;
-	// 	}
-	// 	i = 1;
-	// 	pos->x = inc_x /2;
-	// 	// ft_printf("if %f < 1.0\n", pos->y + inc_y);
-	// 	if (j != scene->res->res_y)
-	// 	{
-	// 		pos->y += inc_y;
-	// 	}
-	// 	j++;
-	// }
+			// if (remap_coord(scene, pos))
+			// {
+				// ft_printf("true\n");
+				// if (i == 250 && j == 250)
+					mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data, q));
+			// }
+			// else
+			// {
+				// ft_printf("false\n");
+				// mlx_pixel_put(mlx_ptr, win_ptr, i, j, 0x000000);
+			// }
+			if (i != scene->res->res_x)
+			{
+				pos->x += inc_x;
+			}
+			i++;
+		}
+		i = 1;
+		pos->x = inc_x /2;
+		// ft_printf("if %f < 1.0\n", pos->y + inc_y);
+		if (j != scene->res->res_y)
+		{
+			pos->y += inc_y;
+		}
+		j++;
+	}
 	// ft_printf("done\n");
 }
 

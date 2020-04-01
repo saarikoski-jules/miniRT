@@ -61,8 +61,8 @@ t_qua *determine_quaternion(t_vec *orien)
 	//orientation must be normalized
 	t_vec *orien_u;
 	orien_u = set_vec_len(orien, 1.0);
-	printf("orien: (%f, %f, %f)\n", orien->x, orien->y, orien->z);
-	printf("orien_u: (%f, %f, %f)\n", orien_u->x, orien_u->y, orien_u->z);
+	// printf("orien: (%f, %f, %f)\n", orien->x, orien->y, orien->z);
+	// printf("orien_u: (%f, %f, %f)\n", orien_u->x, orien_u->y, orien_u->z);
 	// orien_u = gen_coord(5, 6, 7);
 
 	q = (t_qua *)e_malloc(sizeof(t_qua));
@@ -120,30 +120,45 @@ t_qua *determine_quaternion(t_vec *orien)
 
 
 	double dot = get_dot_product(base, orien_u);
-	printf("%f\n", dot);
+	// printf("%f\n", dot);
 	double angle = acos(dot);
 	t_vec *axis = get_cross_product(base, orien_u);
+	if (axis->x == 0 && axis->y == 0 && axis->z == 0)
+	{
+		if (base->x == orien_u->x && base->y == orien_u->y && base->z == orien_u->z)
+		{
+			//same direction, no need to turn
+			q->w = 1.0;
+		}
+		else
+		{
+			q->w = 0.0;
+		}
+		// printf("bad %f, %f, %f\n", axis->x, axis->y, axis->z);
+		q->vector = gen_coord(0.0, 0.0, 0.0);
+		return (q);
+	}
 	t_vec *axis_u = set_vec_len(axis, 1.0);
 
-	printf("axis: (%.10f, %.10f, %.10f)\n", axis->x, axis->y, axis->z);
-	printf("axis_u: (%.10f, %.10f, %.10f)\n", axis_u->x, axis_u->y, axis_u->z);
+	// printf("axis: (%.10f, %.10f, %.10f)\n", axis->x, axis->y, axis->z);
+	// printf("axis_u: (%.10f, %.10f, %.10f)\n", axis_u->x, axis_u->y, axis_u->z);
 
 
 	double half_sin = sin(0.5 * angle);
-	printf("sin %f\n", half_sin);
+	// printf("sin %f\n", half_sin);
 	double half_cos = cos(0.5 * angle);
 
 	q->w = half_cos;
 	q->vector = gen_coord(half_sin * axis_u->x, half_sin * axis_u->y, half_sin * axis_u->z);
 
-	printf("q: %.10f, (%.10f, %.10f, %.10f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+	// printf("q: %.10f, (%.10f, %.10f, %.10f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
 
 
 
 
 	t_qua *q_u = gen_unit_quaternion(q);
 
-	printf("q_u: %.10f, (%.10f, %.10f, %.10f)\n", q_u->w, q_u->vector->x, q_u->vector->y, q_u->vector->z);
+	// printf("q_u: %.10f, (%.10f, %.10f, %.10f)\n", q_u->w, q_u->vector->x, q_u->vector->y, q_u->vector->z);
 
 
 	return (q_u);
@@ -165,26 +180,28 @@ t_qua *gen_q_conjugate(t_qua *q)
 }
 
 
-t_vec *conjugate_vector(t_qua *q, t_vec *v)
+t_vec *orient_vector(t_qua *q, t_vec *v)
 {
-	t_vec *new;
+	// t_vec *new;
 	t_qua *q_con;
 
 	// printf("v: (%f, %f, %f)\n", v->x, v->y, v->z);
+	if (q->w == 0.0 && q->vector->x == 0.0 && q->vector->y == 0.0 && q->vector->z == 0.0)
+		return (gen_coord(-v->x, v->y * -1, v->z * -1));
 	q_con = gen_q_conjugate(q);
 
 	// ft_printf("aaa\n");
-	double ii = pow(q->vector->x, 2); 
-	double jj = pow(q->vector->y, 2);
-	double kk = pow(q->vector->z, 2);
+	// double ii = pow(q->vector->x, 2); 
+	// double jj = pow(q->vector->y, 2);
+	// double kk = pow(q->vector->z, 2);
 
-	double ij = q->vector->x * q->vector->y;
-	double ik = q->vector->x * q->vector->z;
-	double jk = q->vector->y * q->vector->z;
+	// double ij = q->vector->x * q->vector->y;
+	// double ik = q->vector->x * q->vector->z;
+	// double jk = q->vector->y * q->vector->z;
 
-	double iw = q->w * q->vector->x;
-	double jw = q->w * q->vector->y;
-	double kw = q->w * q->vector->z;
+	// double iw = q->w * q->vector->x;
+	// double jw = q->w * q->vector->y;
+	// double kw = q->w * q->vector->z;
 
 	// printf("turned vector: (ii: %f, jj: %f, kk: %f)\n", ii, jj, kk);	
 	// printf("turned vector: (ij: %f, ik: %f, jk: %f)\n", ij, ik, jk);	
@@ -215,7 +232,7 @@ t_vec *conjugate_vector(t_qua *q, t_vec *v)
 // P2.y = x*(2*qw*qz + 2*qx*qy) + y*(qw*qw - qx*qx+ qy*qy - qz*qz)+ z*(-2*qw*qx+ 2*qy*qz)
 // P2.z = x*(-2*qw*qy+ 2*qx*qz) + y*(2*qw*qx+ 2*qy*qz)+ z*(qw*qw - qx*qx- qy*qy+ qz*qz)
 
-	new = (t_vec*)e_malloc(sizeof(t_vec));
+	// new = (t_vec*)e_malloc(sizeof(t_vec));
 
 	// ft_printf("%f\n", ii);
 
@@ -240,47 +257,47 @@ t_vec *conjugate_vector(t_qua *q, t_vec *v)
 	//u = vector part of q
 	//-u = vector part of q_conj
 
-	ft_printf("q->vec len: %f\n", det_len_vec(q->vector));
+	// ft_printf("q->vec len: %f\n", det_len_vec(q->vector));
 
 	double tmp = 2 * get_dot_product(q->vector, v);
-	printf("dot product uv * 2: %f\n", tmp);
+	// printf("dot product uv * 2: %f\n", tmp);
 
 	t_vec *first = gen_coord(q->vector->x * tmp, q->vector->y * tmp, q->vector->z * tmp);
 
-	printf("First vector: (%f, %f, %f)\n", first->x, first->y, first->z);
+	// printf("First vector: (%f, %f, %f)\n", first->x, first->y, first->z);
 
 	double s2 = pow(q->w, 2);
-	printf("s2: %.10f\n", s2);
+	// printf("s2: %.10f\n", s2);
 
 	double dotu = get_dot_product(q_con->vector, q->vector);
 
-	printf("dot product -u . u %.10f\n", dotu);
+	// printf("dot product -u . u %.10f\n", dotu);
 
 	double totimes = s2 + dotu;
 
-	printf("multiply 2nd vector by %.10f\n", totimes);
+	// printf("multiply 2nd vector by %.10f\n", totimes);
 
 	t_vec *second = gen_coord(totimes * v->x, totimes * v->y, totimes * v->z);
 
-	printf("Second vector: (%f, %f, %f)\n", second->x, second->y, second->z);
+	// printf("Second vector: (%f, %f, %f)\n", second->x, second->y, second->z);
 
 
 	double stwo = q->w * 2;
 
-	printf("w * 2 %f\n", stwo);
+	// printf("w * 2 %f\n", stwo);
 
-	t_vec *cross = get_cross_product(q->vector, v);
+	t_vec *cross = get_cross_product(q->vector, v); //fix if vectors point in opposite directions
 
-	printf("cross product: (%f, %f, %f)\n", cross->x, cross->y, cross->z);
+	// printf("cross product: (%f, %f, %f)\n", cross->x, cross->y, cross->z);
 
 	t_vec *crosstimes = gen_coord(cross->x * stwo, cross->y * stwo, cross->z * stwo);
 
-	printf("cross product times s * 2: (%f, %f, %f)\n", crosstimes->x, crosstimes->y, crosstimes->z);
+	// printf("cross product times s * 2: (%f, %f, %f)\n", crosstimes->x, crosstimes->y, crosstimes->z);
 
 	t_vec *semifinal = add_vectors(first, second);
 	t_vec *final = add_vectors(semifinal, crosstimes);
 
-	printf("final: (%f, %f, %f)\n", final->x, final->y, final->z);
+	// printf("final: (%f, %f, %f)\n", final->x, final->y, final->z);
 
 
 	// t_vec *tmp_q = gen_coord(tmp * q->vector->x, tmp * q->vector->y, tmp * q->vector->z);
@@ -302,7 +319,7 @@ t_vec *conjugate_vector(t_qua *q, t_vec *v)
 	// printf("turned vector: (%.10f, %.10f, %.10f)\n", end->x, end->y, end->z);
 
 
-	return (new);
+	return (final);
 }
 
 // t_qua *set_len_qua(t_qua *q)
