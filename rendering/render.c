@@ -180,6 +180,9 @@ double circle(t_rt_scene *scene, t_obj *sp, t_vec *ray)
 
 double plane(t_rt_scene *scene, t_obj *pl, t_vec *ray)
 {
+
+	// questionable
+
 	double d;
 	//p0 = pl->type.pl->pos;
 	//l0 = scene->cam->pos;
@@ -187,29 +190,95 @@ double plane(t_rt_scene *scene, t_obj *pl, t_vec *ray)
 	//l = ray
 
 	// t_vec *n = substract_vectors(pl->type.pl->pos, pl->type.pl->orien);
-	double ln = get_dot_product(ray, pl->type.pl->pos);
+	// double ln = get_dot_product(ray, pl->type.pl->pos); 
+	double ln = get_dot_product(ray, pl->type.pl->orien); //which one??
+	// printf("l: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	// ft_printf("%f\n", ln);
 	if (ln == 0.0)
-		return (-1);
+		return (1.0/0.0);
 	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
 	// ft_printf("ln: %f\n", ln);
 	t_vec *cam_pl = substract_vectors(pl->type.pl->pos, scene->cam->pos);
 	// ft_printf("cam_pl: (%f, %f, %f)\n", cam_pl->x, cam_pl->y, cam_pl->z);
-	double cam_pl_n = get_dot_product(cam_pl, pl->type.pl->orien);
+	double cam_pl_n = get_dot_product(cam_pl, pl->type.pl->orien); //if 0, camera is inside the plane
+	// printf("nl: %f\n", ln);
+	
+	
+	// ft_printf("%f\n", cam_pl_n);
 	// if (p0 - l0)n == 0 (cam_pl_n == 0)camera is inside the object
 	// ft_printf("%f, %f\n", cam_pl_n, ln);
 	double tmp = cam_pl_n / ln;
+	// printf("((p - l) * n) / nl: %f\n", );
+	// printf("((p - l) * n) / nl: %f\n", tmp);
 	t_vec *halp = gen_coord(ray->x * tmp, ray->y * tmp, ray->z *tmp);
+	if (tmp <= 0.0)
+		return (1.0/0.0);
 	// ft_printf("halp: (%f, %f, %f)\n", halp->x, halp->y, halp->z);
 	t_vec *sub = add_vectors(scene->cam->pos, halp);
+	// ft_printf("(%f, %f, %f) - (%f, %f, %f)\n", halp->x, halp->y, halp->z, sub->x, sub->y, sub->z);
 	d = det_len_vec(sub);
-	ft_printf("%f\n", d);
+	// printf("distance: %f\n", d);
+	// ft_printf("%f\n", d);
+	// if (d > 2000.0)
+	// {
+		// printf("color: %x, distance: %f\n", translate_color(pl->color), d);
+		// return (0.1/0.0);
+	// }
 	return (d);
 	// ft_printf("d: %f\n", d)
 
 	// ft_printf("d: %f\n", d);
 
 
-	return (-1);
+	// return (-1);
+}
+
+double 	square(t_rt_scene *scene, t_obj *sq, t_vec *ray)
+{
+
+	// questionable
+
+	double d;
+	//p0 = pl->type.pl->pos;
+	//l0 = scene->cam->pos;
+	//n = pl->type.pl->orien;
+	//l = ray
+
+	// t_vec *n = substract_vectors(pl->type.pl->pos, pl->type.pl->orien);
+	// double ln = get_dot_product(ray, pl->type.pl->pos); 
+	double ln = get_dot_product(ray, sq->type.sq->orien); //which one??
+	// ft_printf("%f\n", ln);
+	if (ln == 0.0)
+		return (-1);
+	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	// ft_printf("ln: %f\n", ln);
+	t_vec *cam_sq = substract_vectors(sq->type.sq->pos, scene->cam->pos);
+	// ft_printf("cam_sq: (%f, %f, %f)\n", cam_sq->x, cam_sq->y, cam_sq->z);
+	double cam_sq_n = get_dot_product(cam_sq, sq->type.sq->orien); //if 0, camera is inside the sqane
+	// ft_printf("%f\n", cam_sq_n);
+	// if (p0 - l0)n == 0 (cam_sq_n == 0)camera is inside the object
+	// ft_printf("%f, %f\n", cam_sq_n, ln);
+	double tmp = cam_sq_n / ln;
+	t_vec *halp = gen_coord(ray->x * tmp, ray->y * tmp, ray->z *tmp);
+	// ft_printf("halp: (%f, %f, %f)\n", halp->x, halp->y, halp->z);
+	t_vec *sub = add_vectors(scene->cam->pos, halp);
+	// ft_printf("sub: %f, %f, %f\n", sub);
+	// ft_printf("(%f, %f, %f) - (%f, %f, %f)\n", halp->x, halp->y, halp->z, sub->x, sub->y, sub->z);
+	d = det_len_vec(sub);
+	if (d > 2000.0)
+		return (-1.0);
+	// ft_printf("%f\n", d);
+	return (d);
+	// ft_printf("d: %f\n", d)
+
+	// ft_printf("d: %f\n", d);
+
+
+	// return (-1);
+
+
+	// ft_printf("%x\n", translate_color(sq->color));
+	return (0);
 }
 
 int cast(t_rt_scene *scene, t_vec *ray)
@@ -257,8 +326,14 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				}
 			//fix when sphere is on top of me
 			}
+			else if (tmp->id == sq)
+			{
+				d_tmp = square(scene, tmp, ray);
+				// ft_printf("", d_tmp)
+			}
 			else if (tmp->id == pl)
 			{
+				// printf("plane, color %x\n", translate_color(tmp->color));
 				d_tmp = plane(scene, tmp, ray);
 				// ft_printf("d temp: %f, plane\n", d_tmp);
 				if (d_tmp < d && d_tmp > 0.0)
@@ -266,8 +341,9 @@ int cast(t_rt_scene *scene, t_vec *ray)
 					// ft_printf("assign color plane\n");
 					d = d_tmp;
 					color = translate_color(tmp->color);
+					// printf("return color %x\n", translate_color(tmp->color));
+
 					// ft_printf("plane: color: %x distance: %f\n", color, d);
-					// ft_printf("plane, color %x\n", color);
 				}
 			// ft_printf("plane?\n");
 			}
@@ -400,6 +476,8 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 			pos->y += inc_y;
 		}
 		j++;
+
+		printf("\n\n");
 	}
 	// ft_printf("done\n");
 }
