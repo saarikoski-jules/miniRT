@@ -320,7 +320,7 @@ double triangle(t_rt_scene *scene, t_obj *tr, t_vec *ray)
 
 	if (get_dot_product(normal_u, cross1) > 0
 		&& get_dot_product(normal_u, cross2) > 0
-		&& get_dot_product(normal_u, cross2) > 0)
+		&& get_dot_product(normal_u, cross3) > 0)
 	{
 		printf("true, t: %f\n", t);
 		return (t);
@@ -411,6 +411,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	}
 	// ft_printf("\nwinning color: %x\n\n\n", color);
 	// ft_printf("returning %x\n\n", color);
+	
 	return (color);
 
 
