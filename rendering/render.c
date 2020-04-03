@@ -233,52 +233,101 @@ double plane(t_rt_scene *scene, t_obj *pl, t_vec *ray)
 	// return (-1);
 }
 
-double 	square(t_rt_scene *scene, t_obj *sq, t_vec *ray)
+
+// Ray : P(t) = O + V * t
+//  // Cylinder [O, D, r].
+//  // point Q on cylinder if ((Q - O) x D)^2 = r^2
+//  //// Cylinder [A, B, r].
+//  // Point P on infinite cylinder if ((P - A) x (B - A))^2 = r^2 * (B - A)^2
+//  // expand : ((O - A) x (B - A) + t * (V x (B - A)))^2 = r^2 * (B - A)^2
+//  // equation in the form (X + t * Y)^2 = d
+//  // where : 
+//  //  X = (O - A) x (B - A)
+//  //  Y = V x (B - A)
+//  //  d = r^2 * (B - A)^2
+//  // expand the equation :
+//  // t^2 * (Y . Y) + t * (2 * (X . Y)) + (X . X) - d = 0
+//  // => second order equation in the form : a*t^2 + b*t + c = 0 where
+//  // a = (Y . Y)
+//  // b = 2 * (X . Y)
+//  // c = (X . X) - d
+//  //--------------------------------------------------------------------------
+//  Vector AB = (B - A);
+//  Vector AO = (O - A);
+//  Vector AOxAB = (AO ^ AB); 
+//  // cross product
+//  Vector VxAB  = (V ^ AB); 
+//  // cross product
+//  float  ab2   = (AB * AB); 
+//  // dot product
+//  float a      = (VxAB * VxAB); 
+//  // dot product
+//  float b      = 2 * (VxAB * AOxAB); 
+//  // dot product
+//  float c      = (AOxAB * AOxAB) - (r*r * ab2);
+//  // solve second order equation : 
+//  a*t^2 + b*t + c = 0
+
+// double 	cylinder(t_rt_scene *scene, t_obj *cy, t_vec *ray)
+// {
+// 	t_vec *orien_u = set_vec_len(cy->type.cy->orien, 1.0);
+// 	t_vec *cylinder = substract_vectors(cy->type.cy->pos, orien_u);
+// 	ft_printf("cylinder: (%f, %f, %f)\n", cylinder->x, cylinder->y, cylinder->z);
+
+// }
+
+double triangle(t_rt_scene *scene, t_obj *tr, t_vec *ray)
 {
+	//calculate normal
+	t_vec *BA = substract_vectors(tr->type.tr->point2, tr->type.tr->point1);
+	t_vec *CA = substract_vectors(tr->type.tr->point3, tr->type.tr->point1);
+	t_vec *normal = get_cross_product(BA, CA);
+	t_vec *normal_u = set_vec_len(normal, 1.0);
 
-	// questionable
+	double plane = get_dot_product(normal_u, tr->type.tr->point1);
 
-	double d;
-	//p0 = pl->type.pl->pos;
-	//l0 = scene->cam->pos;
-	//n = pl->type.pl->orien;
-	//l = ray
+	double t = (get_dot_product(normal, scene->cam->pos) + plane) / get_dot_product(normal, ray);
+	// printf("t: %f\n", t);
 
-	// t_vec *n = substract_vectors(pl->type.pl->pos, pl->type.pl->orien);
-	// double ln = get_dot_product(ray, pl->type.pl->pos); 
-	double ln = get_dot_product(ray, sq->type.sq->orien); //which one??
-	// ft_printf("%f\n", ln);
-	if (ln == 0.0)
-		return (-1);
-	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
-	// ft_printf("ln: %f\n", ln);
-	t_vec *cam_sq = substract_vectors(sq->type.sq->pos, scene->cam->pos);
-	// ft_printf("cam_sq: (%f, %f, %f)\n", cam_sq->x, cam_sq->y, cam_sq->z);
-	double cam_sq_n = get_dot_product(cam_sq, sq->type.sq->orien); //if 0, camera is inside the sqane
-	// ft_printf("%f\n", cam_sq_n);
-	// if (p0 - l0)n == 0 (cam_sq_n == 0)camera is inside the object
-	// ft_printf("%f, %f\n", cam_sq_n, ln);
-	double tmp = cam_sq_n / ln;
-	t_vec *halp = gen_coord(ray->x * tmp, ray->y * tmp, ray->z *tmp);
-	// ft_printf("halp: (%f, %f, %f)\n", halp->x, halp->y, halp->z);
-	t_vec *sub = add_vectors(scene->cam->pos, halp);
-	// ft_printf("sub: %f, %f, %f\n", sub);
-	// ft_printf("(%f, %f, %f) - (%f, %f, %f)\n", halp->x, halp->y, halp->z, sub->x, sub->y, sub->z);
-	d = det_len_vec(sub);
-	if (d > 2000.0)
+	if (t < 0)
+		return (1.0/0.0); //if plane is behind camera, return inf
+
+	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);
+	// ft_printf("point (%f, %f, %f)\n", point->x, point->y, point->z);
+
+	
+
+	// Vec3f edge0 = v1 - v0; 
+// Vec3f edge1 = v2 - v1; 
+// Vec3f edge2 = v0 - v2; 
+// Vec3f C0 = P - v0; 
+// Vec3f C1 = P - v1; 
+// Vec3f C2 = P - v2; 
+// if (dotProduct(N, crossProduct(edge0, C0)) > 0 && 
+    // dotProduct(N, crossProduct(edge1, C1)) > 0 && 
+    // dotProduct(N, crossProduct(edge2, C2)) > 0)
+	t_vec *edge1 = substract_vectors(tr->type.tr->point2, tr->type.tr->point1); 
+	t_vec *edge2 = substract_vectors(tr->type.tr->point3, tr->type.tr->point2); 
+	t_vec *edge3 = substract_vectors(tr->type.tr->point1, tr->type.tr->point3);
+
+	t_vec *P1 = substract_vectors(point, tr->type.tr->point1);
+	t_vec *P2 = substract_vectors(point, tr->type.tr->point2);
+	t_vec *P3 = substract_vectors(point, tr->type.tr->point3);
+
+	t_vec *cross1 = get_cross_product(edge1, P1);
+	t_vec *cross2 = get_cross_product(edge2, P2);
+	t_vec *cross3 = get_cross_product(edge3, P3);
+
+	if (get_dot_product(normal_u, cross1) > 0
+		&& get_dot_product(normal_u, cross2) > 0
+		&& get_dot_product(normal_u, cross2) > 0)
+	{
+		printf("true, t: %f\n", t);
+		return (t);
+	}
+	else
+		printf("false\n");
 		return (-1.0);
-	// ft_printf("%f\n", d);
-	return (d);
-	// ft_printf("d: %f\n", d)
-
-	// ft_printf("d: %f\n", d);
-
-
-	// return (-1);
-
-
-	// ft_printf("%x\n", translate_color(sq->color));
-	return (0);
 }
 
 int cast(t_rt_scene *scene, t_vec *ray)
@@ -326,10 +375,19 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				}
 			//fix when sphere is on top of me
 			}
-			else if (tmp->id == sq)
+			else if (tmp->id == tr)
 			{
-				d_tmp = square(scene, tmp, ray);
+				d_tmp = triangle(scene, tmp, ray);
 				// ft_printf("", d_tmp)
+				if (d_tmp < d && d_tmp > 0.0)
+					{
+					// ft_printf("assign color plane\n");
+						d = d_tmp;
+						color = translate_color(tmp->color);
+					// printf("return color %x\n", translate_color(tmp->color));
+
+					// ft_printf("plane: color: %x distance: %f\n", color, d);
+					}
 			}
 			else if (tmp->id == pl)
 			{

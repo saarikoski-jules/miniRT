@@ -22,7 +22,9 @@
 void parse_line(char *line, t_rt_scene **scene)
 {
 	// ft_printf("IN PARSE LINE: %s\n", line);
-	if (line[0] == 'R')
+	if (line[0] == '#')
+		return ;
+	else if (line[0] == 'R')
 	{
 		if ((*scene)->res == NULL)
 			(*scene)->res = get_resolution(line + 1);
