@@ -50,7 +50,7 @@ t_qua *gen_unit_quaternion(t_qua *q)
 	return (q_u);
 }
 
-t_qua *determine_quaternion(t_vec *orien)
+t_qua *determine_quaternion(t_vec *orien, t_vec *base)
 {
 // 	Quaternion q;
 // vector a = crossproduct(v1, v2);
@@ -66,7 +66,7 @@ t_qua *determine_quaternion(t_vec *orien)
 	// orien_u = gen_coord(5, 6, 7);
 
 	q = (t_qua *)e_malloc(sizeof(t_qua));
-	t_vec *base = gen_coord(0, 0, -1);
+	// t_vec *base = gen_coord(0, 0, -1);
 	// t_vec *base = gen_coord(2, 3, 4);
 
 

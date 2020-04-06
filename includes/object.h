@@ -36,6 +36,10 @@ typedef struct	s_sq
 	t_vec			*pos;
 	t_vec			*orien;
 	double			side;
+	t_vec			*point1;
+	t_vec			*point2;
+	t_vec			*point3;
+	t_vec			*point4;
 }				t_sq;
 
 typedef struct	s_cy
