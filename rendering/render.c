@@ -44,25 +44,42 @@ double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray)
 	return (0);
 }
 
-double plane(t_rt_scene *scene, t_pl *pl, t_vec *ray)
+double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
+{
+	//t = ((p0 - l0) dot n) / l dot n
+	t_vec *v_pl;
+	t_vec *v_n;
+	double ln; //ln == 0, ray and plane are parallel
+	double pln; //pln == 0, ray is inside line
+	double t;
+
+	v_n = set_vec_len(orien, 1); //unnecessary?
+	ln = get_dot_product(ray, v_n); //which one??
+	if (ln == 0.0)
+		return (INFINITY);//should i use infinity or -1
+	v_pl = substract_vectors(pl_pos, cam_pos);
+	pln = get_dot_product(v_pl, v_n); //if 0, camera is inside the plane, so plane should be invisible as it is two dimensional
+	t = pln / ln;
+	if (t <= 0.0) //if t = 0, point is on top of you, so the same outcome as if pln == 0??
+		return (INFINITY);
+	return (t);
+}
+
+double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray)
 {
 
-	// questionable
-
+	double t;
 	double d;
-	double ln = get_dot_product(ray, pl->orien); //which one??
-	if (ln == 0.0)
-		return (1.0/0.0);
-	t_vec *cam_pl = substract_vectors(pl->pos, scene->cam->pos);
-	double cam_pl_n = get_dot_product(cam_pl, pl->orien); //if 0, camera is inside the plane
-	
-	
-	double tmp = cam_pl_n / ln;
-	t_vec *halp = gen_coord(ray->x * tmp, ray->y * tmp, ray->z *tmp); //account for different camera position
-	if (tmp <= 0.0)
-		return (1.0/0.0);
-	t_vec *sub = add_vectors(scene->cam->pos, halp);
-	d = det_len_vec(sub);
+	t_vec *v_point;
+	t_vec *v_intersect;
+
+	t = pl_intersect(pl->orien, scene->cam->pos, pl->pos, ray);
+	if (t == INFINITY)
+		return (INFINITY);
+	//point of intersection
+	v_point = gen_coord(ray->x * t, ray->y * t, ray->z *t); //account for different camera position
+	v_intersect = substract_vectors(scene->cam->pos, v_point); //why add?
+	d = det_len_vec(v_intersect);
 	return (d);
 }
 
@@ -111,20 +128,14 @@ double plane(t_rt_scene *scene, t_pl *pl, t_vec *ray)
 
 double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 {
-	t_vec *OP = substract_vectors(sq->pos, scene->cam->pos);
+	t_vec *orien_u;
+	double t;
 
-	t_vec *orien_u = set_vec_len(sq->orien, 1);
-	double ln = get_dot_product(ray, orien_u);
-	if (ln == 0.0)
-		return (1.0/0.0); //inf
-	double top = get_dot_product(OP, orien_u); //if 0, you're inside plane or can't see square depending on position
-
-	double t = top/ln;
-	if (t < 0.0) //also check if 0.
-		return (1.0/0.0);//inf
-
+	orien_u = set_vec_len(sq->orien, 1);
+	t = pl_intersect(sq->orien, scene->cam->pos, sq->point1, ray);
+	if (t == INFINITY)
+		return (INFINITY);
 	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
-
 
 	t_vec *edge1 = substract_vectors(sq->point2, sq->point1); 
 	t_vec *edge2 = substract_vectors(sq->point3, sq->point2); 
@@ -141,7 +152,6 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 	t_vec *cross3 = get_cross_product(edge3, P3);
 	t_vec *cross4 = get_cross_product(edge4, P4);
 
-
 	if (get_dot_product(orien_u, cross1) > 0
 		&& get_dot_product(orien_u, cross2) > 0
 		&& get_dot_product(orien_u, cross3) > 0
@@ -153,33 +163,29 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 		return (-1.0);
 
 	return (-1);
-	
-	//calculate plane square is located on.
-
-	//calculate corners on plane by using direction vectors on the plane side/2 distance away from the centre point
-
-	// t_vec *corner1;
-	// t_vec *corner2;
-	// t_vec *corner3;
-	// t_vec *corner4;
-
-	// ft_printf("sq corners:\n\t(%f, %f, %f)\n\t(%f, %f, %f)\n\t(%f, %f, %f)\n\t(%f, %f, %f)\n", corner1->x, corner1->y, corner1->z, corner2->x, corner2->y, corner2->z, corner3->x, corner3->y, corner3->z, corner4->x, corner4->y, corner4->z);
 }
 
 double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray)
 {
 	//calculate normal
+	//is the positioning of my triangles strange?
 	t_vec *BA = substract_vectors(tr->point2, tr->point1);
 	t_vec *CA = substract_vectors(tr->point3, tr->point1);
 	t_vec *normal = get_cross_product(BA, CA);
 	t_vec *normal_u = set_vec_len(normal, 1.0);
 
-	double plane = get_dot_product(normal_u, tr->point1);
+	// double plane = get_dot_product(normal_u, tr->point1);
 
-	double t = (get_dot_product(normal, scene->cam->pos) + plane) / get_dot_product(normal, ray);
+
+	double t = pl_intersect(normal_u, scene->cam->pos, tr->point1, ray);
+	if (t == INFINITY)
+		return (INFINITY);
+
+
+	// double t = (get_dot_product(normal, scene->cam->pos) + plane) / get_dot_product(normal, ray);
 	// printf("t: %f\n", t);
-	if (t < 0)
-		return (1.0/0.0); //if plane is behind camera, return inf
+	// if (t < 0)
+		// return (INFINITY); //if plane is behind camera, return inf
 
 	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z); //account for different camera position
 	t_vec *edge1 = substract_vectors(tr->point2, tr->point1); 
@@ -227,42 +233,41 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			if (tmp->id == sp)
 			{
 				d_tmp = circle(scene, tmp->type.sp, ray);
-				if (d_tmp < d && d_tmp > 0.0)
-				{
-					d = d_tmp;
-					color = translate_color(tmp->color);
-				}
+				// if (d_tmp < d && d_tmp > 0.0)
+				// {
+				// 	d = d_tmp;
+				// 	color = translate_color(tmp->color);
+				// }
 			//fix when sphere is on top of me
 			}
 			else if (tmp->id == sq)
 			{
 				d_tmp = square(scene, tmp->type.sq, ray);
-				if (d_tmp < d && d_tmp > 0.0)
-				{
-					d = d_tmp;
-					color = translate_color(tmp->color);
-				}
+				// if (d_tmp < d && d_tmp > 0.0)
+				// {
+				// 	d = d_tmp;
+				// 	color = translate_color(tmp->color);
+				// }
 
 			}
 			else if (tmp->id == tr)
 			{
 				d_tmp = triangle(scene, tmp->type.tr, ray);
-				if (d_tmp < d && d_tmp > 0.0)
-				{
-					d = d_tmp;
-					color = translate_color(tmp->color);
-				}
+				// if (d_tmp < d && d_tmp > 0.0)
+				// {
+				// 	d = d_tmp;
+				// 	color = translate_color(tmp->color);
+				// }
 			}
 			else if (tmp->id == pl)
 			{
-				d_tmp = plane(scene, tmp->type.pl, ray);
-				if (d_tmp < d && d_tmp > 0.0)
-				{
-					d = d_tmp;
-					color = translate_color(tmp->color);
-
-				}
+				d_tmp = plane_intersect(scene, tmp->type.pl, ray);
 			}
+		}
+		if (d_tmp < d && d_tmp > 0.0)
+		{
+			d = d_tmp;
+			color = translate_color(tmp->color);
 		}
 		tmp = tmp->next;
 	}
