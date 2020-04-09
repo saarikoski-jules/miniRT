@@ -83,7 +83,7 @@ double get_dot_product(t_vec *vec1, t_vec *vec2)
 	return (sum);
 }
 
-double det_len_vec(t_vec *vector)
+double det_len_vec(t_vec *vector) //this may be broken
 {
 	double len;
 

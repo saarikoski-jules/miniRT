@@ -79,8 +79,9 @@ double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray)
 	//point of intersection
 	v_point = gen_coord(ray->x * t, ray->y * t, ray->z *t); //account for different camera position
 	v_intersect = add_vectors(scene->cam->pos, v_point); //accounting for camera position
-	d = det_len_vec(v_intersect);
-	return (d);
+	// d = det_len_vec(v_intersect); //this breaks
+	//this should actually be distance
+	return (t); //t should be the actual distance as it's calculated with a unit vector
 }
 
 
@@ -132,6 +133,7 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 	double t;
 
 	orien_u = set_vec_len(sq->orien, 1);
+	//t may not be distance, is this calculated with unit vector
 	t = pl_intersect(sq->orien, scene->cam->pos, sq->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
@@ -165,8 +167,8 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 		// ft_printf("t: %f\n", t);
 		// printf("ray:\t(%f, %f, %f)\n", ray->x, ray->y, ray->z);
 		// t_vec *v_intersect = add_vectors(scene->cam->pos, point);//accounting for different camera position
-		printf("point:\t(%f, %f, %f)\n", point->x, point->y, point->z);
-		printf("intersect:\t(%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
+		// printf("point:\t(%f, %f, %f)\n", point->x, point->y, point->z);
+		// printf("intersect:\t(%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 		return (t);
 	}
 	else
@@ -231,6 +233,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 
 	color = 0;
 	d = 1.0/0.0; 
+	d_tmp = -1.0;
 	tmp = scene->obj;
 	if (tmp == NULL)
 		return (0);
@@ -243,6 +246,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			if (tmp->id == sp)
 			{
 				d_tmp = circle(scene, tmp->type.sp, ray);
+				// printf("sp %f\n", d_tmp);
 				// if (d_tmp < d && d_tmp > 0.0)
 				// {
 				// 	d = d_tmp;
@@ -253,6 +257,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == sq)
 			{
 				d_tmp = square(scene, tmp->type.sq, ray);
+				// printf("sq %f\n", d_tmp);
+				
 				// if (d_tmp < d && d_tmp > 0.0)
 				// {
 				// 	d = d_tmp;
@@ -263,6 +269,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == tr)
 			{
 				d_tmp = triangle(scene, tmp->type.tr, ray);
+				// printf("tr %f, %x\n", d_tmp, translate_color(tmp->color));
 				// if (d_tmp < d && d_tmp > 0.0)
 				// {
 				// 	d = d_tmp;
@@ -272,9 +279,11 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == pl)
 			{
 				d_tmp = plane_intersect(scene, tmp->type.pl, ray);
+				printf("pl %f\n", d_tmp);
+			
 			}
 		}
-		if (d_tmp < d && d_tmp > 0.0)
+		if (d_tmp < d && d_tmp >= 0.0)
 		{
 			d = d_tmp;
 			color = translate_color(tmp->color);
@@ -291,6 +300,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	//square calculation is off
 	
 
+	// printf("distance: %f\n", d);
+	// printf("\n");
 	return (color);
 }
 
@@ -378,7 +389,10 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 					color = remap_coord(scene, pos, cam_data, q);
 					// printf("%x\n", color);
 					// if (color != 0)
-					// printf("pixel: %ld, %ld, color: %x\n", i, j, color);
+					printf("pixel: %ld, %ld\n", j, i);
+					// if (j == 280)
+						// printf("color %x, pixel: %ld, %ld\n\n", color, j, i);
+						// color = 0xff0000;	
 					mlx_pixel_put(mlx_ptr, win_ptr, i, j, color);
 			// }
 			// else
@@ -449,7 +463,7 @@ void trace_them_rays(t_rt_scene *scene)
 	// ft_printf("vector: (%f, %f, %f)\n", dir->x, dir->y, dir->z);
 
 
-	win_ptr = mlx_new_window(mlx_ptr, scene->res->res_x, scene->res->res_y, "title");
+	win_ptr = mlx_new_window(mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
 	trace(scene, mlx_ptr, win_ptr);
 
 	//get straight vector
