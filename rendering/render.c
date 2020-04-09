@@ -177,6 +177,27 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 	return (-1);
 }
 
+double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
+{
+	double t = pl_intersect(cy->orien, scene->cam->pos, cy->pos, ray);
+	if (t == INFINITY)
+		return (INFINITY);
+	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);
+	t_vec *intersect = add_vectors(scene->cam->pos, point);
+	
+	double x = pow(intersect->x - cy->pos->x, 2);
+	double y = pow(intersect->y - cy->pos->y, 2);
+	double z = pow(intersect->z - cy->pos->z, 2);
+	double d = sqrt(x + y + z);
+	printf("d: %f < %f\n", d, cy->dia);
+	if (d < cy->dia)
+		return (t);
+	else
+		return (-1.0);
+	// t_vec *sub = substract_vectors(intersect, cy->pos);
+	// det_len_vec(sub);
+}
+
 double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray)
 {
 	//calculate normal
@@ -276,10 +297,14 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				// 	color = translate_color(tmp->color);
 				// }
 			}
+			else if (tmp->id == cy)
+			{
+				d_tmp = cylinder(scene, tmp->type.cy, ray);
+			}
 			else if (tmp->id == pl)
 			{
 				d_tmp = plane_intersect(scene, tmp->type.pl, ray);
-				printf("pl %f\n", d_tmp);
+				// printf("pl %f\n", d_tmp);
 			
 			}
 		}
@@ -389,7 +414,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 					color = remap_coord(scene, pos, cam_data, q);
 					// printf("%x\n", color);
 					// if (color != 0)
-					printf("pixel: %ld, %ld\n", j, i);
+					// printf("pixel: %ld, %ld\n", j, i);
 					// if (j == 280)
 						// printf("color %x, pixel: %ld, %ld\n\n", color, j, i);
 						// color = 0xff0000;	
