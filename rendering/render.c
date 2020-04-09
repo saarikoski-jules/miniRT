@@ -177,23 +177,44 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 	return (-1);
 }
 
+double get_distance(t_vec *point1, t_vec *point2)
+{
+	double x = pow(point1->x - point2->x, 2);
+	double y = pow(point1->y - point2->y, 2);
+	double z = pow(point1->z - point2->z, 2);
+	double d = sqrt(x + y + z);
+	return (d);
+}
+
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 {
-	double t = pl_intersect(cy->orien, scene->cam->pos, cy->pos, ray);
-	if (t == INFINITY)
-		return (INFINITY);
-	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);
-	t_vec *intersect = add_vectors(scene->cam->pos, point);
+
+	//generate point half the height in the direction of orientation
+	t_vec *mov = set_vec_len(cy->orien, cy->h / 2.0);
+	t_vec *pos1 = add_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
+	t_vec *pos2 = substract_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
+	double t1 = pl_intersect(cy->orien, scene->cam->pos, pos1, ray);
+	// if (t1 == INFINITY)
+		// return (INFINITY);
+	t_vec *point1 = gen_coord(t1 * ray->x, t1 * ray->y, t1 * ray->z);
+	t_vec *intersect1 = add_vectors(scene->cam->pos, point1);
 	
-	double x = pow(intersect->x - cy->pos->x, 2);
-	double y = pow(intersect->y - cy->pos->y, 2);
-	double z = pow(intersect->z - cy->pos->z, 2);
-	double d = sqrt(x + y + z);
-	printf("d: %f < %f\n", d, cy->dia);
-	if (d < cy->dia)
-		return (t);
-	else
-		return (-1.0);
+	double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
+
+	t_vec *point2 = gen_coord(t2 * ray->x, t2 * ray->y, t2 * ray->z);
+	t_vec *intersect2 = add_vectors(scene->cam->pos, point2);
+
+	double t = -1.0;
+
+	double d1 = get_distance(intersect1, pos1);
+	double d2 = get_distance(intersect2, pos2);
+	// double d2 = get_distance(intersect, cy->pos);
+	// printf("d: %f < %f\n", d2, cy->dia);
+	if (d1 < cy->dia / 2.0)
+		t = t1;
+	if (d2 < cy->dia / 2.0 && d2 < d1)
+		t = t2;
+	return (t);
 	// t_vec *sub = substract_vectors(intersect, cy->pos);
 	// det_len_vec(sub);
 }
