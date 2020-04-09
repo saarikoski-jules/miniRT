@@ -78,7 +78,7 @@ double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray)
 		return (INFINITY);
 	//point of intersection
 	v_point = gen_coord(ray->x * t, ray->y * t, ray->z *t); //account for different camera position
-	v_intersect = substract_vectors(scene->cam->pos, v_point); //why add?
+	v_intersect = add_vectors(scene->cam->pos, v_point); //accounting for camera position
 	d = det_len_vec(v_intersect);
 	return (d);
 }
@@ -135,28 +135,38 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray)
 	t = pl_intersect(sq->orien, scene->cam->pos, sq->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
+
 	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
+
+	t_vec *intersect = add_vectors(scene->cam->pos, point);
 
 	t_vec *edge1 = substract_vectors(sq->point2, sq->point1); 
 	t_vec *edge2 = substract_vectors(sq->point3, sq->point2); 
 	t_vec *edge3 = substract_vectors(sq->point4, sq->point3); 
 	t_vec *edge4 = substract_vectors(sq->point1, sq->point4);
 
-	t_vec *P1 = substract_vectors(point, sq->point1);
-	t_vec *P2 = substract_vectors(point, sq->point2);
-	t_vec *P3 = substract_vectors(point, sq->point3);
-	t_vec *P4 = substract_vectors(point, sq->point4);
+	t_vec *P1 = substract_vectors(intersect, sq->point1);
+	t_vec *P2 = substract_vectors(intersect, sq->point2);
+	t_vec *P3 = substract_vectors(intersect, sq->point3);
+	t_vec *P4 = substract_vectors(intersect, sq->point4);
 
 	t_vec *cross1 = get_cross_product(edge1, P1);
 	t_vec *cross2 = get_cross_product(edge2, P2);
 	t_vec *cross3 = get_cross_product(edge3, P3);
 	t_vec *cross4 = get_cross_product(edge4, P4);
 
+	// t_qua *turn determine_quaternion(ray, gen_coord(0,0,-1));
+
 	if (get_dot_product(orien_u, cross1) > 0
 		&& get_dot_product(orien_u, cross2) > 0
 		&& get_dot_product(orien_u, cross3) > 0
 		&& get_dot_product(orien_u, cross4) > 0)
 	{
+		// ft_printf("t: %f\n", t);
+		// printf("ray:\t(%f, %f, %f)\n", ray->x, ray->y, ray->z);
+		// t_vec *v_intersect = add_vectors(scene->cam->pos, point);//accounting for different camera position
+		printf("point:\t(%f, %f, %f)\n", point->x, point->y, point->z);
+		printf("intersect:\t(%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 		return (t);
 	}
 	else
@@ -181,20 +191,20 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray)
 	if (t == INFINITY)
 		return (INFINITY);
 
-
 	// double t = (get_dot_product(normal, scene->cam->pos) + plane) / get_dot_product(normal, ray);
 	// printf("t: %f\n", t);
 	// if (t < 0)
 		// return (INFINITY); //if plane is behind camera, return inf
 
 	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z); //account for different camera position
+	t_vec *intersect = add_vectors(scene->cam->pos, point);
 	t_vec *edge1 = substract_vectors(tr->point2, tr->point1); 
 	t_vec *edge2 = substract_vectors(tr->point3, tr->point2); 
 	t_vec *edge3 = substract_vectors(tr->point1, tr->point3);
 
-	t_vec *P1 = substract_vectors(point, tr->point1);
-	t_vec *P2 = substract_vectors(point, tr->point2);
-	t_vec *P3 = substract_vectors(point, tr->point3);
+	t_vec *P1 = substract_vectors(intersect, tr->point1);
+	t_vec *P2 = substract_vectors(intersect, tr->point2);
+	t_vec *P3 = substract_vectors(intersect, tr->point3);
 
 	t_vec *cross1 = get_cross_product(edge1, P1);
 	t_vec *cross2 = get_cross_product(edge2, P2);
@@ -271,8 +281,17 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		}
 		tmp = tmp->next;
 	}
-	return (color);
 
+
+	//testing
+	// double t = -15 / ray->z;
+
+	// if (t * ray->x < 5.0 && t * ray->x > -5.0 && t * ray->y + 0.5 < 0.05 && t * ray->y + 0.5 > -0.05)
+		// color = 0xff0000;
+	//square calculation is off
+	
+
+	return (color);
 }
 
 int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
@@ -294,6 +313,7 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	
 	
 	// ft_printf("ray: (%f, %f, %f), len: %f\n", ray->x, ray->y, ray->z, det_len_vec(ray));
+	
 	return (cast(scene, ray));
 }
 
@@ -338,6 +358,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	// while (j <= 2)
 
 
+	int color;
 
 	while (j <= scene->res->res_y)
 	{
@@ -353,7 +374,12 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 			// {
 				// ft_printf("true\n");
 				// if (i == 250 && j == 250)
-					mlx_pixel_put(mlx_ptr, win_ptr, i, j, remap_coord(scene, pos, cam_data, q));
+
+					color = remap_coord(scene, pos, cam_data, q);
+					// printf("%x\n", color);
+					// if (color != 0)
+					// printf("pixel: %ld, %ld, color: %x\n", i, j, color);
+					mlx_pixel_put(mlx_ptr, win_ptr, i, j, color);
 			// }
 			// else
 			// {
@@ -375,7 +401,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 		}
 		j++;
 
-		printf("\n\n");
+		// printf("\n\n");
 	}
 	// ft_printf("done\n");
 }
