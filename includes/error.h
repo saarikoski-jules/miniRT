@@ -57,6 +57,10 @@
 # define E_NO_CAM "No cameras defined."
 # define C_NO_CONNECT 152
 # define E_NO_CONNECT "Wasn't able to establish connection to graphics server."
+# define C_R_INVALID_VEC 153
+# define E_R_INVALID_VEC "Invalid vector"
+# define C_R_INVALID_ARG_Q 154
+# define E_R_INVALID_ARG_Q "Invalid arguments in determine_quaternion"
 
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);

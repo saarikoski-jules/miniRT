@@ -204,6 +204,193 @@ double get_cy_endcap(t_vec *pos, t_vec *ray, t_rt_scene *scene, t_cy *cy)
 		return (INFINITY);
 }
 
+double get_shaft_intersection(t_rt_scene *scene, t_cy *cy,
+	t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+
+	//moving the positions here is not right at all as it's not enough that the direction vectors turn, but everything has to turn in relation to each other.
+
+
+	//turn ray by
+	t_vec *base = gen_coord(0, 0, -1);
+	t_qua *turn = determine_quaternion(base, cy->orien);//
+
+	//move ray origin by
+	t_vec *mov = substract_vectors(scene->cam->pos, pos1);
+	// printf("position of endcap centre: (%f, %f, %f)\nposition of camera (%f, %f, %f)\n", pos1->x, pos1->y, pos1->z, scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z);
+	// printf("mov: (%f, %f, %f)\n", mov->x, mov->y, mov->z);
+
+
+
+/*
+//	TESTING ------------------------------
+
+	t_vec *test = orient_vector(q, cy->orien);//
+	t_vec *check = set_vec_len(base, 1);
+	ft_printf("Is this\t\t\t(%f, %f, %f)\n", test->x, test->y, test->z);
+	ft_printf("Should be this\t(%f, %f, %f)\n", check->x, check->y, check->z);
+//	--------------------------------------
+*/
+
+	//Turn and move ray based on the movement of the cylinder
+
+	//New ray start position
+	t_vec *ray_start = add_vectors(scene->cam->pos, mov);
+	
+	
+	//length of vector
+	double len_ray_start = det_len_vec(substract_vectors(ray_start, scene->cam->pos));
+
+	//direction where the new starting position of ray will be
+
+	t_vec *ray_start_two = orient_vector(turn, ray_start);
+
+	//final position of the ray's starting point
+	t_vec *final_ray_start = set_vec_len(ray_start_two, len_ray_start);
+
+
+
+	//move ray start position by quaternion
+
+	// printf("ray len: %f\nmoved ray origin (%f, %f, %f)\n", len_ray_start, ray_start->x, ray_start->y, ray_start->z);
+
+	//New ray direction
+	t_vec *ray_direction = orient_vector(turn, ray);
+	// printf("original ray direction (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	// printf("turned ray direction (%f, %f, %f)\n", ray_direction->x, ray_direction->y, ray_direction->z);
+
+
+
+	//cast ray to xy plane, so drop z coord
+	//find intersection with circle drawn onto xy plane at the start of the cylinder, so at origin (0,0) with r cy->dia / 2
+
+
+	//solve a quadratic for intersections
+
+
+	t_vec *ray_start_2d = gen_coord(final_ray_start->x, final_ray_start->y, 0);
+	t_vec *ray_dir_2d = gen_coord(ray_direction->x, ray_direction->y, 0);
+
+	// printf("start: (%f, %f, %f), dir: (%f, %f, %f)\n", ray_start_2d->x, ray_start_2d->y, ray_start_2d->z, ray_dir_2d->x, ray_dir_2d->y, ray_dir_2d->z);
+	t_vec *O = gen_coord(0,0,0);
+
+	// printf("ray start: (%f, %f, %f)\n", final_ray_start->x,final_ray_start-> y,final_ray_start->z);
+	// printf("ray start 2d: (%f, %f, %f)\n", ray_start_2d->x,ray_start_2d-> y,ray_start_2d->z);
+
+
+
+/*
+	ATTEMPT 1 AT A QUADRATIC
+
+	//All in 2D
+
+	//b = 2 (k dot (A - O))
+	//a = pow(k, 2)
+	//c = pow((A - O), 2) - pow(r, 2)
+
+	//k = ray_direction xy
+	//A = ray_start xy
+	//O = (0, 0)
+	//r = cy->dia / 2
+
+	t_vec *AO = substract_vectors(ray_start_2d, O);
+	double b = 2 * get_dot_product(ray_dir_2d, AO);
+	double a = get_dot_product(ray_dir_2d, ray_dir_2d);
+	double c = get_dot_product(AO, AO) - pow(cy->dia * 0.5, 2);
+
+
+	//solve quadratic
+
+	double disc = pow(b, 2) - 4 * a * c;
+	// printf("%f = (%f)pow2 - 4 * %f * %f\n\n", disc, b, a, c);
+	// if (disc >= 0)
+
+*/
+
+// ATTEMPT 2 AT A QUADRATIC
+
+	//gives the exact same result as previus calculation
+
+	t_vec *ray_dir_2d_u = set_vec_len(ray_dir_2d, 1);
+
+	//c = position of the circle centre = (0,0,0) = O
+	//d = position vector of start point of ray = ray_start_2d
+	//n = unit direction vector of ray = ray_dir_2d_u
+	//r = radius of circle = cy->dia / 2
+
+	t_vec *CD = substract_vectors(O, ray_start_2d);
+
+	double b = get_dot_product(CD, ray_dir_2d_u);
+	double a = 1.0;
+	double c = get_dot_product(ray_start_2d, ray_start_2d) - pow(cy->dia / 2.0, 2);
+
+	double disc = pow(b, 2) - 4 * c;
+
+	//check against the height of the cylinder
+	
+
+	if (disc >= 0)
+		return (1);
+	else
+		return (INFINITY);
+
+	// return (1);
+}
+
+
+double get_shaft_intersection_two(t_rt_scene *scene, t_cy
+		*cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+
+	// (((P + V*t) - A) x (B - A))^2 = r^2 * ((B - A) . (B - A))
+	// vector (or dot product with itself?) =	scalar		??
+	// solve for t
+
+
+
+//------------------------------------------------------------------
+// Ray : P(t) = O + V * t
+// Cylinder [O, D, r].
+// point Q on cylinder if ((Q - O) x D)^2 = r^2
+//
+// Cylinder [A, B, r].
+// Point P on infinite cylinder if ((P - A) x (B - A))^2 = r^2 * (B - A)^2
+// expand : ((O - A) x (B - A) + t * (V x (B - A)))^2 = r^2 * (B - A)^2
+// equation in the form (X + t * Y)^2 = d
+// where : 
+//  X = (O - A) x (B - A)
+//  Y = V x (B - A)
+//  d = r^2 * (B - A)^2
+// expand the equation :
+// t^2 * (Y . Y) + t * (2 * (X . Y)) + (X . X) - d = 0
+// => second order equation in the form : a*t^2 + b*t + c = 0 where
+// a = (Y . Y)
+// b = 2 * (X . Y)
+// c = (X . X) - d
+//-----------------------------------------------------------
+
+/*
+Vector AB = (B - A);
+Vector AO = (O - A);
+Vector AOxAB = (AO ^ AB); 
+// cross product
+Vector VxAB  = (V ^ AB); 
+// cross product
+double  ab2   = (AB * AB); 
+// dot product
+double a      = (VxAB * VxAB); 
+// dot product
+double b      = 2 * (VxAB * AOxAB);
+// dot product
+double c      = (AOxAB * AOxAB) - (r*r * ab2);
+// solve second order equation : a*t^2 + b*t + c = 0
+
+*/
+
+
+}
+
+
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 {
 
@@ -216,6 +403,11 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	double t2 = get_cy_endcap(pos2, ray, scene, cy);
 	// double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
 
+	//move everything so that pos2 is at origo
+	// printf("hi\n");
+	// double t3 = get_shaft_intersection(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_two(scene, cy, pos1, ray, pos2);
+
 
 	// ft_printf("t1 %f, t2 %f\n", t1, t2);
 	// if (t1 < t2 && t1 != -1.0)
@@ -224,11 +416,19 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 		// return (t2);
 	// else
 
-	if (t1 < t2)
-		return (t1);
-	if (t2 <= t1 && t2 != INFINITY)
-		return (t2);
-	return (-1.0);
+	double t = t1;
+	if (t2 < t)
+		t = t2;
+	if (t3 < t)
+		t = t3;
+
+	return (t);
+
+	// if (t1 < t2)
+		// return (t1);
+	// if (t2 <= t1 && t2 != INFINITY)
+		// return (t2);
+	// return (-1.0);
 
 	// t_vec *point2 = gen_coord(t2 * ray->x, t2 * ray->y, t2 * ray->z);
 	// t_vec *intersect2 = add_vectors(scene->cam->pos, point2);
@@ -432,20 +632,33 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	pos->y = 0;//
 
 	t_vec *base = gen_coord(0, 0, -1);
+	//determnie_quaternion(to this vector, from this vector)
 	t_qua *q = determine_quaternion(scene->cam->orien, base);
 	
 	// ft_printf("quaternion: (%f, %f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
 
 	// t_vec *v_c = conjugate_vector(q, pos);
 
+//	TESTING ------------------------------
+
+	// t_vec *dire = gen_coord(0, 1, 1);//
+	// t_qua *q_test = determine_quaternion(base, dire);//
+
+	// t_vec *test = set_vec_len(orient_vector(q_test, dire), 1);//
+	// t_vec *test = orient_vector(q_test, dire);//
+	// t_vec *check = set_vec_len(base, 1);
+	// ft_printf("Is this\t(%f, %f, %f)\n", test->x, test->y, test->z);
+	// ft_printf("Should be this\t(%f, %f, %f)\n", check->x, check->y, check->z);
 
 	// ft_printf("%f, %f\n", inc_x, inc_y);
 
-	// while (j <= 2)
+//	DONE TESTING ---------------------------
+
 
 
 	int color;
 
+	// while (j <= 2)
 	while (j <= scene->res->res_y)
 	{
 		// while (i <= 2)
@@ -461,6 +674,8 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 				// ft_printf("true\n");
 				// if (i == 250 && j == 250)
 
+					color = 0;
+					// if (j == 1 && i == 250)
 					color = remap_coord(scene, pos, cam_data, q);
 					// printf("%x\n", color);
 					// if (color != 0)

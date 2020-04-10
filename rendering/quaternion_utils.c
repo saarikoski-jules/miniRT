@@ -32,6 +32,9 @@
 // }
 t_qua *gen_unit_quaternion(t_qua *q)
 {
+
+	//breaks if you move a point only along z axis?
+
 	t_qua *q_u;
 
 	q_u = (t_qua*)e_malloc(sizeof(t_qua));
@@ -52,6 +55,10 @@ t_qua *gen_unit_quaternion(t_qua *q)
 
 t_qua *determine_quaternion(t_vec *orien, t_vec *base)
 {
+
+	//dies if either is 0 I assume
+	if (det_len_vec(orien) == 0 || det_len_vec(base) == 0)
+		 error_exit_msg(C_R_INVALID_ARG_Q, E_R_INVALID_ARG_Q);
 // 	Quaternion q;
 // vector a = crossproduct(v1, v2);
 // q.xyz = a;
