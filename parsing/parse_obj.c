@@ -4,6 +4,7 @@
 #include "libft.h"
 #include "error.h"
 #include "quaternion.h"//
+#include "vec.h"//
 
 
 t_sp	*get_sphere(char *line, size_t *i)
@@ -89,6 +90,14 @@ t_sq	*get_square(char *line, size_t *i)
 	return (square);
 }
 
+void	det_cy_data(t_cy **cy)
+{
+	(*cy)->r = (*cy)->dia * 0.5;
+	t_vec *mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
+	(*cy)->end2 = add_vectors((*cy)->pos, mov);
+	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
+}
+
 t_cy	*get_cylinder(char *line, size_t *i)
 {
 	t_cy	*cylinder;
@@ -103,6 +112,10 @@ t_cy	*get_cylinder(char *line, size_t *i)
 	cylinder->h = get_float(line, i);
 	if (cylinder->dia < 0.0 || cylinder->h < 0.0)
 		error_exit_msg(C_INVALID_CY, E_INVALID_CY);
+	det_cy_data(&cylinder);
+
+	// ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z );
+
 	return (cylinder);
 }
 

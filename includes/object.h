@@ -48,6 +48,9 @@ typedef struct	s_cy
 	t_vec			*orien;
 	double			dia;
 	double			h;
+	t_vec			*end1;
+	t_vec			*end2;
+	double			r;
 }				t_cy;
 
 typedef struct	s_tr

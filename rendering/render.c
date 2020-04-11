@@ -329,6 +329,17 @@ double get_shaft_intersection(t_rt_scene *scene, t_cy *cy,
 	//check against the height of the cylinder
 	
 
+	double t;
+	if (disc > 0)
+	{
+		double t_top = -b + sqrt(disc);
+		t = t_top / 2;
+		if (t < 0)
+			return (INFINITY);
+		// t_vec *r = gen_coord(t * ray->x, t * ray->y, t * ray->z);
+		// t_vec intersect = add_vectors(scene->cam->pos, r);
+		// if ()
+	}
 	if (disc >= 0)
 		return (1);
 	else
@@ -336,7 +347,6 @@ double get_shaft_intersection(t_rt_scene *scene, t_cy *cy,
 
 	// return (1);
 }
-
 
 double get_shaft_intersection_two(t_rt_scene *scene, t_cy
 		*cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
@@ -369,27 +379,181 @@ double get_shaft_intersection_two(t_rt_scene *scene, t_cy
 // c = (X . X) - d
 //-----------------------------------------------------------
 
-/*
-Vector AB = (B - A);
-Vector AO = (O - A);
-Vector AOxAB = (AO ^ AB); 
+// B = Endpoint of cylinder
+// A = Startpoint of cylinder
+// O = Ray start point
+// V = Ray direction
+
+// /*
+t_vec *AB = substract_vectors(pos2, pos1);
+// Vector AB = (B - A);
+t_vec *AO = substract_vectors(scene->cam->pos, pos1);
+// Vector AO = (O - A);
+t_vec *AOxAB = get_cross_product(AO, AB);
+// Vector AOxAB = (AO ^ AB); 
 // cross product
-Vector VxAB  = (V ^ AB); 
+t_vec *VxAB = get_cross_product(ray, AB);
+// Vector VxAB  = (V ^ AB); 
 // cross product
-double  ab2   = (AB * AB); 
+double ab2 = get_dot_product(AB, AB);
+// double  ab2   = (AB * AB); 
 // dot product
-double a      = (VxAB * VxAB); 
+double a = get_dot_product(VxAB, VxAB);
+// double a      = (VxAB * VxAB);
 // dot product
-double b      = 2 * (VxAB * AOxAB);
+double b = 2 * get_dot_product(VxAB, AOxAB);
+// double b      = 2 * (VxAB * AOxAB);
 // dot product
-double c      = (AOxAB * AOxAB) - (r*r * ab2);
+double c2 = (pow(cy->dia / 2, 2) * a * b * 2);
+double c = get_dot_product(AOxAB, AOxAB) - c2;
+// double c      = (AOxAB * AOxAB) - (r*r * ab2);
 // solve second order equation : a*t^2 + b*t + c = 0
 
-*/
+double disc = pow(b, 2) - (4 * a * c);
+printf("%f = pow(%f, 2) - (4 * %f * %f)\n", disc, b, a, c);
+if (disc >= 0)
+	return (1);
+else
+	return (INFINITY);
+
+// */
 
 
 }
 
+double get_shaft_intersection_three(t_rt_scene *scene, t_cy *cy,
+	t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+	//ray = at + b
+	//a = ray, b = scene->cam->pos 
+	//cylinder = gs + h
+	//g = AB, h = A
+
+	t_vec *g = substract_vectors(pos2, pos1);
+
+	//D is distance, cy->dia / 2
+
+	// if |g| == 0, death
+
+	double len_g = det_len_vec(g);
+	if (len_g == 0)
+	{
+		printf("FAAAIL");
+		return (INFINITY);
+	}
+	//c = g x (b - h) / |g|
+	
+	t_vec *bh = substract_vectors(scene->cam->pos, pos1);
+	t_vec *c1 = get_cross_product(g, bh);
+	t_vec *c = gen_coord(c1->x / len_g, c1->y / len_g, c1->z / len_g);
+
+	//k = (g x a) / |g|
+
+	t_vec *k1 = get_cross_product(g, ray);
+	t_vec *k = gen_coord(k1->x / len_g, k1->y / len_g, k1->z / len_g);
+
+	//if |k| == 0, death
+
+	double k_len = det_len_vec(k);
+	if (k_len == 0)
+	{
+		printf("destruction\n");
+		return (0);
+	}
+
+	//d = 4 * (k * c)^2 - 4|k|^2*(|c|^2 * D^2)
+
+	double c_len = det_len_vec(c);
+	double d1 = pow(c_len, 2) * pow(cy->dia / 2, 2);
+	double d2 = 4 * pow(k_len, 2) * d1;
+	double kc = get_dot_product(k, c);
+	double d = 4 * pow(kc, 2) - d2;
+
+	//if d >= 0, there's an answer
+
+	if (d >= 0)
+		return (1);
+	else
+		return (INFINITY);
+
+	//t = (-2 * (k * c) +- sqrt(d)) / 2 |k|^2
+
+	//plug t into ray and you get position of intersection
+
+}
+
+
+double get_shaft_intersection_four(t_rt_scene *scene, t_cy *cy,
+	t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+	// return (INFINITY);
+	// ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n", cy->dia, cy->r, cy->end1->x, cy->end1->y, cy->end1->z, cy->end2->x, cy->end2->y, cy->end2->z);
+
+	//move and turn ray according to the movement of the cylinder first
+
+	//camera origin (MOVE AND TURN TO CORRECT FOR POSITIONING)
+	t_vec *O = scene->cam->pos;
+	
+	//ray direction (TURN ACCORDING TO OBJECT TURN)
+	t_vec *R = ray;
+
+	//get two dimensional start point and ray
+	t_vec *O_2d = gen_coord(O->x, O->y, 0);
+	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+
+	//get vector between ray origin and circle centre
+	t_vec *p = substract_vectors(O, cy->end1);
+
+	//Find intersection between 2d ray and circle at (0,0,0) with radius cy->r 
+	
+	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
+	double b = R_2d->x * p->x + R_2d->y *p->y;
+	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
+
+	// double s = R_2d->x * p->x;
+	// double t = R_2d->y * p->y;
+	double disc_end = a * c;
+	double disc = pow(b, 2) - disc_end;
+	// printf("a: %f, b: %f, c: %f\n", a, b, c);
+	// printf("s: %f, t: %f\n", s, t);
+	// printf("%f = %f^2 - %f * %f\n", disc, b, a, c);
+	
+	double t;
+	if (disc < 0)
+		return (INFINITY);
+	else if (disc > 0)
+	{
+		double t1 = -b + sqrt(disc) / a;
+		double t2 = -b - sqrt(disc) / a;
+		if (t1 < t2)
+			t = t1;
+		else
+			t = t2;
+	}
+	else
+	{
+		t = -b / a;
+	}
+	
+	//determine z coordinate of intersection
+	// double z = p->z + t * ray->z;
+
+	t_vec *point = gen_coord(p->x + t * ray->x, p->y + t * ray->y, p->z + t * ray->z);
+
+	// t_vec *halp = add_vectors(ray, scene->cam->pos);
+	// t_vec *point = gen_coord(t * halp->x, t * halp->y, t * halp->z);
+	// printf("point (%f, %f, %f), end1: (%f, %f, %f), end2 (%f, %f, %f)\n", point->x, point->y, point->z, cy->end1->x, cy->end1->y, cy->end1->z, cy->end2->x, cy->end2->y, cy->end2->z);
+	//change to work for any position and rotation
+
+	// printf("%f > %f || %f < %f\n", point->z, cy->end2->z, point->z, cy->end1->z);
+
+	// if (point->z > cy->end2->z || point->z < cy->end1->z)
+	if (point->z < cy->end2->z || point->z > cy->end1->z)
+		return (INFINITY);
+
+	//get and return distance from camera (or t?)
+	return (t);
+}
 
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 {
@@ -403,10 +567,17 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	double t2 = get_cy_endcap(pos2, ray, scene, cy);
 	// double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
 
+
+	// t1 = INFINITY;
+	// t2 = INFINITY;
+
+
 	//move everything so that pos2 is at origo
 	// printf("hi\n");
 	// double t3 = get_shaft_intersection(scene, cy, pos1, ray, pos2);
-	double t3 = get_shaft_intersection_two(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_two(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_three(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
 
 
 	// ft_printf("t1 %f, t2 %f\n", t1, t2);
