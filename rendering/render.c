@@ -491,8 +491,11 @@ double get_shaft_intersection_four(t_rt_scene *scene, t_cy *cy,
 
 	//move and turn ray according to the movement of the cylinder first
 
+	//move world by
+	t_vec *mov = substract_vectors(cy->end1, gen_coord(0,0,0));
+
 	//camera origin (MOVE AND TURN TO CORRECT FOR POSITIONING)
-	t_vec *O = scene->cam->pos;
+	t_vec *O = add_vectors(scene->cam->pos, mov);
 	
 	//ray direction (TURN ACCORDING TO OBJECT TURN)
 	t_vec *R = ray;
@@ -545,7 +548,7 @@ double get_shaft_intersection_four(t_rt_scene *scene, t_cy *cy,
 	// printf("point (%f, %f, %f), end1: (%f, %f, %f), end2 (%f, %f, %f)\n", point->x, point->y, point->z, cy->end1->x, cy->end1->y, cy->end1->z, cy->end2->x, cy->end2->y, cy->end2->z);
 	//change to work for any position and rotation
 
-	// printf("%f > %f || %f < %f\n", point->z, cy->end2->z, point->z, cy->end1->z);
+	printf("%f < %f || %f > %f\n", point->z, cy->end2->z, point->z, cy->end1->z);
 
 	// if (point->z > cy->end2->z || point->z < cy->end1->z)
 	if (point->z < cy->end2->z || point->z > cy->end1->z)
@@ -566,10 +569,12 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	double t1 = get_cy_endcap(pos1, ray, scene, cy);
 	double t2 = get_cy_endcap(pos2, ray, scene, cy);
 	// double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
+	double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
 
 
 	// t1 = INFINITY;
 	// t2 = INFINITY;
+	// t3 = INFINITY;
 
 
 	//move everything so that pos2 is at origo
@@ -577,7 +582,6 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	// double t3 = get_shaft_intersection(scene, cy, pos1, ray, pos2);
 	// double t3 = get_shaft_intersection_two(scene, cy, pos1, ray, pos2);
 	// double t3 = get_shaft_intersection_three(scene, cy, pos1, ray, pos2);
-	double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
 
 
 	// ft_printf("t1 %f, t2 %f\n", t1, t2);
