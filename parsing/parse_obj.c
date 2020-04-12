@@ -65,7 +65,7 @@ void find_square_corners(t_sq **square)
 
 
 
-	// ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
+	ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
 
 	// (*square)->point1 = orient_vector()
 
@@ -96,6 +96,7 @@ void	det_cy_data(t_cy **cy)
 	t_vec *mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
 	(*cy)->end2 = add_vectors((*cy)->pos, mov);
 	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
+	(*cy)->q = determine_quaternion(gen_coord(0,0,-1), (*cy)->orien);
 }
 
 t_cy	*get_cylinder(char *line, size_t *i)
@@ -114,7 +115,7 @@ t_cy	*get_cylinder(char *line, size_t *i)
 		error_exit_msg(C_INVALID_CY, E_INVALID_CY);
 	det_cy_data(&cylinder);
 
-	ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z );
+	// ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n\tq: %f, (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z, cylinder->q->w, cylinder->q->vector->x, cylinder->q->vector->y, cylinder->q->vector->z);
 
 	return (cylinder);
 }

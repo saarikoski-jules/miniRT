@@ -14,6 +14,7 @@
 # define OBJECT_H
 
 # include "vec.h"
+# include "quaternion.h"//
 # include "color.h"
 /*
 ** OBJECT STRUCTS
@@ -51,6 +52,7 @@ typedef struct	s_cy
 	t_vec			*end1;
 	t_vec			*end2;
 	double			r;
+	t_qua			*q;
 }				t_cy;
 
 typedef struct	s_tr
