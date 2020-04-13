@@ -93,8 +93,8 @@ double det_len_vec(t_vec *vector) //this may be broken
 
 	double sum = x + y + z;
 	len = sqrt(sum);
-	if (len == 0)
-		error_exit_msg(C_R_INVALID_VEC, E_R_INVALID_VEC);
+	// if (len == 0)
+		// error_exit_msg(C_R_INVALID_VEC, E_R_INVALID_VEC);
 	// ft_printf("(%f, %f, %f)\n(%f, %f, %f)\nsum = %f\nlen = %f\n", vector->x, vector->y, vector->z, x, y, z, sum, len);
 	return (len);
 }

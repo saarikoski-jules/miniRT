@@ -17,6 +17,7 @@
 //TODO: if two items are on the exact same 2D plane, which one displays? Right now the one mentioned earlier in the .rt file is displayed
 //TODO: square is not visible if your camera and square orientation are the same
 //TODO: cylinders break when seen more from the direction of the endcaps
+//TODO: cylinder is rendered slightly wider than it's meant to
 
 double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray)
 {
@@ -265,39 +266,51 @@ double get_shaft_intersection_four(t_rt_scene *scene, t_cy *cy,
 
 	// double s = R_2d->x * p->x;
 	// double t = R_2d->y * p->y;
-	double disc_end = a * c;
-	double disc = pow(b, 2) - disc_end;
+	// double disc_end = a * c;
+	double disc = b * b - a * c;
 	// printf("a: %f, b: %f, c: %f\n", a, b, c);
 	// printf("s: %f, t: %f\n", s, t);
 	// printf("%f = %f^2 - %f * %f\n", disc, b, a, c);
 	
 	double t;
+	double t1 = 100;
+	double t2 = 100;
+
+	t = -1;
+	// printf("disc: %f\n", disc);
+	// if (disc < 2)
 	if (disc < 0)
 		return (INFINITY);
 	else if (disc > 0)
 	{
-		double t1 = -b + sqrt(disc) / a;
-		double t2 = -b - sqrt(disc) / a;
-		printf("t1: %f, t2: %f\n", t1, t2);
+		t1 = -b + sqrt(disc) / a;
+		t2 = -b - sqrt(disc) / a;
+		// printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+		// printf("start: (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z);
+		// printf("t1: %f, t2: %f\n", t1, t2);
 		if (t1 < 0 && t2 < 0)
 			return (INFINITY);
-		if (t1 < t2)
+		if (t1 > t)
 			t = t1;
-		else
+		if (t2 < t1)
 			t = t2;
 		// if (t1 < t2 && t1 > 0)
 		//if one of the results is pos and the other neg, you're inside the cylinder. This is okay if length holds up
 	}
-	else
+	else if (disc == 0)
 	{
 		t = -b / a;
 	}
+
 	if (t < 0)
 		return (INFINITY);
 
 	// printf("t: %f\n", t);
 	//determine z coordinate of intersection
-	double z = p->z + t * ray->z;
+	double z = p->z + t * R->z;
+	double y = p->y + t * R->y;
+
+	
 	// double z = p->z + t * R->z;
 
 	// printf("p->z: %f\n", p->z);
@@ -317,13 +330,23 @@ double get_shaft_intersection_four(t_rt_scene *scene, t_cy *cy,
 	// if (point->z > cy->end2->z || point->z < cy->end1->z)
 	// if (point->z < cy->end2->z || point->z > cy->end1->z)
 	// if (z < cy->end2->z || z > cy->end1->z)
+
+	
+	// printf("z: %f\n", z);
+	if (y > cy->r + 1 || y < -cy->r - 1)
+		return (INFINITY);
 	if (z > 0 || z < -cy->h)
 	{
-		printf("%f > 0 || %f < %f\n", z, z, -cy->h);
-		// return (INFINITY);
+		// printf("%f > 0 || %f < %f\n", z, z, -cy->h);
+		return (INFINITY);
 	}
+	// printf("a: %f, b: %f, c: %f\n", a, b, c);
+	// printf("z: %f\n", z);
+	// printf("disc: %f\n", disc);
+	// printf("t: %f, t1: %f, t2: %f\n", t, t1, t2);
+	// printf("point: (%f, %f, %f)\n\n", point->x, point->y, point->z);
 	//get and return distance from camera (or t?)
-	printf("t: %f\n", t);
+	// printf("t: %f\n", t);
 	return (t);
 }
 
@@ -340,24 +363,34 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	//move to centre
 	t_vec *mov1 = substract_vectors(scene->cam->pos, cy->pos);
 	
+	// printf("cy->pos (%f, %f, %f)\n", cy->pos->x, cy->pos->y,cy->pos->z);
 
 	//gen direction vector and distance for the position of the camera
 	// t_vec *O_u = set_vec_len(scene->cam->pos, 1);
-	t_vec *O_u = set_vec_len(mov1, 1);
-	// double O_dist = det_len_vec(scene->cam->pos);
+	// printf("mov1 (%f, %f, %f)\n", mov1->x, mov1->y, mov1->z);
+		// printf("ray\n");
 	double O_dist = det_len_vec(mov1);
+	t_vec *O;
+	if (O_dist != 0)
+	{
+		t_vec *O_u = set_vec_len(mov1, 1);
+	// double O_dist = det_len_vec(scene->cam->pos);
 
 
 	//turn the diretion vector
-	t_vec *O_new = orient_vector(cy->q, O_u);
+		t_vec *O_new = orient_vector(cy->q, O_u);
 
 	//new camera position
 	// t_vec *O = set_vec_len(O_new, O_dist);
-	t_vec *O_new_len = set_vec_len(O_new, O_dist);
+		t_vec *O_new_len = set_vec_len(O_new, O_dist);
 
 	//move O by the same amount as before
-	t_vec *O = add_vectors(O_new_len, cy->pos);
-
+		O = add_vectors(O_new_len, cy->pos);
+	}
+	else
+	{
+		O = scene->cam->pos;
+	}
 	// printf("new camera position (%f, %f, %f)\n", O->x, O->y, O->z);
 	// printf("old camera position (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z);
 
@@ -390,8 +423,15 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	{
 		t = -b / a;
 	}
-	double z = p->z + t * ray->z;
+	double z = p->z + t * ray->z;//CHANGES
+	double y = p->y + t * ray->y;//CHANGES
+
+
 	t_vec *point = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z); //this should be correct? Somehow it's not
+
+	
+	if (y > cy->r + 1 || y < -cy->r - 1)//CHANGES
+		return (INFINITY);//CHANGES
 	if (z > 0 || z < -cy->h)
 	{
 		// printf("z: %f\n", z);
@@ -416,8 +456,8 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	// double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
 
 	//this works perfectly for everything but turns
-	double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
-	// double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
 
 
 	t1 = INFINITY;
@@ -573,6 +613,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == cy)
 			{
 				d_tmp = cylinder(scene, tmp->type.cy, ray);
+				// if (d_tmp < 2000)
+					// printf("t: %f\n", d_tmp);
 			}
 			else if (tmp->id == pl)
 			{
@@ -698,9 +740,9 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 				// if (i == 250 && j == 250)
 
 					color = 0;
-					// if (j == 270 && i == 250)
+					// if (j == 400 && i == 250)
 						color = remap_coord(scene, pos, cam_data, q);
-					// if (j == 270)
+					// if (j == 400)
 						// color = 0xff0000;	
 
 					// printf("%x\n", color);
