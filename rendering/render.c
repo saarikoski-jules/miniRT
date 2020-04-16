@@ -355,13 +355,13 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 {
 	// t_vec *O = scene->cam->pos;
 	// t_vec *R = set_vec_len(ray, 1);
-	t_vec *ray_u = set_vec_len(ray, 1);
+
+
 
 	//Gen O and R accounting for cylinder rotation
 
 
 	//move to centre
-	t_vec *mov1 = substract_vectors(scene->cam->pos, cy->pos);
 	
 	// printf("cy->pos (%f, %f, %f)\n", cy->pos->x, cy->pos->y,cy->pos->z);
 
@@ -369,8 +369,15 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	// t_vec *O_u = set_vec_len(scene->cam->pos, 1);
 	// printf("mov1 (%f, %f, %f)\n", mov1->x, mov1->y, mov1->z);
 		// printf("ray\n");
+	
+	
+	
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *mov1 = substract_vectors(scene->cam->pos, cy->pos);
 	double O_dist = det_len_vec(mov1);
 	t_vec *O;
+	
+	
 	if (O_dist != 0)
 	{
 		t_vec *O_u = set_vec_len(mov1, 1);
@@ -391,11 +398,18 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	{
 		O = scene->cam->pos;
 	}
+	
+	t_vec *R = orient_vector(cy->q, ray_u);//
+	
+	
 	// printf("new camera position (%f, %f, %f)\n", O->x, O->y, O->z);
 	// printf("old camera position (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z);
 
 	//reorient ray
-	t_vec *R = orient_vector(cy->q, ray_u);
+	// t_vec *R = ray;
+	// printf("old:\nscene->cam->pos: (%f, %f, %f)\nray: (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z, ray->x, ray->y, ray->z);
+
+	// printf("new:\nO: (%f, %f, %f)\nR: (%f, %f, %f)\n\n", O->x, O->y, O->z, R->x, R->y, R->z);
 	// printf("old ray: (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z);
 	// printf("new ray: (%f, %f, %f)\n\n", R->x, R->y, R->z);
 
@@ -408,12 +422,14 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	double disc_end = a * c;
 	double disc = pow(b, 2) - disc_end;
 	double t;
+	double t1 = -1;
+	double t2 = -1;
 	if (disc < 0)
 		return (INFINITY);
 	else if (disc > 0)
 	{
-		double t1 = -b + sqrt(disc) / a;
-		double t2 = -b - sqrt(disc) / a;
+		t1 = -b + sqrt(disc) / a;
+		t2 = -b - sqrt(disc) / a;
 		if (t1 < t2)
 			t = t1;
 		else
@@ -423,22 +439,116 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 	{
 		t = -b / a;
 	}
-	double z = p->z + t * ray->z;//CHANGES
-	double y = p->y + t * ray->y;//CHANGES
+
+	// double z = p->z + t * R->z;//CHANGES
+	// double y = p->y + t * R->y;//CHANGES
+//breaks when moving camera on the anywhere except away from the object
+
+	double z = p->z + t * R->z;//CHANGES
+	double y = p->y + t * R->y;//CHANGES
+
+
 
 
 	t_vec *point = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z); //this should be correct? Somehow it's not
 
 	
-	if (y > cy->r + 1 || y < -cy->r - 1)//CHANGES
-		return (INFINITY);//CHANGES
+	// if (y > cy->r || y < -cy->r)//CHANGES
+	// {
+		// printf("bad y: %f\n", y);
+		// return (INFINITY);//CHANGES
+	// }
 	if (z > 0 || z < -cy->h)
 	{
 		// printf("z: %f\n", z);
 		return (INFINITY);
 	}
 	// printf("t: %f\n", t);
+	// if (t1 > 0)
+		t_vec *point1 = gen_coord(p->x + t1 * R->x, p->y + t1 * R->y, p->z + t1 * R->z); //this should be correct? Somehow it's not
+	// if (t2 > 0)
+		t_vec *point2 = gen_coord(p->x + t2 * R->x, p->y + t2 * R->y, p->z + t2 * R->z); //this should be correct? 
+	
+	if (t1 != -1 && t2 != -1)
+	{
+		printf("point1 y: %f, point2 y: %f, p1 - p2 = %f\n", point1->y, point2->y, point1->y - point2->y);
+		printf("point1: (%f, %f, %f)\npoint2: (%f, %f, %f)\n\n", point1->x, point1->y, point1->z, point2->x, point2->y, point2->z);
+	}
+	// printf("point1 (%f, %f, %f)\n", point->x, point->y, point->z);
 	return (t);
+}
+
+double get_shaft_intersection_six(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+
+	t_vec *O = scene->cam->pos;
+
+	t_vec *R = set_vec_len(ray, 1);
+
+	t_vec *p = substract_vectors(O, cy->end1);
+	t_vec *O_2d = gen_coord(O->x, O->y, 0);
+	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
+	double b = R_2d->x * p->x + R_2d->y *p->y;
+	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
+	double disc_end = a * c;
+	double disc = pow(b, 2) - disc_end;
+	double t;
+	double t1 = -1;
+	double t2 = -1;
+	if (disc < 0)
+		return (INFINITY);
+	else if (disc > 0)
+	{
+		t1 = (-b + sqrt(disc)) / a;
+		t2 = (-b - sqrt(disc)) / a;
+		if (t1 < t2)
+			t = t1;
+		else
+			t = t2;
+	}
+	else
+	{
+		t = -b / a;
+	}
+
+	double z = p->z + t * R->z;//CHANGES
+	double y = p->y + t * R->y;//CHANGES
+	double x = p->x + t * R->x;//CHANGES
+
+
+
+
+	// t_vec *point = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z); //this should be correct? Somehow it's not
+
+	
+	if (y > cy->r || y < -cy->r)//CHANGES
+	{
+		// printf("bad y: %f\n", y);
+		return (INFINITY);//CHANGES
+	}
+	if ((z > 0 || z < -cy->h)
+		|| (y > cy->r || y < -cy->r)
+		|| (x > cy->r || x < -cy->r))
+	{
+		// printf("z: %f\n", z);
+		return (INFINITY);
+	}
+	// printf("t: %f\n", t);
+	// if (t1 > 0)
+		// t_vec *point1 = gen_coord(p->x + t1 * R->x, p->y + t1 * R->y, p->z + t1 * R->z); //this should be correct? Somehow it's not
+	// if (t2 > 0)
+		// t_vec *point2 = gen_coord(p->x + t2 * R->x, p->y + t2 * R->y, p->z + t2 * R->z); //this should be correct? 
+	
+	// if (t1 != -1 && t2 != -1)
+	// {
+		// printf("point1 y: %f, point2 y: %f, p1 - p2 = %f\n", point1->y, point2->y, point1->y - point2->y);
+		// printf("point1: (%f, %f, %f)\npoint2: (%f, %f, %f)\n\n", point1->x, point1->y, point1->z, point2->x, point2->y, point2->z);
+	// }
+	// printf("point1 (%f, %f, %f)\n", point->x, point->y, point->z);
+	return (t);
+
+
 }
 
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
@@ -452,12 +562,13 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	pos1 = cy->end1;
 	pos2 = cy->end2;
 	double t1 = get_cy_endcap(pos1, ray, scene, cy);
-	double t2 = get_cy_endcap(pos2, ray, scene, cy);
+	double t2 = get_cy_endcap(pos2, ray, scene, cy); //endcaps have stopped working?
 	// double t2 = pl_intersect(cy->orien, scene->cam->pos, pos2, ray);
 
 	//this works perfectly for everything but turns
 	// double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
-	double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_six(scene, cy, pos1, ray, pos2);
 
 
 	t1 = INFINITY;
