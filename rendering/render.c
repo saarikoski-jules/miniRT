@@ -481,6 +481,7 @@ double get_shaft_intersection_five(t_rt_scene *scene, t_cy *cy,
 double get_shaft_intersection_six(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
 {
 
+	// adapt to cylinder movement and turn
 	t_vec *O = scene->cam->pos;
 
 	t_vec *R = set_vec_len(ray, 1);
@@ -502,7 +503,7 @@ double get_shaft_intersection_six(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_ve
 	{
 		t1 = (-b + sqrt(disc)) / a;
 		t2 = (-b - sqrt(disc)) / a;
-		if (t1 < t2)
+		if (t1 < t2) //might need to change this so it never gets a negative value
 			t = t1;
 		else
 			t = t2;
@@ -511,45 +512,109 @@ double get_shaft_intersection_six(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_ve
 	{
 		t = -b / a;
 	}
+	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
+	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
 
-	double z = p->z + t * R->z;//CHANGES
-	double y = p->y + t * R->y;//CHANGES
-	double x = p->x + t * R->x;//CHANGES
-
-
-
-
-	// t_vec *point = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z); //this should be correct? Somehow it's not
-
-	
-	if (y > cy->r || y < -cy->r)//CHANGES
+	if ((intersection->z > 0 || intersection->z < -cy->h)
+		|| (intersection->y > cy->r || intersection->y < -cy->r)
+		|| (intersection->x > cy->r || intersection->x < -cy->r))
 	{
-		// printf("bad y: %f\n", y);
-		return (INFINITY);//CHANGES
-	}
-	if ((z > 0 || z < -cy->h)
-		|| (y > cy->r || y < -cy->r)
-		|| (x > cy->r || x < -cy->r))
-	{
-		// printf("z: %f\n", z);
 		return (INFINITY);
 	}
-	// printf("t: %f\n", t);
-	// if (t1 > 0)
-		// t_vec *point1 = gen_coord(p->x + t1 * R->x, p->y + t1 * R->y, p->z + t1 * R->z); //this should be correct? Somehow it's not
-	// if (t2 > 0)
-		// t_vec *point2 = gen_coord(p->x + t2 * R->x, p->y + t2 * R->y, p->z + t2 * R->z); //this should be correct? 
-	
-	// if (t1 != -1 && t2 != -1)
-	// {
-		// printf("point1 y: %f, point2 y: %f, p1 - p2 = %f\n", point1->y, point2->y, point1->y - point2->y);
-		// printf("point1: (%f, %f, %f)\npoint2: (%f, %f, %f)\n\n", point1->x, point1->y, point1->z, point2->x, point2->y, point2->z);
-	// }
-	// printf("point1 (%f, %f, %f)\n", point->x, point->y, point->z);
 	return (t);
-
-
 }
+
+double solve_quadratic(double a, double b, double c)
+{
+	double disc_end = a * c;
+	double disc = pow(b, 2) - disc_end;
+	double t;
+	double t1 = -1;
+	double t2 = -1;
+	if (disc < 0)
+		return (INFINITY);
+	else if (disc > 0)
+	{
+		t1 = (-b + sqrt(disc)) / a;
+		t2 = (-b - sqrt(disc)) / a;
+		if (t1 < t2) //might need to change this so it never gets a negative value
+			t = t1;
+		else
+			t = t2;
+	}
+	else
+	{
+		t = -b / a;
+	}
+	return (t);
+}
+
+double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+	t_vec *O;
+	// if (det_len_vec(scene->cam->pos) != 0)
+	// {
+		//move cam to centre, turn by quat, move back to pos
+		// t_vec *mov = substract_vectors();
+		// t_vec *turned = orient_vector(cy->q, gen_coord(0,0,0));//you still have to turn this even if cam is at origin
+		// O = add_vectors(turned, scene->cam->pos);
+		// O = add_vectors(turned, scene->cam->pos);
+		// printf("scene->cam->pos: (%f, %f, %f)\n", scene->cam->pos->x, scene->cam->pos->y, scene->cam->pos->z);
+		// printf("mov: (%f, %f, %f)\n", mov->x, mov->y, mov->z);
+		// printf("O: (%f, %f, %f)\n\n", O->x, O->y, O->z);
+		// O = scene->cam->pos;
+	// }
+	// else
+	// {
+		// O = scene->cam->pos;
+	// }
+
+
+	// t_vec *mov = substract_vectors(cy->pos, scene->cam->pos);
+
+	// t_vec *mov2 = add_vectors(mov, scene->cam->pos);
+	// O = substract_vectors(mov2, cy->pos);
+
+	// get direction unit vector between camera and centre of object
+	// turn that vector with the centre point of 0
+	// generate new position for the camera in the new turned direction dist away from the object centre point
+
+	t_vec *OC = substract_vectors(scene->cam->pos, cy->pos);
+	double OC_len = det_len_vec(OC);
+	t_vec *OC_u = set_vec_len(OC, 1);
+
+	t_vec *turn = orient_vector(cy->q, OC_u);
+
+	t_vec *cam_dist = set_vec_len(turn, OC_len);
+
+	O = add_vectors(cam_dist, cy->pos);
+
+	// O = scene->cam->pos;
+
+
+	// t_vec *R = set_vec_len(ray, 1);
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *R = orient_vector(cy->q, ray_u);
+
+	t_vec *p = substract_vectors(O, cy->end1);
+	t_vec *O_2d = gen_coord(O->x, O->y, 0);
+	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
+	double b = R_2d->x * p->x + R_2d->y *p->y;
+	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
+	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
+	double t = solve_quadratic(a, b, c);
+	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
+
+	if ((intersection->z > 0 || intersection->z < -cy->h)
+		|| (intersection->y > cy->r || intersection->y < -cy->r)
+		|| (intersection->x > cy->r || intersection->x < -cy->r))
+	{
+		return (INFINITY);
+	}
+	return (t);
+}
+
 
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 {
@@ -568,7 +633,8 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	//this works perfectly for everything but turns
 	// double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
 	// double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
-	double t3 = get_shaft_intersection_six(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_six(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_seven(scene, cy, pos1, ray, pos2);
 
 
 	t1 = INFINITY;
@@ -594,9 +660,11 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	if (t2 < t)
 		t = t2;
 	if (t3 < t)
+	{
+		// printf("lol\n");
 		t = t3;
-
-	t = t3;//
+	}
+	// t = t3;//
 	return (t);
 
 	// if (t1 < t2)
