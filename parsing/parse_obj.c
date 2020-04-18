@@ -65,7 +65,7 @@ void find_square_corners(t_sq **square)
 
 
 
-	ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
+	// ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
 
 	// (*square)->point1 = orient_vector()
 

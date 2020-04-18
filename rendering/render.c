@@ -580,6 +580,7 @@ double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	// generate new position for the camera in the new turned direction dist away from the object centre point
 
 	t_vec *OC = substract_vectors(scene->cam->pos, cy->pos);
+	// t_vec *OC = substract_vectors(cy->pos, scene->cam->pos);
 	double OC_len = det_len_vec(OC);
 	t_vec *OC_u = set_vec_len(OC, 1);
 
@@ -588,15 +589,20 @@ double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	t_vec *cam_dist = set_vec_len(turn, OC_len);
 
 	O = add_vectors(cam_dist, cy->pos);
-
+	// printf("O: (%f, %f, %f)\n", O->x, O->y, O->z);
 	// O = scene->cam->pos;
 
 
 	// t_vec *R = set_vec_len(ray, 1);
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
+	printf("ray_u (%f, %f, %f)\nR (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z, R->x, R->y, R->z);
 
-	t_vec *p = substract_vectors(O, cy->end1);
+	// t_vec *p = substract_vectors(O, cy->end1);
+	t_vec *p = substract_vectors(O, cy->pos);
+	// t_vec *p = gen_coord(O->x, O->y, O->z);
+	// printf("p: (%f, %f, %f)\n", p->x, p->y, p->z);
+
 	t_vec *O_2d = gen_coord(O->x, O->y, 0);
 	t_vec *R_2d = gen_coord(R->x, R->y, 0);
 	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
@@ -606,7 +612,8 @@ double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	double t = solve_quadratic(a, b, c);
 	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
 
-	if ((intersection->z > 0 || intersection->z < -cy->h)
+	// if ((intersection->z > 0 || intersection->z < -cy->h)
+	if ((intersection->z > cy->h / 2 || intersection->z < -cy->h / 2)
 		|| (intersection->y > cy->r || intersection->y < -cy->r)
 		|| (intersection->x > cy->r || intersection->x < -cy->r))
 	{
@@ -615,6 +622,87 @@ double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	return (t);
 }
 
+t_vec *oriented_ray(t_vec *OC, t_vec *ray, t_cy *cy)
+{
+	t_vec *R;
+
+// Orienting rays:
+	// get vector from camera to object (OC)
+	// get ray
+	// get vector from object centre to the direction its pointing to (-OC + ray) (this is just the orientation vector of the object) (no its not)
+	// turn the orientation vector of object by quat (dont need this)
+	// 
+
+
+	// get -OC + ray
+	// turn -OC + ray by quat
+	// calculate new ray from as OC + turned
+	t_vec *bottom = substract_vectors(ray, OC);
+	double bottom_len = det_len_vec(bottom);
+	t_vec *bottom_u = set_vec_len(bottom, 1);
+
+	t_vec *turned = orient_vector(cy->q, bottom_u);
+	t_vec *turned_dist = set_vec_len(turned, bottom_len);
+	
+	//should be -OC + turned_dist
+	R = add_vectors(turned_dist, OC); //not quite right
+	// R = substract_vectors(turned_dist, OC);
+
+	return (R);
+}
+
+double get_shaft_intersection_eight(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_vec *ray, t_vec *pos2)
+{
+	t_vec *O;
+	t_vec *OC = substract_vectors(scene->cam->pos, cy->pos);
+	double OC_len = det_len_vec(OC);
+	t_vec *OC_u = set_vec_len(OC, 1);
+	t_vec *turn = orient_vector(cy->q, OC_u);
+	t_vec *cam_dist = set_vec_len(turn, OC_len);
+	O = add_vectors(cam_dist, cy->pos);
+
+
+// Orienting rays:
+	// get vector from camera to object (OC)
+	// get ray
+	// get vector from object centre to the direction its pointing to (-OC + ray) (this is just the orientation vector of the object) (no its not)
+	// turn the orientation vector of object by quat (dont need this)
+	// 
+
+
+	// get -OC + ray
+	// turn -OC + ray by quat
+	// calculate new ray from as OC + turned
+
+
+
+	// t_vec *R = set_vec_len(ray, 1);
+	
+	// t_vec *ray_u = set_vec_len(ray, 1);
+	// t_vec *R = orient_vector(cy->q, ray_u);
+	
+	t_vec *R = oriented_ray(OC, ray, cy);
+
+	// t_vec *p = substract_vectors(O, cy->end1);
+	t_vec *p = substract_vectors(O, cy->pos);
+	t_vec *O_2d = gen_coord(O->x, O->y, 0);
+	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
+	double b = R_2d->x * p->x + R_2d->y *p->y;
+	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
+	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
+	double t = solve_quadratic(a, b, c);
+	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
+
+	// if ((intersection->z > 0 || intersection->z < -cy->h)
+	if ((intersection->z > cy->h / 2 || intersection->z < -cy->h / 2)
+		|| (intersection->y > cy->r || intersection->y < -cy->r)
+		|| (intersection->x > cy->r || intersection->x < -cy->r))
+	{
+		return (INFINITY);
+	}
+	return (t);
+}
 
 double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 {
@@ -634,7 +722,8 @@ double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray)
 	// double t3 = get_shaft_intersection_four(scene, cy, pos1, ray, pos2);
 	// double t3 = get_shaft_intersection_five(scene, cy, pos1, ray, pos2);
 	// double t3 = get_shaft_intersection_six(scene, cy, pos1, ray, pos2);
-	double t3 = get_shaft_intersection_seven(scene, cy, pos1, ray, pos2);
+	// double t3 = get_shaft_intersection_seven(scene, cy, pos1, ray, pos2);
+	double t3 = get_shaft_intersection_eight(scene, cy, pos1, ray, pos2);
 
 
 	t1 = INFINITY;
