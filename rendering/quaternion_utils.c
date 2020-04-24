@@ -125,16 +125,28 @@ t_qua *determine_quaternion(t_vec *orien, t_vec *base)
                 // half_sin * axis.y,
                 // half_sin * axis.z);
 
+	// if (base->z == -1 && orien->z == -1)
+		// printf("breaks?\n");
 
-	double dot = get_dot_product(base, orien_u);
+	t_vec *base_u = set_vec_len(base, 1);
+	// double dot = get_dot_product(base, orien_u);
+	double dot = get_dot_product(base_u, orien_u);
+	// if (dot == 1)
+		// printf("base and orien_u point in the same direction?\nbase: (%f, %f, %f)\norien_u: (%f, %f, %f)\n", base->x, base->y, base->z, orien_u->x, orien_u->y, orien_u->z);
 	// printf("%f\n", dot);
 	double angle = acos(dot);
-	t_vec *axis = get_cross_product(base, orien_u);
+
+
+	// t_vec *axis = get_cross_product(base, orien_u);
+	t_vec *axis = get_cross_product(base_u, orien_u);
+	// if (base->z == -1 && orien->z == -1)
+		// printf("axis (%f, %f, %f)\n", axis->x, axis->y, axis->z);
 	if (axis->x == 0 && axis->y == 0 && axis->z == 0)
 	{
-		if (base->x == orien_u->x && base->y == orien_u->y && base->z == orien_u->z)
+		if (base_u->x == orien_u->x && base_u->y == orien_u->y && base_u->z == orien_u->z)
 		{
 			//same direction, no need to turn
+			// printf("breaks in if statement?\n");
 			q->w = 1.0;
 		}
 		else
@@ -146,10 +158,18 @@ t_qua *determine_quaternion(t_vec *orien, t_vec *base)
 		return (q);
 	}
 	t_vec *axis_u = set_vec_len(axis, 1.0);
+	// if (base->z == -1 && orien->z == -1)
+		// printf("axis_u (%f, %f, %f)\n", axis_u->x, axis_u->y, axis_u->z);
 
 	// printf("axis: (%.10f, %.10f, %.10f)\n", axis->x, axis->y, axis->z);
 	// printf("axis_u: (%.10f, %.10f, %.10f)\n", axis_u->x, axis_u->y, axis_u->z);
 
+	// printf("angle: %f\n", angle);
+
+	//if angle is 0 ????
+
+	// if (angle == 0)
+		// printf("breaks?\ndot: %f\n", dot);
 
 	double half_sin = sin(0.5 * angle);
 	// printf("sin %f\n", half_sin);

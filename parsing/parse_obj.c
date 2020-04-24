@@ -1,4 +1,4 @@
-
+#include <stdio.h>//
 #include "object.h"
 #include "parse.h"
 #include "libft.h"
@@ -96,6 +96,7 @@ void	det_cy_data(t_cy **cy)
 	t_vec *mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
 	(*cy)->end2 = add_vectors((*cy)->pos, mov);
 	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
+	printf("get cylinder: \n");
 	(*cy)->q = determine_quaternion(gen_coord(0,0,-1), (*cy)->orien);
 }
 

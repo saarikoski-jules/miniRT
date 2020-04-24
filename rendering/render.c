@@ -596,7 +596,7 @@ double get_shaft_intersection_seven(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	// t_vec *R = set_vec_len(ray, 1);
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
-	printf("ray_u (%f, %f, %f)\nR (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z, R->x, R->y, R->z);
+	// printf("ray_u (%f, %f, %f)\nR (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z, R->x, R->y, R->z);
 
 	// t_vec *p = substract_vectors(O, cy->end1);
 	t_vec *p = substract_vectors(O, cy->pos);
@@ -637,15 +637,41 @@ t_vec *oriented_ray(t_vec *OC, t_vec *ray, t_cy *cy)
 	// get -OC + ray
 	// turn -OC + ray by quat
 	// calculate new ray from as OC + turned
-	t_vec *bottom = substract_vectors(ray, OC);
-	double bottom_len = det_len_vec(bottom);
-	t_vec *bottom_u = set_vec_len(bottom, 1);
+	// t_vec *OC = set_vec_len(OC, 1); //new camera position
+	t_vec *ray_u = set_vec_len(ray, 1); 
+
+
+	// pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
+	double t = pl_intersect(gen_coord(0,0,1), OC, gen_coord(0,0,0), ray_u);//NO
+
+	//point on the plane is point + t * ray
+	t_vec *inter = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->y);//current ray intersection with new object plane
+	t_vec *sect = add_vectors(OC, inter); //current ray intersection with new object plane
+
+	//bottom is from 0 to sect
+
+
+	// t_vec *bottom = substract_vectors(ray_u, OC_u);
+	double bottom_len = det_len_vec(sect);
+	t_vec *bottom_u = set_vec_len(sect, 1);
+
+
+
+	printf("bottom: (%f, %f, %f)\n", bottom_u->x, bottom_u->y, bottom_u->z);
 
 	t_vec *turned = orient_vector(cy->q, bottom_u);
+	// t_vec *turned = set_vec_len(cy->orien, bottom_len);
 	t_vec *turned_dist = set_vec_len(turned, bottom_len);
-	
+	t_vec *turned_dist_u = set_vec_len(turned, 1);
+	printf("turned bottom: (%f, %f, %f)\n", turned_dist_u->x, turned_dist_u->y, turned_dist_u->z);
+	// t_vec *ray_u = set_vec_len(ray, 1);
+
 	//should be -OC + turned_dist
-	R = add_vectors(turned_dist, OC); //not quite right
+	t_vec *R_tmp = add_vectors(OC, turned_dist); //not quite right
+	R = substract_vectors(gen_coord(0,0,0), R_tmp);
+	t_vec *R_u = set_vec_len(R, 1); //not quite right
+	printf("turned dist: (%f, %f, %f)\n", R_u->x, R_u->y, R_u->z);
+	printf("original ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
 	// R = substract_vectors(turned_dist, OC);
 
 	return (R);
@@ -662,29 +688,17 @@ double get_shaft_intersection_eight(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	O = add_vectors(cam_dist, cy->pos);
 
 
-// Orienting rays:
-	// get vector from camera to object (OC)
-	// get ray
-	// get vector from object centre to the direction its pointing to (-OC + ray) (this is just the orientation vector of the object) (no its not)
-	// turn the orientation vector of object by quat (dont need this)
-	// 
-
-
-	// get -OC + ray
-	// turn -OC + ray by quat
-	// calculate new ray from as OC + turned
-
-
-
-	// t_vec *R = set_vec_len(ray, 1);
 	
-	// t_vec *ray_u = set_vec_len(ray, 1);
-	// t_vec *R = orient_vector(cy->q, ray_u);
 	
-	t_vec *R = oriented_ray(OC, ray, cy);
 
 	// t_vec *p = substract_vectors(O, cy->end1);
 	t_vec *p = substract_vectors(O, cy->pos);
+
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *R = orient_vector(cy->q, ray_u);
+	// t_vec *R = oriented_ray(p, ray, cy);
+
+
 	t_vec *O_2d = gen_coord(O->x, O->y, 0);
 	t_vec *R_2d = gen_coord(R->x, R->y, 0);
 	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
@@ -701,6 +715,10 @@ double get_shaft_intersection_eight(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	{
 		return (INFINITY);
 	}
+	if (intersection->z > 2 && intersection->z < 3)
+		printf("R: (%f, %f, %f)\n", R->x, R->y, R->z);
+
+		// printf("intersection: (%f, %f, %f)\n", intersection->x, intersection->y, intersection->z);
 	return (t);
 }
 
@@ -839,6 +857,11 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	tmp = scene->obj;
 	if (tmp == NULL)
 		return (0);
+
+
+	// ray = gen_coord(0,1,-1);//
+
+
 	while(tmp != NULL)
 	{
 		//save the closest value to the camera and return that
@@ -958,11 +981,11 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	inc_y = 1.0/scene->res->res_y;
 	pos = (t_vec*)e_malloc(sizeof(t_vec));
 	pos->z = -1; //we'll need to find the real number for this
-	// pos->x = inc_x / 2;
-	// pos->y = inc_y / 2;
+	pos->x = inc_x / 2;
+	pos->y = inc_y / 2;
 
-	pos->x = 0;//
-	pos->y = 0;//
+	// pos->x = 0;//
+	// pos->y = 0;//
 
 	t_vec *base = gen_coord(0, 0, -1);
 	//determnie_quaternion(to this vector, from this vector)

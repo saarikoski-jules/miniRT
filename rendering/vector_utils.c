@@ -78,7 +78,9 @@ double get_dot_product(t_vec *vec1, t_vec *vec2)
 	sum = x + y + z;
 	// sum = sum1 + y;
 	// ft_p
-	// printf("sum: %f\n", sum);
+	
+	if (sum == 1)
+		printf("vec1: (%f, %f, %f)\nvec2 (%f, %f, %f)\n", vec1->x, vec1->y, vec1->z, vec2->x, vec2->y, vec2->z);
 
 	return (sum);
 }
