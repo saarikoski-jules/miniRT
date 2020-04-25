@@ -290,14 +290,16 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color)
 	t_color *amb_base = (t_color *)e_malloc(sizeof(t_color));
 	//calculate color ratio:
 	int r = scene->amb->color->r * scene->amb->ratio;
-	amb_base->r = color->r * r;
+	amb_base->r = sqrt(color->r * r);
 	// printf("final red: %d\n", amb_base->r);
 	int g = scene->amb->color->g * scene->amb->ratio;
-	amb_base->g = color->g * g;
+	amb_base->g = sqrt(color->g * g);
 	// printf("final green: %d\n", amb_base->g);
 	int b = scene->amb->color->b * scene->amb->ratio;
-	amb_base->b = color->b * b;
+	amb_base->b = sqrt(color->b * b);
 	// printf("final blue: %d\n", amb_base->b);
+
+	printf("final color: (%d, %d, %d)\n", amb_base->r, amb_base->g, amb_base->b);
 
 	//rotate through all the lights and calculate lights and shadows
 
