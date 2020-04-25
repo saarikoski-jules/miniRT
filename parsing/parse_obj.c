@@ -96,7 +96,7 @@ void	det_cy_data(t_cy **cy)
 	t_vec *mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
 	(*cy)->end2 = add_vectors((*cy)->pos, mov);
 	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
-	printf("get cylinder: \n");
+	// printf("get cylinder: \n");
 	(*cy)->q = determine_quaternion(gen_coord(0,0,-1), (*cy)->orien);
 }
 
@@ -116,7 +116,7 @@ t_cy	*get_cylinder(char *line, size_t *i)
 		error_exit_msg(C_INVALID_CY, E_INVALID_CY);
 	det_cy_data(&cylinder);
 
-	ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n\tq: %f, (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z, cylinder->q->w, cylinder->q->vector->x, cylinder->q->vector->y, cylinder->q->vector->z);
+	// ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n\tq: %f, (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z, cylinder->q->w, cylinder->q->vector->x, cylinder->q->vector->y, cylinder->q->vector->z);
 
 	return (cylinder);
 }
