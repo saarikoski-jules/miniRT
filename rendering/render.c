@@ -281,7 +281,120 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray)
 		return (-1.0);
 }
 
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color)
+int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
+{
+	//get point on object surface = cam->pos + d * ray
+	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	t_vec *point = add_vectors(scene->cam->pos, intersection);
+
+	//check if there is an intersection on the vector between light and all objects
+
+
+	double hit = -1;
+	double hit_tmp = -1;
+	t_obj *tmp_obj;
+	tmp_obj = scene->obj;
+	if (tmp_obj == NULL)
+		return (0);
+
+		// printf("hit pos: (%f, %f, %f)\n", point->x, point->y, point->z);
+		// printf("check intersections\n");
+		// printf("light pos (%f, %f, %f)\n\n", light->pos->x, light->pos->y, light->pos->z);
+	t_vec *sec = substract_vectors(point, light->pos);
+	while(tmp_obj != NULL)
+	{
+		// printf("whoah this is so slow..\n");
+		if (tmp_obj != NULL)
+		{
+			if (tmp_obj->id == sp)
+			{
+				hit_tmp = circle(scene, tmp_obj->type.sp, sec);
+				//fix when sphere is on top of me
+			}
+			else if (tmp_obj->id == sq)
+			{
+				hit_tmp = square(scene, tmp_obj->type.sq, sec);
+			}
+			else if (tmp_obj->id == tr)
+			{
+				hit_tmp = triangle(scene, tmp_obj->type.tr, sec);
+			}
+			else if (tmp_obj->id == cy)
+			{
+				hit_tmp = cylinder(scene, tmp_obj->type.cy, sec);
+			}
+			else if (tmp_obj->id == pl)
+			{
+				hit_tmp = plane_intersect(scene, tmp_obj->type.pl, sec);
+			}
+		}
+		if (hit_tmp > 0 && hit_tmp < 1)
+		{
+			// printf("\n\nINTERSECTION\n\n");
+			return (hit_tmp);
+		}
+		tmp_obj = tmp_obj->next;
+
+	}
+
+	//hit should be between 0 and 1 for there to be an intersection between point and light
+	// if ()
+	// printf("hit: %f\n", hit);
+		return (0);
+	//return 0 if there are no intersections
+}
+
+t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d)
+{
+	// printf("lights\n");
+	t_light *tmp;
+	int i;
+
+	tmp = scene->light;
+	i = 1;
+	int tmp_red = color->r;
+	int tmp_green = color->g;
+	int tmp_blue = color->b;
+	if (tmp == NULL)
+		return (color);
+	while(tmp != NULL)
+	{
+		if (tmp != NULL)
+		{
+			// printf("light: (%d, %d, %d)\n", tmp->color->r, tmp->color->g, tmp->color->b);
+
+			//if light hits object, i++
+			if (check_intersections(scene, ray, d, tmp))
+			{
+				// printf("past check intersections\n\n");
+				tmp_red += tmp->color->r;
+				tmp_green += tmp->color->g;
+				tmp_blue += tmp->color->b;
+				i++;
+			}
+			tmp = tmp->next;
+		}
+	}
+	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
+	if (i != 0)
+	{
+		//instead of this do a shadow darker/brighter calculation
+		final_color->r = tmp_red / i;
+		final_color->g = tmp_green / i;
+		final_color->b = tmp_blue / i;
+	}
+	else
+	{
+		final_color->r = tmp_red;
+		final_color->g = tmp_green;
+		final_color->b = tmp_blue;
+	}
+	// printf("number of lights: %d\n", i);
+	// printf("\n");
+	return (final_color);
+}
+
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d)
 {
 	// printf("color: (%d, %d, %d)\n", color->r, color->g, color->b);
 	// printf("Ambiance: ratio: %f, color: (%d, %d, %d)\n", scene->amb->ratio, scene->amb->color->r, scene->amb->color->g, scene->amb->color->b);
@@ -299,11 +412,14 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color)
 	amb_base->b = sqrt(color->b * b);
 	// printf("final blue: %d\n", amb_base->b);
 
-	printf("final color: (%d, %d, %d)\n", amb_base->r, amb_base->g, amb_base->b);
-
+	//make sure to validate color
+	
 	//rotate through all the lights and calculate lights and shadows
+	t_color *final_color = calculate_shading(scene, ray, color, d);
 
-	return (amb_base);
+	printf("final color: (%d, %d, %d)\n", final_color->r, final_color->g, final_color->b);
+	printf("color: (%d, %d, %d)\n\n", amb_base->r, amb_base->g, amb_base->b);
+	return (final_color);
 }
 
 int cast(t_rt_scene *scene, t_vec *ray)
@@ -349,7 +465,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		{
 			d = d_tmp;
 			//get position from d, ray and camera position. Trace vector from point to all cameras and calculate combined color including ambiance
-			t_color *rgb = calculate_final_color(scene, ray, tmp->color);
+			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d);
 			color = translate_color(rgb);
 		}
 		tmp = tmp->next;
