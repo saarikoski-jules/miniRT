@@ -344,7 +344,13 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	//return 0 if there are no intersections
 }
 
-t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d)
+t_vec *calculate_normal(t_vec *ray, t_vec *hit, t_obj *obj)
+{
+
+}
+
+
+t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj)
 {
 	// printf("lights\n");
 	t_light *tmp;
@@ -357,6 +363,11 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	int tmp_blue = color->b;
 	if (tmp == NULL)
 		return (color);
+	//calculate intersection here
+	t_vec *N = calculate_normal(ray, intersection, obj); //normal to the hit point
+	t_vec *R; //ray from hit point to light
+
+
 	while(tmp != NULL)
 	{
 		if (tmp != NULL)
@@ -366,10 +377,12 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			//if light hits object, i++
 			if (check_intersections(scene, ray, d, tmp))
 			{
+				
 				// printf("past check intersections\n\n");
-				tmp_red += tmp->color->r;
-				tmp_green += tmp->color->g;
-				tmp_blue += tmp->color->b;
+
+				tmp_red = 0.18 * light->ratio * light->color->r * get_dot_product(N * R);
+				// tmp_green += tmp->color->g;
+				// tmp_blue += tmp->color->b;
 				i++;
 			}
 			tmp = tmp->next;
@@ -394,7 +407,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	return (final_color);
 }
 
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d)
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj)
 {
 	// printf("color: (%d, %d, %d)\n", color->r, color->g, color->b);
 	// printf("Ambiance: ratio: %f, color: (%d, %d, %d)\n", scene->amb->ratio, scene->amb->color->r, scene->amb->color->g, scene->amb->color->b);
@@ -415,7 +428,7 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 	//make sure to validate color
 	
 	//rotate through all the lights and calculate lights and shadows
-	t_color *final_color = calculate_shading(scene, ray, color, d);
+	t_color *final_color = calculate_shading(scene, ray, color, d, obj);
 
 	printf("final color: (%d, %d, %d)\n", final_color->r, final_color->g, final_color->b);
 	printf("color: (%d, %d, %d)\n\n", amb_base->r, amb_base->g, amb_base->b);
