@@ -33,6 +33,7 @@ double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
 	double b = 2.0 * dot_dir_L;
 	double c = dot_L - r_pow;
 	double disc = pow(b, 2) - 4 * a * c;
+	double d = -1;
 	if (disc < 0)
 		return (-1.0);
 	if (disc > 0)
@@ -40,21 +41,22 @@ double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
 		double d1 = (((-b) - sqrt(disc)) / 2);
 		double d2 = (((-b) + sqrt(disc)) / 2);
 		if (d1 < d2)
-			return (d1);
+			d = d1;
 		else
-			return (d2);
+			d = d2;
 	}
 	else if (disc == 0)
 	{
-		double d = (-1 * b) / (2 * a); //should be the same as d = -0.5 * b
+		double d3 = (-1 * b) / (2 * a); //should be the same as d = -0.5 * b
 		//get normal
-		t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
-		t_vec *i_point = add_vectors(intersect, scene->cam->pos);
-		t_vec *n_o = substract_vectors(i_point, sp->pos);
-		*n = set_vec_len(n_o, 1);
-		return (d);
+		d = d3;
 	}
-	return (0);
+	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	t_vec *i_point = add_vectors(intersect, scene->cam->pos);
+	t_vec *n_o = substract_vectors(i_point, sp->pos);
+	*n = set_vec_len(n_o, 1);
+	return (d);
+	// return (0);
 }
 
 double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
@@ -304,68 +306,69 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 		return (-1.0);
 }
 
-// int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
-// {
-// 	//get point on object surface = cam->pos + d * ray
-// 	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z);
-// 	t_vec *point = add_vectors(scene->cam->pos, intersection);
+int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
+{
+	//get point on object surface = cam->pos + d * ray
+	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	t_vec *point = add_vectors(scene->cam->pos, intersection);
 
-// 	//check if there is an intersection on the vector between light and all objects
+	//check if there is an intersection on the vector between light and all objects
 
 
-// 	double hit = -1;
-// 	double hit_tmp = -1;
-// 	t_obj *tmp_obj;
-// 	tmp_obj = scene->obj;
-// 	if (tmp_obj == NULL)
-// 		return (0);
+	double hit = -1;
+	double hit_tmp = -1;
+	t_obj *tmp_obj;
+	tmp_obj = scene->obj;
+	if (tmp_obj == NULL)
+		return (0);
 
-// 		// printf("hit pos: (%f, %f, %f)\n", point->x, point->y, point->z);
-// 		// printf("check intersections\n");
-// 		// printf("light pos (%f, %f, %f)\n\n", light->pos->x, light->pos->y, light->pos->z);
-// 	t_vec *sec = substract_vectors(point, light->pos);
-// 	while(tmp_obj != NULL)
-// 	{
-// 		// printf("whoah this is so slow..\n");
-// 		if (tmp_obj != NULL)
-// 		{
-// 			if (tmp_obj->id == sp)
-// 			{
-// 				hit_tmp = circle(scene, tmp_obj->type.sp, sec);
-// 				//fix when sphere is on top of me
-// 			}
-// 			else if (tmp_obj->id == sq)
-// 			{
-// 				hit_tmp = square(scene, tmp_obj->type.sq, sec);
-// 			}
-// 			else if (tmp_obj->id == tr)
-// 			{
-// 				hit_tmp = triangle(scene, tmp_obj->type.tr, sec);
-// 			}
-// 			else if (tmp_obj->id == cy)
-// 			{
-// 				hit_tmp = cylinder(scene, tmp_obj->type.cy, sec);
-// 			}
-// 			else if (tmp_obj->id == pl)
-// 			{
-// 				hit_tmp = plane_intersect(scene, tmp_obj->type.pl, sec);
-// 			}
-// 		}
-// 		if (hit_tmp > 0 && hit_tmp < 1)
-// 		{
-// 			// printf("\n\nINTERSECTION\n\n");
-// 			return (hit_tmp);
-// 		}
-// 		tmp_obj = tmp_obj->next;
+		// printf("hit pos: (%f, %f, %f)\n", point->x, point->y, point->z);
+		// printf("check intersections\n");
+		// printf("light pos (%f, %f, %f)\n\n", light->pos->x, light->pos->y, light->pos->z);
+	t_vec *norm = gen_coord(0, 0, 0);
+	t_vec *sec = substract_vectors(point, light->pos);
+	while(tmp_obj != NULL)
+	{
+		// printf("whoah this is so slow..\n");
+		if (tmp_obj != NULL)
+		{
+			if (tmp_obj->id == sp)
+			{
+				hit_tmp = circle(scene, tmp_obj->type.sp, sec, &norm);
+				//fix when sphere is on top of me
+			}
+			else if (tmp_obj->id == sq)
+			{
+				hit_tmp = square(scene, tmp_obj->type.sq, sec, &norm);
+			}
+			else if (tmp_obj->id == tr)
+			{
+				hit_tmp = triangle(scene, tmp_obj->type.tr, sec, &norm);
+			}
+			else if (tmp_obj->id == cy)
+			{
+				hit_tmp = cylinder(scene, tmp_obj->type.cy, sec, &norm);
+			}
+			else if (tmp_obj->id == pl)
+			{
+				hit_tmp = plane_intersect(scene, tmp_obj->type.pl, sec, &norm);
+			}
+		}
+		if (hit_tmp > 0 && hit_tmp < 1)
+		{
+			printf("\n\nINTERSECTION\n\n");
+			return (hit_tmp);
+		}
+		tmp_obj = tmp_obj->next;
 
-// 	}
+	}
 
-// 	//hit should be between 0 and 1 for there to be an intersection between point and light
-// 	// if ()
-// 	// printf("hit: %f\n", hit);
-// 		return (0);
-// 	//return 0 if there are no intersections
-// }
+	//hit should be between 0 and 1 for there to be an intersection between point and light
+	// if ()
+	// printf("hit: %f\n", hit);
+		return (0);
+	//return 0 if there are no intersections
+}
 
 // t_vec *calculate_normal(t_vec *ray, t_vec *hit, t_obj *obj)
 // {
@@ -373,62 +376,68 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 // }
 
 
-// t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
-// {
-// 	// printf("lights\n");
-// 	t_light *tmp;
-// 	int i;
+t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
+{
 
-// 	tmp = scene->light;
-// 	i = 1;
-// 	int tmp_red = color->r;
-// 	int tmp_green = color->g;
-// 	int tmp_blue = color->b;
-// 	if (tmp == NULL)
-// 		return (color);
-// 	//calculate intersection here
-// 	t_vec *N = calculate_normal(ray, intersection, obj); //normal to the hit point
-// 	t_vec *R; //ray from hit point to light
+	// printf("lights\n");
+	t_light *tmp;
+	int i;
 
+	tmp = scene->light;
+	i = 1;
+	int tmp_red = color->r;
+	int tmp_green = color->g;
+	int tmp_blue = color->b;
+	if (tmp == NULL)
+		return (color);
+	//calculate intersection here
+	// t_vec *N = calculate_normal(ray, intersection, obj); //normal to the hit point
+	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	t_vec *point = add_vectors(intersect, scene->cam->pos);
+	t_vec *R;
 
-// 	while(tmp != NULL)
-// 	{
-// 		if (tmp != NULL)
-// 		{
-// 			// printf("light: (%d, %d, %d)\n", tmp->color->r, tmp->color->g, tmp->color->b);
+	while(tmp != NULL)
+	{
+		if (tmp != NULL)
+		{
+			R = substract_vectors(tmp->pos, point); //ray from hit point to light
+			// printf("light: (%d, %d, %d)\n", tmp->color->r, tmp->color->g, tmp->color->b);
 
-// 			//if light hits object, i++
-// 			if (check_intersections(scene, ray, d, tmp))
-// 			{
+			//if light hits object, i++
+			if (check_intersections(scene, ray, d, tmp) == 0)
+			{
 				
-// 				// printf("past check intersections\n\n");
+				// printf("past check intersections\n\n");
 
-// 				tmp_red = 0.18 * light->ratio * light->color->r * get_dot_product(N * R);
-// 				// tmp_green += tmp->color->g;
-// 				// tmp_blue += tmp->color->b;
-// 				i++;
-// 			}
-// 			tmp = tmp->next;
-// 		}
-// 	}
-// 	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
-// 	if (i != 0)
-// 	{
-// 		//instead of this do a shadow darker/brighter calculation
-// 		final_color->r = tmp_red / i;
-// 		final_color->g = tmp_green / i;
-// 		final_color->b = tmp_blue / i;
-// 	}
-// 	else
-// 	{
-// 		final_color->r = tmp_red;
-// 		final_color->g = tmp_green;
-// 		final_color->b = tmp_blue;
-// 	}
-// 	// printf("number of lights: %d\n", i);
-// 	// printf("\n");
-// 	return (final_color);
-// }
+				tmp_red = 0.18 * tmp->brightness * tmp->color->r * get_dot_product(n, R);
+				tmp_green = 0.18 * tmp->brightness * tmp->color->g * get_dot_product(n, R);
+				tmp_blue = 0.18 * tmp->brightness * tmp->color->b * get_dot_product(n, R);
+				// tmp_green += tmp->color->g;
+				// tmp_blue += tmp->color->b;
+				i++;
+			}
+			tmp = tmp->next;
+		}
+	}
+	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
+	// if (i != 0)
+	// {
+		//instead of this do a shadow darker/brighter calculation
+		// final_color->r = tmp_red / i;
+		// final_color->g = tmp_green / i;
+		// final_color->b = tmp_blue / i;
+	// }
+	// else
+	// {
+		final_color->r = sqrt(tmp_red * color->r);
+		final_color->g = sqrt(tmp_green * color->b);
+		final_color->b = sqrt(tmp_blue * color->g);
+	// }
+	// printf("number of lights: %d\n", i);
+	// printf("\n");
+	// return (final_color);
+	return (final_color);
+}
 
 t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
 {
@@ -451,12 +460,16 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 	//make sure to validate color
 	
 	//rotate through all the lights and calculate lights and shadows
-	// t_color *final_color = calculate_shading(scene, ray, color, d, obj, n);
 
 	// printf("final color: (%d, %d, %d)\n", final_color->r, final_color->g, final_color->b);
 	// printf("color: (%d, %d, %d)\n\n", amb_base->r, amb_base->g, amb_base->b);
 	// return (final_color);
-	return (amb_base); //make sure to validate color
+	//This should never happen
+
+	if (n->x == 0 && n->y == 0 && n->z == 0)
+		printf("0,0,0\n");
+	t_color *final_color = calculate_shading(scene, ray, amb_base, d, obj, n);
+	return (final_color); //make sure to validate color
 }
 
 int cast(t_rt_scene *scene, t_vec *ray)
