@@ -38,7 +38,7 @@ all:
 
 windows:
 	@make -C libft
-	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Iminilibx_linux -Lminilibx_linux $(MLX_FLAGS_W)
+	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx_linux/minilibx-master -Lmlx_linux/minilibx-master $(MLX_FLAGS_W)
 
 fclean:
 	@rm -rf a.out
