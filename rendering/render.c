@@ -154,13 +154,13 @@ double get_distance(t_vec *point1, t_vec *point2)
 	return (d);
 }
 
-double get_cy_endcap(t_vec *pos, t_vec *ray, t_rt_scene *scene, t_cy *cy)
+double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene, t_cy *cy)
 {
-	double t = pl_intersect(cy->orien, scene->cam->pos, pos, ray);
+	double t = pl_intersect(cy->orien, ray_start, pos, ray);
 	if (t == INFINITY) //if endcap is flat against the camera you won't see it
 		return (INFINITY);
 	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);
-	t_vec *intersect = add_vectors(scene->cam->pos, point);
+	t_vec *intersect = add_vectors(ray_start, point);
 
 	double d = get_distance(intersect, pos);
 	if (d < cy->dia / 2.0)
@@ -196,15 +196,17 @@ double solve_quadratic(double a, double b, double c)
 	return (t);
 }
 
-double get_shaft_intersection_eight(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_vec *ray, t_vec *pos2, t_vec **n)
+double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
 {
+	//start pos of ray, cy, n (normal)
+
 	t_vec *O;
-	t_vec *OC = substract_vectors(scene->cam->pos, cy->pos);
+	t_vec *OC = substract_vectors(ray_start, cy->pos); //start_pos, cy->pos
 	double OC_len = det_len_vec(OC);
 	t_vec *OC_u = set_vec_len(OC, 1);
 	t_vec *turn = orient_vector(cy->q, OC_u);
 	t_vec *cam_dist = set_vec_len(turn, OC_len);
-	O = add_vectors(cam_dist, cy->pos);
+	O = add_vectors(cam_dist, cy->pos); 
 
 	t_vec *p = substract_vectors(O, cy->pos);
 
@@ -226,44 +228,59 @@ double get_shaft_intersection_eight(t_rt_scene *scene, t_cy *cy, t_vec *pos1, t_
 	{
 		return (INFINITY);
 	}
-	t_vec *pos = gen_coord(intersection->z * cy->orien->x, intersection->z * cy->orien->y, intersection->z * cy->orien->z);
-	t_vec *pos_c = add_vectors(pos1, pos);
+	//This isn't working
+
+	// t_vec *pos = gen_coord(intersection->z * cy->orien->x, intersection->z * cy->orien->y, intersection->z * cy->orien->z);
+	// t_vec *pos_c = add_vectors(cy->pos, pos);
+	
+	//Get position along the orien of the cylinder
+	t_vec *pos_offset = set_vec_len(cy->orien, intersection->z);
+	// t_vec *pos = 
+	t_vec *pos_c = add_vectors(cy->pos, pos_offset);
+
 	t_vec *i_real = gen_coord(t * ray->x, t * ray->y, t * ray->z);
-	t_vec *i_real_c = add_vectors(i_real, scene->cam->pos);
+	t_vec *i_real_c = add_vectors(i_real, ray_start);
 	t_vec *normal = substract_vectors(i_real_c, pos_c);
-	*n = set_vec_len(normal, 1);
+	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
+	// printf("pos_c: (%f, %f, %f) i_real_c: (%f, %f, %f)\n", pos_c->x, pos_c->y, pos_c->z, i_real_c->x, i_real_c->y, i_real_c->z);
 	return (t);
 }
 
-double cylinder(t_rt_scene *scene, t_cy *cy, t_vec *ray, t_vec **n)
+double cylinder(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
 {
-	t_vec *mov = set_vec_len(cy->orien, cy->h / 2.0);
-	t_vec *pos1 = add_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
-	t_vec *pos2 = substract_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
+	// t_vec *mov = set_vec_len(cy->orien, cy->h / 2.0);
+	// t_vec *pos1 = add_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
+	// t_vec *pos2 = substract_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
 	
-	pos1 = cy->end1;
-	pos2 = cy->end2;
-	double t1 = get_cy_endcap(pos1, ray, scene, cy);
-	double t2 = get_cy_endcap(pos2, ray, scene, cy); //endcaps have stopped working?
-	double t3 = get_shaft_intersection_eight(scene, cy, pos1, ray, pos2, n);
+	// pos1 = cy->end1;
+	// pos2 = cy->end2;
+	double t1 = get_cy_endcap(cy->end1, ray_start, ray, scene, cy);
+	double t2 = get_cy_endcap(cy->end2, ray_start, ray, scene, cy); //endcaps have stopped working?
+	double t3 = get_shaft_intersection_eight(scene->cam, ray_start, ray, cy, n);
+	// double t3 = get_shaft_intersection_eight(scene, cy, pos1, ray, pos2, n);
 	// t1 = INFINITY;
 	// t2 = INFINITY;
 	// t3 = INFINITY;
 
 	double t = t1;
+	// *n = set_vec_len(substract_vectors(gen_coord(0,0,0), cy->orien), 1);
 	if (t2 < t)
 	{
 		t = t2;
+		// *n = set_vec_len(cy->orien, 1);
 	}
 	if (t3 < t)
 	{
 		t = t3;
-
 	}
 	else
 	{
+		if (t == t2)
+			*n = set_vec_len(cy->orien, 1);
+		else if (t == t1)
+			*n = set_vec_len(substract_vectors(gen_coord(0,0,0), cy->orien), 1);
+
 		//can also be the invert of this
-		*n = set_vec_len(cy->orien, 1);
 	}
 	return (t);
 }
@@ -309,7 +326,9 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 {
 	//get point on object surface = cam->pos + d * ray
-	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	// double epsilon = 0.000001; //to prevent objects intersecting with themselves
+	double epsilon = -0.000001; //to prevent objects intersecting with themselves
+	t_vec *intersection = gen_coord(d * ray->x - epsilon, d * ray->y - epsilon, d * ray->z - epsilon); //wont work for everything, make sure to move intersection point a little towards the light
 	t_vec *point = add_vectors(scene->cam->pos, intersection);
 
 	//check if there is an intersection on the vector between light and all objects
@@ -327,6 +346,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		// printf("light pos (%f, %f, %f)\n\n", light->pos->x, light->pos->y, light->pos->z);
 	t_vec *norm = gen_coord(0, 0, 0);
 	t_vec *sec = substract_vectors(point, light->pos);
+	t_vec *sec_u = set_vec_len(sec, 1);
+	double sec_len = det_len_vec(sec); //sec is vector from point to light
 	while(tmp_obj != NULL)
 	{
 		// printf("whoah this is so slow..\n");
@@ -347,17 +368,24 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 			}
 			else if (tmp_obj->id == cy)
 			{
-				hit_tmp = cylinder(scene, tmp_obj->type.cy, sec, &norm);
+				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
+				hit_tmp = cylinder(scene, point, sec_u, tmp_obj->type.cy, &norm);
+
 			}
 			else if (tmp_obj->id == pl)
 			{
 				hit_tmp = plane_intersect(scene, tmp_obj->type.pl, sec, &norm);
 			}
 		}
-		if (hit_tmp > 0 && hit_tmp < 1)
+		// if (hit_tmp > 0 && hit_tmp < 1) //is less than distance to light
+
+		//Intersects itself
+		if (hit_tmp > 0 && hit_tmp < sec_len)
 		{
-			printf("\n\nINTERSECTION\n\n");
-			return (hit_tmp);
+			// printf("\n\nINTERSECTION hit_tmp: %f, sec len: %f\n\n", hit_tmp, sec_len);
+			// return (hit_tmp);
+			// return (1);
+			return (0);
 		}
 		tmp_obj = tmp_obj->next;
 
@@ -395,23 +423,38 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
 	t_vec *point = add_vectors(intersect, scene->cam->pos);
 	t_vec *R;
+	t_vec *R_u;
+	double dot;
 
 	while(tmp != NULL)
 	{
 		if (tmp != NULL)
 		{
 			R = substract_vectors(tmp->pos, point); //ray from hit point to light
+			R_u = set_vec_len(R, 1); //ray from hit point to light
+			
 			// printf("light: (%d, %d, %d)\n", tmp->color->r, tmp->color->g, tmp->color->b);
 
 			//if light hits object, i++
-			if (check_intersections(scene, ray, d, tmp) == 0)
+			if (check_intersections(scene, ray, d, tmp))
 			{
-				
+				printf("Calculate shadow\n");
+			}
+			else
+			{
+				//Calculate bright spot
+				dot = get_dot_product(n, R_u);
+				// printf("Ray: (%f, %f, %f)\nnormal: (%f, %f, %f)\n", R->x, R->y, R->z, n->x, n->y, n->z);
+				// printf("dot: %f\n", dot);
 				// printf("past check intersections\n\n");
+				//Do this for the color generated by light and its distance
+				double brightness_ratio = 0.5; //how close the light is??
+				if (dot < 0)
+					dot = 0;
 
-				tmp_red = 0.18 * tmp->brightness * tmp->color->r * get_dot_product(n, R);
-				tmp_green = 0.18 * tmp->brightness * tmp->color->g * get_dot_product(n, R);
-				tmp_blue = 0.18 * tmp->brightness * tmp->color->b * get_dot_product(n, R);
+				tmp_red += brightness_ratio * tmp->brightness * tmp->color->r * dot; //instead of one use 0.18 or equivalent
+				tmp_green += brightness_ratio * tmp->brightness * tmp->color->g * dot;
+				tmp_blue += brightness_ratio * tmp->brightness * tmp->color->b * dot;
 				// tmp_green += tmp->color->g;
 				// tmp_blue += tmp->color->b;
 				i++;
@@ -429,9 +472,12 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	// }
 	// else
 	// {
-		final_color->r = sqrt(tmp_red * color->r);
-		final_color->g = sqrt(tmp_green * color->b);
-		final_color->b = sqrt(tmp_blue * color->g);
+		final_color->r = tmp_red / 2;
+		final_color->g = tmp_green / 2;
+		final_color->b = tmp_blue / 2; //this won't work for getting the correct color
+	
+	// printf("tmp: (%d, %d, %d)\ncolor (%d, %d, %d)\n", tmp_red, tmp_green, tmp_blue, color->r, color->g, color->b);
+	// printf("final: (%d, %d, %d)\n", final_color->r, final_color->g, final_color->b);
 	// }
 	// printf("number of lights: %d\n", i);
 	// printf("\n");
@@ -469,7 +515,8 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 	if (n->x == 0 && n->y == 0 && n->z == 0)
 		printf("0,0,0\n");
 	t_color *final_color = calculate_shading(scene, ray, amb_base, d, obj, n);
-	return (final_color); //make sure to validate color
+	// return (final_color); //make sure to validate color
+	return (color);
 }
 
 int cast(t_rt_scene *scene, t_vec *ray)
@@ -505,7 +552,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			}
 			else if (tmp->id == cy)
 			{
-				d_tmp = cylinder(scene, tmp->type.cy, ray, &n);
+				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
+				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
 			}
 			else if (tmp->id == pl)
 			{
