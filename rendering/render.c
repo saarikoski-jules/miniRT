@@ -9,7 +9,7 @@
 #include <parse.h>
 
 #define DIST 1 //choose: determine camera distance from grid
-#define FOV_VERT 60 //choose: determine vertical fov
+#define FOV_VERT 90 //choose: determine vertical fov
 //choose: default rotation of camera, should be changeable.
 
 
@@ -24,10 +24,14 @@
 
 double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
 {
+	//sphere seems to be a bit too low compared to the square in some cases
+
+	t_vec *ray_u = set_vec_len(ray, 1);
+
 	t_vec *L = substract_vectors(scene->cam->pos, sp->pos);
 	double dot_L = get_dot_product(L, L);
 	double r_pow = pow(sp->dia / 2.0, 2);
-	t_vec *dir_u = set_vec_len(ray, 1.0);
+	t_vec *dir_u = set_vec_len(ray_u, 1.0);
 	double dot_dir_L = get_dot_product(dir_u, L);
 	double a = 1.0;
 	double b = 2.0 * dot_dir_L;
@@ -51,7 +55,7 @@ double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
 		//get normal
 		d = d3;
 	}
-	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
+	t_vec *intersect = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z);
 	t_vec *i_point = add_vectors(intersect, scene->cam->pos);
 	t_vec *n_o = substract_vectors(i_point, sp->pos);
 	*n = set_vec_len(n_o, 1);
@@ -68,8 +72,10 @@ double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
 	double pln; //pln == 0, ray is inside line
 	double t;
 
+	t_vec *ray_u = set_vec_len(ray, 1); //
 	v_n = set_vec_len(orien, 1); //unnecessary?
-	ln = get_dot_product(ray, v_n); //which one??
+	ln = get_dot_product(ray_u, v_n); //which one??
+	// ln = get_dot_product(ray, v_n); //which one??
 	if (ln == 0.0)
 		return (INFINITY);//should i use infinity or -1
 	v_pl = substract_vectors(pl_pos, cam_pos);
@@ -113,11 +119,14 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n)
 	t = pl_intersect(sq->orien, scene->cam->pos, sq->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
-	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *point = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);//account for different camera pos
+	// t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
+
 
 	t_vec *intersect = add_vectors(scene->cam->pos, point);
 
-	t_vec *edge1 = substract_vectors(sq->point2, sq->point1); 
+	t_vec *edge1 = substract_vectors(sq->point2, sq->point1);
 	t_vec *edge2 = substract_vectors(sq->point3, sq->point2); 
 	t_vec *edge3 = substract_vectors(sq->point4, sq->point3); 
 	t_vec *edge4 = substract_vectors(sq->point1, sq->point4);
@@ -159,7 +168,8 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 	double t = pl_intersect(cy->orien, ray_start, pos, ray);
 	if (t == INFINITY) //if endcap is flat against the camera you won't see it
 		return (INFINITY);
-	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *point = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);
 	t_vec *intersect = add_vectors(ray_start, point);
 
 	double d = get_distance(intersect, pos);
@@ -173,6 +183,7 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 
 double solve_quadratic(double a, double b, double c)
 {
+	// printf("b: %f\n", b);
 	double disc_end = a * c;
 	double disc = pow(b, 2) - disc_end;
 	double t;
@@ -193,11 +204,14 @@ double solve_quadratic(double a, double b, double c)
 	{
 		t = -b / a;
 	}
+	// if (t > 0)
+		// printf("t: %f\n", t);
 	return (t);
 }
 
 double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
 {
+	//cylinder distance calculation is off. Cylinder shaft seems to be a little bit too far away
 	//start pos of ray, cy, n (normal)
 
 	t_vec *O;
@@ -210,14 +224,24 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 
 	t_vec *p = substract_vectors(O, cy->pos);
 
+	// t_vec *p = cy->pos;
+
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
 
 	t_vec *O_2d = gen_coord(O->x, O->y, 0);
 	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+	
+	
+	// if (det_len_vec(R) != 1.0)
+	// {
+		// printf("vector length: %.15f\n", det_len_vec(R));
+	// }
+	
 	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
 	double b = R_2d->x * p->x + R_2d->y *p->y;
 	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
+
 	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
 	double t = solve_quadratic(a, b, c);
 	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
@@ -298,7 +322,8 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 	if (t == INFINITY)
 		return (INFINITY);
 
-	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z); //account for different camera position
+	t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *point = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z); //account for different camera position
 	t_vec *intersect = add_vectors(scene->cam->pos, point);
 	t_vec *edge1 = substract_vectors(tr->point2, tr->point1); 
 	t_vec *edge2 = substract_vectors(tr->point3, tr->point2); 
@@ -317,7 +342,7 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 		&& get_dot_product(normal_u, cross3) > 0)
 	{
 		*n = normal_u;
-		return (t);
+		return (t); //t is always 10. It should not be? Calculate distance to current intersection point
 	}
 	else
 		return (-1.0);
@@ -541,23 +566,28 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 				d_tmp = circle(scene, tmp->type.sp, ray, &n);
 				//fix when sphere is on top of me
+				// printf("sp\n");
 			}
 			else if (tmp->id == sq)
 			{
 				d_tmp = square(scene, tmp->type.sq, ray, &n);
+				// printf("sq\n");
 			}
 			else if (tmp->id == tr)
 			{
 				d_tmp = triangle(scene, tmp->type.tr, ray, &n);
+				// printf("tr\n");
 			}
 			else if (tmp->id == cy)
 			{
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
 				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
+				// printf("cy\n");
 			}
 			else if (tmp->id == pl)
 			{
 				d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
+				// printf("pl\n");
 			}
 		}
 
@@ -565,12 +595,14 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		{
 			d = d_tmp;
 			//get position from d, ray and camera position. Trace vector from point to all cameras and calculate combined color including ambiance
-			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);
-			// t_color *rgb = tmp->color;
+			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
+			// printf("dist: %f\n", d);
+			// t_color *rgb = tmp->color;
 		}
 		tmp = tmp->next;
 	}
+	// printf("\n");
 	return (color);
 }
 
