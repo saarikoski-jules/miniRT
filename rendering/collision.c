@@ -3,14 +3,14 @@
 #include "render.h"
 #include <math.h>
 
-
-double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
+// double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
+double circle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec **n)
 {
 	//sphere seems to be a bit too low compared to the square in some cases
 
 	t_vec *ray_u = set_vec_len(ray, 1);
 
-	t_vec *L = substract_vectors(scene->cam->pos, sp->pos);
+	t_vec *L = substract_vectors(ray_start, sp->pos);
 	double dot_L = get_dot_product(L, L);
 	double r_pow = pow(sp->dia / 2.0, 2);
 	t_vec *dir_u = set_vec_len(ray_u, 1.0);
@@ -38,7 +38,7 @@ double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
 		d = d3;
 	}
 	t_vec *intersect = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z);
-	t_vec *i_point = add_vectors(intersect, scene->cam->pos);
+	t_vec *i_point = add_vectors(intersect, ray_start);
 	t_vec *n_o = substract_vectors(i_point, sp->pos);
 	*n = set_vec_len(n_o, 1);
 	return (d);
@@ -68,26 +68,28 @@ double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
 	return (t);
 }
 
-double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n)
+// double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n)
+double plane_intersect(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_pl *pl, t_vec **n)
 {
 	double t;
 	double d;
 	t_vec *v_point;
 	t_vec *v_intersect;
 
-	t = pl_intersect(pl->orien, scene->cam->pos, pl->pos, ray);
+	t = pl_intersect(pl->orien, ray_start, pl->pos, ray);
 	if (t == INFINITY)
 		return (INFINITY);
 	//point of intersection
 	v_point = gen_coord(ray->x * t, ray->y * t, ray->z *t); //account for different camera position
-	v_intersect = add_vectors(scene->cam->pos, v_point); //accounting for camera position
+	v_intersect = add_vectors(ray_start, v_point); //accounting for camera position
 	// d = det_len_vec(v_intersect); //this breaks
 	//this should actually be distance
 	*n = set_vec_len(pl->orien, 1);
 	return (t); //t should be the actual distance as it's calculated with a unit vector
 }
 
-double square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n)
+// double square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n)
+double square(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sq *sq, t_vec **n)
 {
 	t_vec *orien_u;
 	double t;
@@ -98,7 +100,7 @@ double square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n)
 	orien_u = set_vec_len(normal, 1.0);
 	// orien_u = set_vec_len(sq->orien, 1); // breaks when the same with camera orientation
 	//t may not be distance, is this calculated with unit vector
-	t = pl_intersect(sq->orien, scene->cam->pos, sq->point1, ray);
+	t = pl_intersect(sq->orien, ray_start, sq->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
 	t_vec *ray_u = set_vec_len(ray, 1);
@@ -295,7 +297,8 @@ double cylinder(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec
 	return (t);
 }
 
-double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
+// double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
+double triangle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_tr *tr, t_vec **n)
 {
 	//calculate normal
 	//is the positioning of my triangles strange?
@@ -304,13 +307,13 @@ double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
 	t_vec *normal = get_cross_product(BA, CA);
 	t_vec *normal_u = set_vec_len(normal, 1.0);
 
-	double t = pl_intersect(normal_u, scene->cam->pos, tr->point1, ray);
+	double t = pl_intersect(normal_u, ray_start, tr->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
 
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *point = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z); //account for different camera position
-	t_vec *intersect = add_vectors(scene->cam->pos, point);
+	t_vec *intersect = add_vectors(ray_start, point);
 	t_vec *edge1 = substract_vectors(tr->point2, tr->point1); 
 	t_vec *edge2 = substract_vectors(tr->point3, tr->point2); 
 	t_vec *edge3 = substract_vectors(tr->point1, tr->point3);

@@ -11,8 +11,9 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 {
 	//get point on object surface = cam->pos + d * ray
 	// double epsilon = 0.000001; //to prevent objects intersecting with themselves
-	double epsilon = -0.000001; //to prevent objects intersecting with themselves
-	t_vec *intersection = gen_coord(d * ray->x - epsilon, d * ray->y - epsilon, d * ray->z - epsilon); //wont work for everything, make sure to move intersection point a little towards the light
+	// double epsilon = -0.000001; //to prevent objects intersecting with themselves
+	// t_vec *intersection = gen_coord(d * ray->x - epsilon, d * ray->y - epsilon, d * ray->z - epsilon); //wont work for everything, make sure to move intersection point a little towards the light
+	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z); //wont work for everything, make sure to move intersection point a little towards the light
 	t_vec *point = add_vectors(scene->cam->pos, intersection);
 
 	//check if there is an intersection on the vector between light and all objects
@@ -29,7 +30,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		// printf("check intersections\n");
 		// printf("light pos (%f, %f, %f)\n\n", light->pos->x, light->pos->y, light->pos->z);
 	t_vec *norm = gen_coord(0, 0, 0);
-	t_vec *sec = substract_vectors(point, light->pos);
+	t_vec *sec = substract_vectors(light->pos, point);
 	t_vec *sec_u = set_vec_len(sec, 1);
 	double sec_len = det_len_vec(sec); //sec is vector from point to light
 	while(tmp_obj != NULL)
@@ -39,17 +40,24 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		{
 			if (tmp_obj->id == sp)
 			{
-				hit_tmp = circle(scene, tmp_obj->type.sp, sec, &norm);
+				// hit_tmp = circle(scene, point, tmp_obj->type.sp, sec, &norm);
+                // printf("hit: %f\n", hit_tmp );
 				//fix when sphere is on top of me
-			}
+				hit_tmp = circle(scene, point, sec_u, tmp_obj->type.sp, &norm);
+			
+            }
 			else if (tmp_obj->id == sq)
 			{
-				hit_tmp = square(scene, tmp_obj->type.sq, sec, &norm);
-			}
+				// hit_tmp = square(scene, point, tmp_obj->type.sq, sec, &norm);
+				hit_tmp = square(scene, point, sec_u, tmp_obj->type.sq, &norm);
+			
+            }
 			else if (tmp_obj->id == tr)
 			{
-				hit_tmp = triangle(scene, tmp_obj->type.tr, sec, &norm);
-			}
+				// hit_tmp = triangle(scene, point, tmp_obj->type.tr, sec, &norm);
+				hit_tmp = triangle(scene, point, sec_u, tmp_obj->type.tr, &norm);
+			
+            }
 			else if (tmp_obj->id == cy)
 			{
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
@@ -58,18 +66,21 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 			}
 			else if (tmp_obj->id == pl)
 			{
-				hit_tmp = plane_intersect(scene, tmp_obj->type.pl, sec, &norm);
-			}
+				hit_tmp = plane_intersect(scene, point, sec_u, tmp_obj->type.pl, &norm);
+
+        	}
 		}
 		// if (hit_tmp > 0 && hit_tmp < 1) //is less than distance to light
 
 		//Intersects itself
+    
+		// if (hit_tmp > 0 && hit_tmp < 1)
 		if (hit_tmp > 0 && hit_tmp < sec_len)
 		{
 			// printf("\n\nINTERSECTION hit_tmp: %f, sec len: %f\n\n", hit_tmp, sec_len);
 			// return (hit_tmp);
-			// return (1);
 			return (1);
+			// return (0);
 		}
 		tmp_obj = tmp_obj->next;
 
@@ -105,6 +116,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	t_vec *R_u;
 	double dot;
 
+	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
 	//Get combined color effect on the pixel from all the lights
 	while(tmp != NULL)
 	{
@@ -118,7 +130,11 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			//if light hits object, i++
 			if (check_intersections(scene, ray, d, tmp))
 			{
-				printf("Calculate shadow\n");
+				// printf("Calculate shadow\n");
+                final_color->r = 0;
+                final_color->g = 0;
+                final_color->b = 255;
+                return (final_color);
 			}
 			else
 			{
@@ -154,7 +170,6 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	// }
 	// else
 	// {
-	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
 	int light_r = tmp_red / i;
 	int light_g = tmp_green / i;
 	int light_b = tmp_blue / i;

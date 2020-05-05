@@ -20,6 +20,7 @@
 //TODO: cylinders break when seen more from the direction of the endcaps
 //TODO: cylinder is rendered slightly wider than it's meant to
 //TODO: what happens when any object is on top of me
+//TODO: make sure any invalid arguments aren't accepted. Make sure --saved is the only extra thing that works
 
 
 
@@ -48,30 +49,41 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		{
 			if (tmp->id == sp)
 			{
-				d_tmp = circle(scene, tmp->type.sp, ray, &n);
+
+				// d_tmp = circle(scene, tmp->type.sp, ray, &n);
+				d_tmp = circle(scene, scene->cam->pos, ray, tmp->type.sp, &n);
+
 				//fix when sphere is on top of me
 				// printf("sp\n");
 			}
 			else if (tmp->id == sq)
 			{
-				d_tmp = square(scene, tmp->type.sq, ray, &n);
+				// d_tmp = square(scene, tmp->type.sq, ray, &n);
+				d_tmp = square(scene, scene->cam->pos, ray, tmp->type.sq, &n);
+
 				// printf("sq\n");
 			}
 			else if (tmp->id == tr)
 			{
-				d_tmp = triangle(scene, tmp->type.tr, ray, &n);
+				// d_tmp = triangle(scene, tmp->type.tr, ray, &n);
 				// printf("tr\n");
+				d_tmp = triangle(scene, scene->cam->pos, ray, tmp->type.tr, &n);
+			
 			}
 			else if (tmp->id == cy)
 			{
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
-				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
+				// d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
 				// printf("cy\n");
+				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
+
 			}
 			else if (tmp->id == pl)
 			{
-				d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
+				// d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
 				// printf("pl\n");
+				d_tmp = plane_intersect(scene, scene->cam->pos, ray, tmp->type.pl, &n);
+			
 			}
 		}
 
