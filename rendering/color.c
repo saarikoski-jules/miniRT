@@ -13,7 +13,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	// double epsilon = 0.000001; //to prevent objects intersecting with themselves
 	// double epsilon = -0.000001; //to prevent objects intersecting with themselves
 	// t_vec *intersection = gen_coord(d * ray->x - epsilon, d * ray->y - epsilon, d * ray->z - epsilon); //wont work for everything, make sure to move intersection point a little towards the light
-	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z); //wont work for everything, make sure to move intersection point a little towards the light
+    t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *intersection = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z); //wont work for everything, make sure to move intersection point a little towards the light
 	t_vec *point = add_vectors(scene->cam->pos, intersection);
 
 	//check if there is an intersection on the vector between light and all objects
@@ -33,6 +34,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	t_vec *sec = substract_vectors(light->pos, point);
 	t_vec *sec_u = set_vec_len(sec, 1);
 	double sec_len = det_len_vec(sec); //sec is vector from point to light
+    t_vec *epsilon = set_vec_len(sec, 0.00000001); //to not intersect self
+    t_vec *point_new = add_vectors(point, epsilon); //to not intersect self
 	while(tmp_obj != NULL)
 	{
 		// printf("whoah this is so slow..\n");
@@ -43,30 +46,35 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 				// hit_tmp = circle(scene, point, tmp_obj->type.sp, sec, &norm);
                 // printf("hit: %f\n", hit_tmp );
 				//fix when sphere is on top of me
-				hit_tmp = circle(scene, point, sec_u, tmp_obj->type.sp, &norm);
+				// hit_tmp = circle(scene, point, sec_u, tmp_obj->type.sp, &norm);
+				hit_tmp = circle(scene, point_new, sec_u, tmp_obj->type.sp, &norm); //to not intersect self
 			
             }
 			else if (tmp_obj->id == sq)
 			{
 				// hit_tmp = square(scene, point, tmp_obj->type.sq, sec, &norm);
-				hit_tmp = square(scene, point, sec_u, tmp_obj->type.sq, &norm);
+				// hit_tmp = square(scene, point, sec_u, tmp_obj->type.sq, &norm);
+				hit_tmp = square(scene, point_new, sec_u, tmp_obj->type.sq, &norm);
 			
             }
 			else if (tmp_obj->id == tr)
 			{
 				// hit_tmp = triangle(scene, point, tmp_obj->type.tr, sec, &norm);
-				hit_tmp = triangle(scene, point, sec_u, tmp_obj->type.tr, &norm);
+				// hit_tmp = triangle(scene, point, sec_u, tmp_obj->type.tr, &norm);
+				hit_tmp = triangle(scene, point_new, sec_u, tmp_obj->type.tr, &norm);
 			
             }
 			else if (tmp_obj->id == cy)
 			{
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
-				hit_tmp = cylinder(scene, point, sec_u, tmp_obj->type.cy, &norm);
+				// hit_tmp = cylinder(scene, point, sec_u, tmp_obj->type.cy, &norm);
+				hit_tmp = cylinder(scene, point_new, sec_u, tmp_obj->type.cy, &norm);
 
 			}
 			else if (tmp_obj->id == pl)
 			{
-				hit_tmp = plane_intersect(scene, point, sec_u, tmp_obj->type.pl, &norm);
+				// hit_tmp = plane_intersect(scene, point, sec_u, tmp_obj->type.pl, &norm);
+				hit_tmp = plane_intersect(scene, point_new, sec_u, tmp_obj->type.pl, &norm); //to not intersect self
 
         	}
 		}
@@ -77,6 +85,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		// if (hit_tmp > 0 && hit_tmp < 1)
 		if (hit_tmp > 0 && hit_tmp < sec_len)
 		{
+            // printf("hit obj: %d\n", tmp_obj->id); //ALWAYS INTERSECTS ITSELF. Move intersect point towards light by very little
 			// printf("\n\nINTERSECTION hit_tmp: %f, sec len: %f\n\n", hit_tmp, sec_len);
 			// return (hit_tmp);
 			return (1);
@@ -131,9 +140,9 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			if (check_intersections(scene, ray, d, tmp))
 			{
 				// printf("Calculate shadow\n");
-                final_color->r = 0;
+                final_color->r = 255;
                 final_color->g = 0;
-                final_color->b = 255;
+                final_color->b = 0;
                 return (final_color);
 			}
 			else

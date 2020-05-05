@@ -11,6 +11,8 @@ double circle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec *
 	t_vec *ray_u = set_vec_len(ray, 1);
 
 	t_vec *L = substract_vectors(ray_start, sp->pos);
+    if (det_len_vec(L) < sp->dia / 2)
+        return (0.0001); //You're inside the circle
 	double dot_L = get_dot_product(L, L);
 	double r_pow = pow(sp->dia / 2.0, 2);
 	t_vec *dir_u = set_vec_len(ray_u, 1.0);
@@ -198,7 +200,7 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	//cylinder distance calculation is off. Cylinder shaft seems to be a little bit too far away
 	//start pos of ray, cy, n (normal)
 
-	t_vec *O;
+	t_vec *O; //check if vector starts inside the cylinder
 	t_vec *OC = substract_vectors(ray_start, cy->pos); //start_pos, cy->pos
 	double OC_len = det_len_vec(OC);
 	t_vec *OC_u = set_vec_len(OC, 1);
@@ -209,6 +211,14 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *p = substract_vectors(O, cy->pos);
 
 	// t_vec *p = cy->pos;
+
+
+	// if ((p->z > cy->h / 2 || p->z < -cy->h / 2)
+		// && (p->y > cy->r || p->y < -cy->r)
+		// && (p->x > cy->r || p->x < -cy->r))
+    // {
+        // return (0.0001); //check if ray starts inside object
+    // }
 
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
