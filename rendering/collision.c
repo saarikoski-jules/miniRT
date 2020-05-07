@@ -1,3 +1,4 @@
+#include <stdio.h>//
 #include "vec.h"
 #include "rt.h"
 #include "render.h"
@@ -11,8 +12,8 @@ double circle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec *
 	t_vec *ray_u = set_vec_len(ray, 1);
 
 	t_vec *L = substract_vectors(ray_start, sp->pos);
-    if (det_len_vec(L) < sp->dia / 2)
-        return (0.0001); //You're inside the circle
+    if (det_len_vec(L) <= sp->dia / 2)
+        return (-10); //You're inside the circle
 	double dot_L = get_dot_product(L, L);
 	double r_pow = pow(sp->dia / 2.0, 2);
 	t_vec *dir_u = set_vec_len(ray_u, 1.0);
@@ -197,40 +198,25 @@ double solve_quadratic(double a, double b, double c)
 
 double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
 {
-	//cylinder distance calculation is off. Cylinder shaft seems to be a little bit too far away
-	//start pos of ray, cy, n (normal)
 
 	t_vec *O; //check if vector starts inside the cylinder
-	t_vec *OC = substract_vectors(ray_start, cy->pos); //start_pos, cy->pos
-	double OC_len = det_len_vec(OC);
-	t_vec *OC_u = set_vec_len(OC, 1);
-	t_vec *turn = orient_vector(cy->q, OC_u);
-	t_vec *cam_dist = set_vec_len(turn, OC_len);
-	O = add_vectors(cam_dist, cy->pos); 
+	t_vec *OC = substract_vectors(ray_start, cy->pos); //vector from vector start point to cylinder centre
+	double OC_len = det_len_vec(OC); //distance from vector start to cylinder centre
+    // if (OC_len)
+	t_vec *OC_u = set_vec_len(OC, 1); //unit vector OC
+	t_vec *turn = orient_vector(cy->q, OC_u); //turned unit vector
+	t_vec *p = set_vec_len(turn, OC_len); // turned unit vector from ray start point to new cylinder position. Used to be cam_dist
+/*
+	// O = add_vectors(cam_dist, cy->pos); // move turned vector by  
 
-	t_vec *p = substract_vectors(O, cy->pos);
-
-	// t_vec *p = cy->pos;
-
-
-	// if ((p->z > cy->h / 2 || p->z < -cy->h / 2)
-		// && (p->y > cy->r || p->y < -cy->r)
-		// && (p->x > cy->r || p->x < -cy->r))
-    // {
-        // return (0.0001); //check if ray starts inside object
-    // }
+	// t_vec *p = substract_vectors(O, cy->pos);
+*/
 
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
 
 	t_vec *O_2d = gen_coord(O->x, O->y, 0);
 	t_vec *R_2d = gen_coord(R->x, R->y, 0);
-	
-	
-	// if (det_len_vec(R) != 1.0)
-	// {
-		// printf("vector length: %.15f\n", det_len_vec(R));
-	// }
 	
 	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
 	double b = R_2d->x * p->x + R_2d->y *p->y;
@@ -246,25 +232,26 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	{
 		return (INFINITY);
 	}
-	//This isn't working
-
-	// t_vec *pos = gen_coord(intersection->z * cy->orien->x, intersection->z * cy->orien->y, intersection->z * cy->orien->z);
-	// t_vec *pos_c = add_vectors(cy->pos, pos);
-	
 	//Get position along the orien of the cylinder
 	t_vec *pos_offset = set_vec_len(cy->orien, intersection->z); //works if this is unit vecs
-	// t_vec *pos = 
-	// t_vec *pos = add_vectors(cy->pos, pos_offset);
 	t_vec *pos_c = substract_vectors(cy->pos, pos_offset);
-	// t_vec *pos_c = add_vectors(ray_start, pos); //breaks somehow..?
 
 	t_vec *i_real = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);
 	t_vec *i_real_c = add_vectors(i_real, ray_start);
 	t_vec *normal = substract_vectors(i_real_c, pos_c);
-	// printf("position on axis: (%f, %f, %f)\n", pos_c->x, pos_c->y, pos_c->z);
-	// printf("intersection point: (%f, %f, %f)\n\n", i_real_c->x, i_real_c->y, i_real_c->z);
 	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
-	// printf("pos_c: (%f, %f, %f) i_real_c: (%f, %f, %f)\n", pos_c->x, pos_c->y, pos_c->z, i_real_c->x, i_real_c->y, i_real_c->z);
+	if ((p->z <= cy->h / 2 && p->z >= -cy->h / 2)
+		&& (p->y <= cy->r && p->y >= -cy->r)
+		&& (p->x <= cy->r && p->x >= -cy->r))
+    {
+        printf("(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
+        printf("ray starting from:\t(%.10f, %.10f, %.10f)\n", ray_start->x, ray_start->y, ray_start->z);
+        // printf("ray dir: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+        // printf("cy->pos: (%f, %f, %f)\n\n", cy->pos->x, cy->pos->y, cy->pos->z);
+        return (-10); //check if ray starts inside object
+    } //Self intersection might not be quite working properly
+
+
 	return (t);
 }
 
@@ -279,6 +266,8 @@ double cylinder(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec
 	double t1 = get_cy_endcap(cy->end1, ray_start, ray, scene, cy);
 	double t2 = get_cy_endcap(cy->end2, ray_start, ray, scene, cy); //endcaps have stopped working?
 	double t3 = get_shaft_intersection_eight(scene->cam, ray_start, ray, cy, n);
+    if (t3 == -10)
+        return(-10);
 	// double t3 = get_shaft_intersection_eight(scene, cy, pos1, ray, pos2, n);
 	// t1 = INFINITY;
 	// t2 = INFINITY;

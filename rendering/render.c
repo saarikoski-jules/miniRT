@@ -52,6 +52,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 
 				// d_tmp = circle(scene, tmp->type.sp, ray, &n);
 				d_tmp = circle(scene, scene->cam->pos, ray, tmp->type.sp, &n);
+				// if (d_tmp == -10.0)
+					// printf("aaa\n");
 
 				//fix when sphere is on top of me
 				// printf("sp\n");
@@ -85,11 +87,20 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				d_tmp = plane_intersect(scene, scene->cam->pos, ray, tmp->type.pl, &n);
 			
 			}
+			if (d_tmp == -10.0)
+			{
+				// printf("-10\n");
+				return (-10);
+			}
 		}
 
 		if (d_tmp < d && d_tmp >= 0.0)
 		{
 			d = d_tmp;
+			// if (d == -10) //if camera is inside an object, give me all black
+			// {
+				// return (-10);
+			// }
 			//get position from d, ray and camera position. Trace vector from point to all cameras and calculate combined color including ambiance
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
@@ -166,6 +177,11 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 			color = remap_coord(scene, pos, cam_data, q);
 			mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
 
+			if (color == -10)
+			{
+				printf("inside obj\n");
+				return;
+			}
 			if (i != scene->res->res_x)
 			{
 				pos->x += inc_x;

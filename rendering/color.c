@@ -36,6 +36,11 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	double sec_len = det_len_vec(sec); //sec is vector from point to light
     t_vec *epsilon = set_vec_len(sec, 0.00000001); //to not intersect self
     t_vec *point_new = add_vectors(point, epsilon); //to not intersect self
+    //INSTEAD OF MOVING POINT TOWARD LIGHT, SHOULD MOVE POINT TOWARD SELF
+    // t_vec *IC = add_vectors(point, scene->cam->pos);
+    // t_vec *epsilon = set_vec_len(IC, 0.000000001);
+    // t_vec *point_new = add_vectors(point, epsilon);
+    // point_new = point;
 	while(tmp_obj != NULL)
 	{
 		// printf("whoah this is so slow..\n");
@@ -77,7 +82,12 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 				hit_tmp = plane_intersect(scene, point_new, sec_u, tmp_obj->type.pl, &norm); //to not intersect self
 
         	}
-		}
+            if (hit_tmp == -10)
+            {
+                printf("intersection point:\t(%.10f, %.10f, %.10f)\n\n", point->x, point->y, point->z);
+                return (1);
+            }
+        }
 		// if (hit_tmp > 0 && hit_tmp < 1) //is less than distance to light
 
 		//Intersects itself
