@@ -160,6 +160,11 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 	t_vec *intersect = add_vectors(ray_start, point);
 
 	double d = get_distance(intersect, pos);
+	
+	// t_vec *pos_start = substract_vectors(ray_start, cy->pos);
+	// if (det_len_vec(pos_start) < cy->height)
+		
+
 	if (d < cy->dia / 2.0)
 	{
 		return (t);
@@ -231,9 +236,11 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	double t = solve_quadratic(a, b, c);
 	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
 
+
+
 	if ((intersection->z > cy->h / 2 || intersection->z < -cy->h / 2)
 		|| (intersection->y > cy->r || intersection->y < -cy->r)
-		|| (intersection->x > cy->r || intersection->x < -cy->r))
+		|| (intersection->x > cy->r || intersection->x < -cy->r)) //could do this with the more accurate technique underneath
 	{
 		return (INFINITY);
 	}
@@ -246,47 +253,15 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *normal = substract_vectors(i_real_c, pos_c);
 	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
 	
-    if (det_len_vec(O_2d) <= cy->r
+	if (det_len_vec(O_2d) <= cy->r
         && p->z <= cy->h / 2
         && p->z >= -cy->h / 2)
-    {
-        printf("dist from (0,0) %.11f\n", det_len_vec(O_2d));
-        printf("height: %.11f\n", p->z);
-        printf("inside obj\n");
+	{
+        // printf("dist from (0,0) %.11f\n", det_len_vec(O_2d));
+        // printf("height: %.11f\n", p->z);
+        // printf("inside obj\n");
         return (-10);
-    }
-
-    // printf("\n\noriginal ray start: (%f, %f, %f)\n", ray_start->x, ray_start->y, ray_start->z);
-    // printf("original ray direction: (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z);
-    // printf("new ray start: (%f, %f, %f)\n", p->x, p->y, p->z);
-    t_vec *R_u = set_vec_len(R, 1);
-    // printf("new ray dir: (%f, %f, %f)\n", R_u->x, R_u->y, R_u->z);
-    // printf("intersection point: (%f, %f, %f)\n", intersection->x, intersection->y,intersection->z);
-
-    // double new = det_len_vec(p);
-    // double old = det_len_vec(ray_start);
-
-    // printf("new distance from 0: %.11f\n", det_len_vec(p));
-    // printf("old distance from 0: %.11f\n", det_len_vec(ray_start));
-    // printf("new distance from 0: %f\n", new);
-
-
-    // if ((p->z <= cy->h / 2 && p->z >= -cy->h / 2)
-		// && (p->y <= cy->r && p->y >= -cy->r)
-		// && (p->x <= cy->r && p->x >= -cy->r))
-    // {
-        // printf("(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
-        // printf("ray starting from:\t(%.10f, %.10f, %.10f)\n", ray_start->x, ray_start->y, ray_start->z);
-        // printf("ray dir: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
-        // printf("cy->pos: (%f, %f, %f)\n\n", cy->pos->x, cy->pos->y, cy->pos->z);
-        // return (-10); //check if ray starts inside object
-    // } //Self intersection might not be quite working properly
-    // else
-    // {
-        // printf("false:\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
-
-    // }
-
+	}
 	return (t);
 }
 
