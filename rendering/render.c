@@ -174,9 +174,12 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 		// while (i <= 2)
 		while (i <= scene->res->res_x)
 		{
-			color = remap_coord(scene, pos, cam_data, q);
-			mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
-
+			// if (i == 270 && j == 330)
+			// {
+				color = remap_coord(scene, pos, cam_data, q);
+				// color = 0xffffff;
+				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
+			// }
 			if (color == -10)
 			{
 				printf("inside obj\n");

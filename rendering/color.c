@@ -41,6 +41,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
     // t_vec *epsilon = set_vec_len(IC, 0.000000001);
     // t_vec *point_new = add_vectors(point, epsilon);
     // point_new = point;
+
+
 	while(tmp_obj != NULL)
 	{
 		// printf("whoah this is so slow..\n");
@@ -74,6 +76,13 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
 				// hit_tmp = cylinder(scene, point, sec_u, tmp_obj->type.cy, &norm);
 				hit_tmp = cylinder(scene, point_new, sec_u, tmp_obj->type.cy, &norm);
+                t_vec *point_cy = substract_vectors(tmp_obj->type.cy->pos, point);
+                t_vec *point_new_cy = substract_vectors(tmp_obj->type.cy->pos, point_new);
+                // if (det_len_vec(point_cy) > det_len_vec(point_new_cy))
+                // {
+                    // printf("Not inside obj:\nintersection: %.10f\nto direction of light: %.10f\n", det_len_vec(point_cy), det_len_vec(point_new_cy));
+                    // return (1);
+                // }
 
 			}
 			else if (tmp_obj->id == pl)
@@ -84,7 +93,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
         	}
             if (hit_tmp == -10)
             {
-                printf("intersection point:\t(%.10f, %.10f, %.10f)\n\n", point->x, point->y, point->z);
+                // printf("false:\nintersection point:\t(%.10f, %.10f, %.10f)\n\n", point->x, point->y, point->z);
                 return (1);
             }
         }
@@ -95,6 +104,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		// if (hit_tmp > 0 && hit_tmp < 1)
 		if (hit_tmp > 0 && hit_tmp < sec_len)
 		{
+            // printf("true:\nintersection point:\t(%.10f, %.10f, %.10f)\n\n", point->x, point->y, point->z);
+
             // printf("hit obj: %d\n", tmp_obj->id); //ALWAYS INTERSECTS ITSELF. Move intersect point towards light by very little
 			// printf("\n\nINTERSECTION hit_tmp: %f, sec len: %f\n\n", hit_tmp, sec_len);
 			// return (hit_tmp);

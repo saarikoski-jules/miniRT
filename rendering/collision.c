@@ -206,20 +206,25 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *OC_u = set_vec_len(OC, 1); //unit vector OC
 	t_vec *turn = orient_vector(cy->q, OC_u); //turned unit vector
 	t_vec *p = set_vec_len(turn, OC_len); // turned unit vector from ray start point to new cylinder position. Used to be cam_dist
-/*
-	// O = add_vectors(cam_dist, cy->pos); // move turned vector by  
+	// O = add_vectors(p, cy->pos); // move turned vector by  
 
+/*
 	// t_vec *p = substract_vectors(O, cy->pos);
 */
 
 	t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *R = orient_vector(cy->q, ray_u);
 
-	t_vec *O_2d = gen_coord(O->x, O->y, 0);
-	t_vec *R_2d = gen_coord(R->x, R->y, 0);
+    t_vec *O_2d = gen_coord(p->x, p->y, 0);
+
+	// t_vec *O_2d = gen_coord(p->x, p->y, 0);
+	// t_vec *O_2d = gen_coord(O->x, O->y, 0);
+	// t_vec *R_2d = gen_coord(R->x, R->y, 0);
 	
-	double a = pow(R_2d->x, 2) + pow(R_2d->y, 2);
-	double b = R_2d->x * p->x + R_2d->y *p->y;
+
+
+	double a = pow(R->x, 2) + pow(R->y, 2);
+	double b = R->x * p->x + R->y *p->y;
 	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
 
 	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
@@ -240,17 +245,47 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *i_real_c = add_vectors(i_real, ray_start);
 	t_vec *normal = substract_vectors(i_real_c, pos_c);
 	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
-	if ((p->z <= cy->h / 2 && p->z >= -cy->h / 2)
-		&& (p->y <= cy->r && p->y >= -cy->r)
-		&& (p->x <= cy->r && p->x >= -cy->r))
+	
+    if (det_len_vec(O_2d) <= cy->r
+        && p->z <= cy->h / 2
+        && p->z >= -cy->h / 2)
     {
-        printf("(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
-        printf("ray starting from:\t(%.10f, %.10f, %.10f)\n", ray_start->x, ray_start->y, ray_start->z);
+        printf("dist from (0,0) %.11f\n", det_len_vec(O_2d));
+        printf("height: %.11f\n", p->z);
+        printf("inside obj\n");
+        return (-10);
+    }
+
+    // printf("\n\noriginal ray start: (%f, %f, %f)\n", ray_start->x, ray_start->y, ray_start->z);
+    // printf("original ray direction: (%f, %f, %f)\n", ray_u->x, ray_u->y, ray_u->z);
+    // printf("new ray start: (%f, %f, %f)\n", p->x, p->y, p->z);
+    t_vec *R_u = set_vec_len(R, 1);
+    // printf("new ray dir: (%f, %f, %f)\n", R_u->x, R_u->y, R_u->z);
+    // printf("intersection point: (%f, %f, %f)\n", intersection->x, intersection->y,intersection->z);
+
+    // double new = det_len_vec(p);
+    // double old = det_len_vec(ray_start);
+
+    // printf("new distance from 0: %.11f\n", det_len_vec(p));
+    // printf("old distance from 0: %.11f\n", det_len_vec(ray_start));
+    // printf("new distance from 0: %f\n", new);
+
+
+    // if ((p->z <= cy->h / 2 && p->z >= -cy->h / 2)
+		// && (p->y <= cy->r && p->y >= -cy->r)
+		// && (p->x <= cy->r && p->x >= -cy->r))
+    // {
+        // printf("(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
+        // printf("ray starting from:\t(%.10f, %.10f, %.10f)\n", ray_start->x, ray_start->y, ray_start->z);
         // printf("ray dir: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
         // printf("cy->pos: (%f, %f, %f)\n\n", cy->pos->x, cy->pos->y, cy->pos->z);
-        return (-10); //check if ray starts inside object
-    } //Self intersection might not be quite working properly
+        // return (-10); //check if ray starts inside object
+    // } //Self intersection might not be quite working properly
+    // else
+    // {
+        // printf("false:\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n(%.10f <= %.10f && %.10f >= %.10f)\n", p->z, cy->h / 2, p->z, -cy->h / 2, p->y, cy->r, p->y, -cy->r, p->x, cy->r, p->x, -cy->r);
 
+    // }
 
 	return (t);
 }
