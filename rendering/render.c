@@ -51,7 +51,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 
 				// d_tmp = circle(scene, tmp->type.sp, ray, &n);
-				d_tmp = circle(scene, scene->cam->pos, ray, tmp->type.sp, &n);
+				d_tmp = circle(scene->cam->pos, ray, tmp->type.sp, &n);
 				// if (d_tmp == -10.0)
 					// printf("aaa\n");
 
@@ -78,7 +78,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				// d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
 				// printf("cy\n");
 				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
-
+				// if (d == -10)
+					// printf("aaa\n");
 			}
 			else if (tmp->id == pl)
 			{
@@ -128,12 +129,13 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	
 	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, -1);
 	t_vec *ray = orient_vector(q, vec);
+	t_vec *ray_u = set_vec_len(ray, 1);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
 	
 	
 	// ft_printf("ray: (%f, %f, %f), len: %f\n", ray->x, ray->y, ray->z, det_len_vec(ray));
 	
-	return (cast(scene, ray));
+	return (cast(scene, ray_u));
 }
 
 

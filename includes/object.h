@@ -5,10 +5,11 @@
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/15 14:53:21 by jsaariko       #+#    #+#                */
-/*   Updated: 2020/03/17 14:52:12 by jvisser       ########   odam.nl         */
+/*   Created: 2020/05/11 13:07:10 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/05/11 14:40:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef OBJECT_H
 # define OBJECT_H
@@ -24,6 +25,7 @@ typedef struct	s_sp
 {
 	t_vec			*pos;
 	double			dia;
+	double			r;
 }				t_sp;
 
 typedef struct	s_pl
@@ -59,7 +61,8 @@ typedef struct	s_tr
 {
 	t_vec	*point1;	
 	t_vec	*point2;	
-	t_vec	*point3;	
+	t_vec	*point3;
+	t_vec	*orien;	
 }				t_tr;
 
 /*

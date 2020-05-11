@@ -5,8 +5,8 @@
 #                                                      +:+                     #
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
-#    Created: 2020/03/14 14:09:55 by jsaariko       #+#    #+#                 #
-#    Updated: 2020/03/18 15:47:14 by jvisser       ########   odam.nl          #
+#    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
+#    Updated: 2020/05/11 14:18:37 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ RT_SRCS =	test.c \
 			$(RENDER_DIR)quaternion_utils.c \
 			$(RENDER_DIR)collision.c \
 			$(RENDER_DIR)color.c \
+			$(RENDER_DIR)intersection_utils.c \
 
 MLXFLAGS_W = -lmlx -lXext -lX11
 MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread

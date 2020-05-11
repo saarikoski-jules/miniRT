@@ -5,8 +5,8 @@
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/18 14:45:21 by jvisser        #+#    #+#                */
-/*   Updated: 2020/03/18 15:46:53 by jvisser       ########   odam.nl         */
+/*   Created: 2020/03/18 14:45:21 by jvisser       #+#    #+#                 */
+/*   Updated: 2020/05/11 12:21:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_cy	*get_cylinder(char *line, size_t *i);
 t_tr	*get_triangle(char *line, size_t *i);
 
 void	validate_fov(int fov);
-void	validate_orien(t_vec *orien);
+void	validate_orien(t_vec **orien);
 // void	validate_color(t_color *color);
 
 void	validate_int(char *line);

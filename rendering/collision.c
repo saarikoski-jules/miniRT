@@ -4,48 +4,24 @@
 #include "render.h"
 #include <math.h>
 
-// double circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n)
-double circle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec **n)
-{
-	//sphere seems to be a bit too low compared to the square in some cases
+double circle(t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec **n)
+{	//this might not be the best place to calculate the normal
+	t_vec *len;
+	double b;
+	double c;
+	double t;
 
-	t_vec *ray_u = set_vec_len(ray, 1);
-
-	t_vec *L = substract_vectors(ray_start, sp->pos);
-    if (det_len_vec(L) <= sp->dia / 2)
-        return (-10); //You're inside the circle
-	double dot_L = get_dot_product(L, L);
-	double r_pow = pow(sp->dia / 2.0, 2);
-	t_vec *dir_u = set_vec_len(ray_u, 1.0);
-	double dot_dir_L = get_dot_product(dir_u, L);
-	double a = 1.0;
-	double b = 2.0 * dot_dir_L;
-	double c = dot_L - r_pow;
-	double disc = pow(b, 2) - 4 * a * c;
-	double d = -1;
-	if (disc < 0)
-		return (-1.0);
-	if (disc > 0)
-	{
-		double d1 = (((-b) - sqrt(disc)) / 2);
-		double d2 = (((-b) + sqrt(disc)) / 2);
-		if (d1 < d2)
-			d = d1;
-		else
-			d = d2;
-	}
-	else if (disc == 0)
-	{
-		double d3 = (-1 * b) / (2 * a); //should be the same as d = -0.5 * b
-		//get normal
-		d = d3;
-	}
-	t_vec *intersect = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z);
+	len = substract_vectors(ray_start, sp->pos);
+	if (det_len_vec(len) <= sp->r)
+		return (-10); //You're inside the circle
+	b = 2.0 * get_dot_product(ray, len);
+	c = get_dot_product(len, len) - pow(sp->r, 2);
+	t = solve_quadratic(1.0, b, c, 4);
+	t_vec *intersect = gen_coord(t * ray->x, t * ray->y, t * ray->z);
 	t_vec *i_point = add_vectors(intersect, ray_start);
 	t_vec *n_o = substract_vectors(i_point, sp->pos);
 	*n = set_vec_len(n_o, 1);
-	return (d);
-	// return (0);
+	return (t);
 }
 
 double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
@@ -173,7 +149,7 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 		return (INFINITY);
 }
 
-double solve_quadratic(double a, double b, double c)
+double solve_quadratic_two(double a, double b, double c)
 {
 	// printf("b: %f\n", b);
 	double disc_end = a * c;
@@ -233,10 +209,13 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
 
 	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
-	double t = solve_quadratic(a, b, c);
+	double t = solve_quadratic_two(a, b, c);
 	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
+	if (t <= 0)
+		return (INFINITY);
 
-
+	// if (t != INFINITY)
+		// printf("intersection: (%f, %f, %f)\n", intersection->x, intersection->y, intersection->z);
 
 	if ((intersection->z > cy->h / 2 || intersection->z < -cy->h / 2)
 		|| (intersection->y > cy->r || intersection->y < -cy->r)
@@ -248,11 +227,23 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *pos_offset = set_vec_len(cy->orien, intersection->z); //works if this is unit vecs
 	t_vec *pos_c = substract_vectors(cy->pos, pos_offset);
 
+	// printf("orig z: %.15f\n", intersection->z);
+
+	// printf("old: (%.15f, %.15f, %.15f)\n", pos_c->x, pos_c->y, pos_c->z);
+
+
 	t_vec *i_real = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);
 	t_vec *i_real_c = add_vectors(i_real, ray_start);
 	t_vec *normal = substract_vectors(i_real_c, pos_c);
 	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
+	// printf("old: (%.15f, %.15f, %.15f)\n", normal->x, normal->y, normal->z);
+	// printf("old: (%f, %f, %f)\n", i_real_c->x, i_real_c->y, i_real_c->z);
 	
+
+
+	// if (t != INFINITY)
+		// printf("p->z: %f, h: %f\nlength: %f, r: %f\n", p->z, cy->h, det_len_vec(O_2d), cy->r);
+
 	if (det_len_vec(O_2d) <= cy->r
         && p->z <= cy->h / 2
         && p->z >= -cy->h / 2)
@@ -303,6 +294,8 @@ double cylinder(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec
 
 		//can also be the invert of this
 	}
+	// if (t != INFINITY && t != 0)
+		// printf("t: %.16f, t1 = %f, t2 = %f, t3 = %.16f\n", t, t1, t2, t3);
 	return (t);
 }
 

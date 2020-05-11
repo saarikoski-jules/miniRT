@@ -54,7 +54,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
                 // printf("hit: %f\n", hit_tmp );
 				//fix when sphere is on top of me
 				// hit_tmp = circle(scene, point, sec_u, tmp_obj->type.sp, &norm);
-				hit_tmp = circle(scene, point_new, sec_u, tmp_obj->type.sp, &norm); //to not intersect self
+				hit_tmp = circle(point_new, sec_u, tmp_obj->type.sp, &norm); //to not intersect self
 			
             }
 			else if (tmp_obj->id == sq)
@@ -123,6 +123,107 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	//return 0 if there are no intersections
 }
 
+t_vec *cy_normal(t_rt_scene *scene, t_cy *cy, t_vec *intersect)
+{
+	t_vec *normal;
+
+	//INSTEAD DETERMINE FROM END TO UP. THIS WILL WORK
+
+	// normal == NULL;
+	//side1 get distance from centre to intersect
+	//side2 == r
+	//solve side 3 of straight triangle
+
+	//tan(angle) = opposite / adjacent
+
+	double min_angle = cy->r / cy->h;
+
+	// t_vec *hyp = sqrt(pow(cy->r, 2) - pow(cy->h, 2))
+
+
+	t_vec *v_len = substract_vectors(intersect, cy->end1);
+	double len = det_len_vec(v_len);
+	double len_z;
+
+	// printf("len: %f\n", pow(len, 2));
+	// printf("r: %f\n", cy->r);
+
+	t_vec *v_up = substract_vectors(intersect, cy->end2);
+	if (det_len_vec(v_up) <= cy->r)
+	{
+		return (cy->orien);
+	}
+	else if (len <= cy->r)
+	{
+		return (substract_vectors(gen_coord(0,0,0),cy->orien));
+	}
+	else
+	{
+		double tot = pow(len, 2) - pow(cy->r, 2);
+		// printf("tot: %f\n", tot);
+		len_z = sqrt(tot); //this seems right
+	// printf("new z: %.15f\n\n", len_z);
+
+	}
+	// printf("len_z: %f\n\n", len_z);
+	t_vec *z = set_vec_len(cy->orien, len_z);
+	t_vec *tmp = add_vectors(cy->end1, z);
+	// printf("new: (%.15f, %.15f, %.15f)\n\n", tmp->x, tmp->y, tmp->z);
+	// t_vec *real_inter = add_vectors(intersect, scene->cam->pos);
+	normal = substract_vectors(intersect, tmp);
+	
+
+	// printf("new: (%f, %f, %f)\n\n", intersect->x, intersect->y, intersect->z);
+
+	// t_vec *maybe_inter = add_vectors(z, normal);
+	// if (maybe_inter->x == intersect->x && maybe_inter->y == intersect->y && maybe_inter->z == intersect->z)
+	// {
+		return (normal);
+	// }
+	// printf("wrong\n");
+	// printf("maybe:\t\t(%.15f, %.15f, %.15f)\nintersect:\t(%.15f, %.15f, %.15f)\n\n", maybe_inter->x, maybe_inter->y, maybe_inter->z, intersect->x, intersect->y, intersect->z);
+// 
+	// return (NULL);
+
+}
+
+t_vec *calculate_normal(t_rt_scene *scene, t_obj *obj, t_vec *intersect)
+{
+	t_vec *normal;
+	normal = NULL;
+
+	if (obj->id == cy)
+	{
+		normal = cy_normal(scene, obj->type.cy, intersect);
+		// printf("normal: (%f, %f, %f)\n", normal->x, normal->y, normal->z);
+	}
+	if (obj->id == sp)
+	{
+		normal = substract_vectors(intersect, obj->type.sp->pos);
+	}
+	if (obj->id == pl)
+	{
+		normal = obj->type.pl->orien;
+	}
+	if (obj->id == tr)
+	{
+		normal = obj->type.tr->orien;
+	}
+	if (obj->id == sq)
+	{
+		normal = obj->type.sq->orien;
+	}
+
+	if (normal == NULL)
+		return (NULL);
+	// printf("%p\n", normal);
+	if (normal != NULL)
+	{
+		t_vec *normal_u = set_vec_len(normal, 1);
+		return (normal_u);
+	}
+}
+
 t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
 {
 
@@ -147,6 +248,13 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	t_vec *R_u;
 	double dot;
 
+	t_vec *normal = calculate_normal(scene, obj, point);
+	// if (normal != NULL)
+	// {	
+		// if ((normal->x != n->x || normal->y != n->y || normal->z != n->z) && obj->id != sp)
+			// printf("n:\t(%.15f, %.15f, %.15f)\nnormal:\t(%.15f, %.15f, %.15f)\n\n", n->x, n->y, n->z, normal->x, normal->y, normal->z);
+	// }
+	// printf("new: (%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
 	//Get combined color effect on the pixel from all the lights
 	while(tmp != NULL)
@@ -161,18 +269,20 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			//if light hits object, i++
 			if (check_intersections(scene, ray, d, tmp))
 			{
-				printf("Calculate shadow\n");
+				// printf("Calculate shadow\n");
                 // final_color->r = 255;
                 // final_color->g = 0;
                 // final_color->b = 0;
 				// printf("do nothing?");
                 // return (color);
+				// printf("inters")
 				i++;
 			}
 			else
 			{
 				//Calculate bright spot
-				dot = get_dot_product(n, R_u);
+				dot = get_dot_product(normal, R_u);
+				// dot = get_dot_product(n, R_u);
 				// printf("Ray: (%f, %f, %f)\nnormal: (%f, %f, %f)\n", R->x, R->y, R->z, n->x, n->y, n->z);
 				// printf("dot: %f\n", dot);
 				// printf("past check intersections\n\n");

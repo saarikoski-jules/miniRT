@@ -17,8 +17,9 @@ t_sp	*get_sphere(char *line, size_t *i)
 	sphere->pos = get_vec(line, i);
 	*i += ft_strmatch(line + *i, " ");
 	sphere->dia = get_float(line, i);
-	if (sphere->dia < 0.0)
+	if (sphere->dia < 0.0)//0 not valid
 		error_exit_msg(C_INVALID_SP, E_INVALID_SP);
+	sphere->r = sphere->dia * 0.5;
 	return (sphere);
 }
 
@@ -31,7 +32,7 @@ t_pl	*get_plane(char *line, size_t *i)
 		error_exit_errno();
 	plane->pos = get_vec(line, i);
 	plane->orien = get_vec(line, i);
-	validate_orien(plane->orien);
+	validate_orien(&plane->orien);
 	return (plane);
 }
 
@@ -82,7 +83,7 @@ t_sq	*get_square(char *line, size_t *i)
 		error_exit_errno();
 	square->pos = get_vec(line, i);
 	square->orien = get_vec(line, i);
-	validate_orien(square->orien);
+	validate_orien(&square->orien);
 	square->side = get_float(line, i);
 	find_square_corners(&square);
 	if (square->side < 0.0)
@@ -109,7 +110,7 @@ t_cy	*get_cylinder(char *line, size_t *i)
 		error_exit_errno();
 	cylinder->pos = get_vec(line, i);
 	cylinder->orien = get_vec(line, i);
-	validate_orien(cylinder->orien);
+	validate_orien(&cylinder->orien);
 	cylinder->dia = get_float(line, i);
 	cylinder->h = get_float(line, i);
 	if (cylinder->dia < 0.0 || cylinder->h < 0.0)
@@ -131,5 +132,11 @@ t_tr	*get_triangle(char *line, size_t *i)
 	triangle->point1 = get_vec(line, i);
 	triangle->point2 = get_vec(line, i);
 	triangle->point3 = get_vec(line, i);
+
+	t_vec *BA = substract_vectors(triangle->point2, triangle->point1);
+	t_vec *CA = substract_vectors(triangle->point3, triangle->point1);
+	t_vec *normal = get_cross_product(BA, CA);
+	triangle->orien = set_vec_len(normal, 1.0);
+
 	return (triangle);
 }

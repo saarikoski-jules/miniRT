@@ -3,23 +3,27 @@
 /*                                                        ::::::::            */
 /*   parse_validation.c                                 :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/18 15:46:03 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/05/08 10:56:14 by jsaariko      ########   odam.nl         */
+/*   Created: 2020/05/11 12:19:51 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/05/11 12:33:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 #include "error.h"
 #include "rt.h"
 #include "libft.h"
+#include "vec.h"
 
-void	validate_orien(t_vec *orien)
+void	validate_orien(t_vec **orien)
 {
-	if (orien->x < -1 || orien->x > 1
-	|| orien->y < -1 || orien->y > 1
-	|| orien->z < -1 || orien->z > 1)
+	if ((*orien)->x < -1 || (*orien)->x > 1
+	|| (*orien)->y < -1 || (*orien)->y > 1
+	|| (*orien)->z < -1 || (*orien)->z > 1)
 		error_exit_msg(C_INVALID_ORIEN_VEC, E_INVALID_ORIEN_VEC);
+	*orien = set_vec_len(*orien, 1);
 }
 
 void	validate_fov(int fov)
