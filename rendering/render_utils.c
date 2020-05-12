@@ -13,7 +13,16 @@ int translate_color(t_color *color)
 	return (rgb);
 }
 
+t_vec	*find_point(t_vec *start, t_vec *dir, double t)
+{
+	t_vec *dist;
+	t_vec *point;
 
+	dist = gen_coord(dir->x * t, dir->y * t, dir->z * t);
+	point = add_vectors(start, dist);
+	free(dist);
+	return (point);
+}
 
 // int within_grid(t_vec *pos, t_grid *grid)
 // {

@@ -88,10 +88,10 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				d_tmp = pl_intersect(tmp->type.pl->orien, scene->cam->pos, tmp->type.pl->pos, ray);
 			
 			}
-			if (d_tmp == -10.0)
+			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ)
 			{
 				// printf("-10\n");
-				return (-10);
+				return (INSIDE_OBJ);
 			}
 		}
 
@@ -182,7 +182,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 				// color = 0xffffff;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
 			// }
-			if (color == -10)
+			if (color == INSIDE_OBJ)
 			{
 				printf("inside obj\n");
 				return;

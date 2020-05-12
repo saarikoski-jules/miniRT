@@ -34,6 +34,7 @@ double pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 // double	plane_intersect(t_rt_scene *scene, t_vec *start, t_vec *ray, t_pl *pl, t_vec **n);
 // double	plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n);
 t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n);
+t_vec *find_point(t_vec *start, t_vec *dir, double t);
 
 
 //utils
