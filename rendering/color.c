@@ -54,28 +54,29 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
                 // printf("hit: %f\n", hit_tmp );
 				//fix when sphere is on top of me
 				// hit_tmp = circle(scene, point, sec_u, tmp_obj->type.sp, &norm);
-				hit_tmp = circle(point_new, sec_u, tmp_obj->type.sp, &norm); //to not intersect self
-			
+				hit_tmp = sp_intersect(point_new, sec_u, tmp_obj->type.sp); //to not intersect self
+				// if (hit_tmp >= 0 && hit_tmp != INFINITY)
+					// printf("hit_tmp cp: %f\n", hit_tmp);
             }
 			else if (tmp_obj->id == sq)
 			{
 				// hit_tmp = square(scene, point, tmp_obj->type.sq, sec, &norm);
 				// hit_tmp = square(scene, point, sec_u, tmp_obj->type.sq, &norm);
-				hit_tmp = square(scene, point_new, sec_u, tmp_obj->type.sq, &norm);
+				hit_tmp = sq_intersect(point_new, sec_u, tmp_obj->type.sq);
 			
             }
 			else if (tmp_obj->id == tr)
 			{
 				// hit_tmp = triangle(scene, point, tmp_obj->type.tr, sec, &norm);
 				// hit_tmp = triangle(scene, point, sec_u, tmp_obj->type.tr, &norm);
-				hit_tmp = triangle(scene, point_new, sec_u, tmp_obj->type.tr, &norm);
+				hit_tmp = tr_intersect(point_new, sec_u, tmp_obj->type.tr);
 			
             }
 			else if (tmp_obj->id == cy)
 			{
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
 				// hit_tmp = cylinder(scene, point, sec_u, tmp_obj->type.cy, &norm);
-				hit_tmp = cylinder(scene, point_new, sec_u, tmp_obj->type.cy, &norm);
+				hit_tmp = cy_intersect(point_new, sec_u, tmp_obj->type.cy);
                 // t_vec *point_cy = substract_vectors(tmp_obj->type.cy->pos, point);
                 // t_vec *point_new_cy = substract_vectors(tmp_obj->type.cy->pos, point_new);
                 // if (det_len_vec(point_cy) > det_len_vec(point_new_cy))
@@ -88,7 +89,16 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 			else if (tmp_obj->id == pl)
 			{
 				// hit_tmp = plane_intersect(scene, point, sec_u, tmp_obj->type.pl, &norm);
-				hit_tmp = plane_intersect(scene, point_new, sec_u, tmp_obj->type.pl, &norm); //to not intersect self
+
+				//orien of item
+				//ray start pos
+				//item position
+				//ray direction
+
+				hit_tmp = pl_intersect(tmp_obj->type.pl->orien, point_new, tmp_obj->type.pl->pos, sec_u);
+				// hit_tmp = pl_intersect(tmp_obj->type.pl->orien, t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
+
+				// hit_tmp = plane_intersect(scene, point_new, sec_u, tmp_obj->type.pl, &norm); //to not intersect self
 
         	}
             if (hit_tmp == -10)
@@ -100,10 +110,10 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 		// if (hit_tmp > 0 && hit_tmp < 1) //is less than distance to light
 
 		//Intersects itself
-    
 		// if (hit_tmp > 0 && hit_tmp < 1)
 		if (hit_tmp > 0 && hit_tmp < sec_len)
 		{
+			// printf("here?\n");
             // printf("true:\nintersection point:\t(%.10f, %.10f, %.10f)\n\n", point->x, point->y, point->z);
 
             // printf("hit obj: %d\n", tmp_obj->id); //ALWAYS INTERSECTS ITSELF. Move intersect point towards light by very little
@@ -123,7 +133,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	//return 0 if there are no intersections
 }
 
-t_vec *cy_normal(t_rt_scene *scene, t_cy *cy, t_vec *intersect)
+t_vec *cy_normal(t_cy *cy, t_vec *intersect)
 {
 	t_vec *normal;
 
@@ -187,37 +197,34 @@ t_vec *cy_normal(t_rt_scene *scene, t_cy *cy, t_vec *intersect)
 
 }
 
-t_vec *calculate_normal(t_rt_scene *scene, t_obj *obj, t_vec *intersect)
+t_vec *calculate_normal(t_obj *obj, t_vec *intersect)
 {
 	t_vec *normal;
 	normal = NULL;
 
+
+	//for planes make sure normal is either correct or opposite orientation depending on where light comes
 	if (obj->id == cy)
 	{
-		normal = cy_normal(scene, obj->type.cy, intersect);
-		// printf("normal: (%f, %f, %f)\n", normal->x, normal->y, normal->z);
+		normal = cy_normal(obj->type.cy, intersect);
 	}
-	if (obj->id == sp)
+	else if (obj->id == sp)
 	{
 		normal = substract_vectors(intersect, obj->type.sp->pos);
 	}
-	if (obj->id == pl)
+	else if (obj->id == pl)
 	{
 		normal = obj->type.pl->orien;
 	}
-	if (obj->id == tr)
+	else if (obj->id == tr)
 	{
 		normal = obj->type.tr->orien;
 	}
-	if (obj->id == sq)
+	else if (obj->id == sq)
 	{
 		normal = obj->type.sq->orien;
 	}
-
-	if (normal == NULL)
-		return (NULL);
-	// printf("%p\n", normal);
-	if (normal != NULL)
+	else if (normal != NULL)
 	{
 		t_vec *normal_u = set_vec_len(normal, 1);
 		return (normal_u);
@@ -248,7 +255,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	t_vec *R_u;
 	double dot;
 
-	t_vec *normal = calculate_normal(scene, obj, point);
+	t_vec *normal = calculate_normal(obj, point);
 	// if (normal != NULL)
 	// {	
 		// if ((normal->x != n->x || normal->y != n->y || normal->z != n->z) && obj->id != sp)
@@ -282,10 +289,6 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			{
 				//Calculate bright spot
 				dot = get_dot_product(normal, R_u);
-				// dot = get_dot_product(n, R_u);
-				// printf("Ray: (%f, %f, %f)\nnormal: (%f, %f, %f)\n", R->x, R->y, R->z, n->x, n->y, n->z);
-				// printf("dot: %f\n", dot);
-				// printf("past check intersections\n\n");
 				//Do this for the color generated by light and its distance
 				if (dot < 0)
 					dot = 0;

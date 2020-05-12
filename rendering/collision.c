@@ -4,8 +4,9 @@
 #include "render.h"
 #include <math.h>
 
-double circle(t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec **n)
-{	//this might not be the best place to calculate the normal
+double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
+{	
+	//this might not be the best place to calculate the normal
 	t_vec *len;
 	double b;
 	double c;
@@ -16,15 +17,11 @@ double circle(t_vec *ray_start, t_vec *ray, t_sp *sp, t_vec **n)
 		return (-10); //You're inside the circle
 	b = 2.0 * get_dot_product(ray, len);
 	c = get_dot_product(len, len) - pow(sp->r, 2);
-	t = solve_quadratic(1.0, b, c, 4);
-	t_vec *intersect = gen_coord(t * ray->x, t * ray->y, t * ray->z);
-	t_vec *i_point = add_vectors(intersect, ray_start);
-	t_vec *n_o = substract_vectors(i_point, sp->pos);
-	*n = set_vec_len(n_o, 1);
+	t = solve_quadratic(1.0, b, c);
 	return (t);
 }
 
-double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
+double pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 {
 	//t = ((p0 - l0) dot n) / l dot n
 	t_vec *v_pl;
@@ -36,10 +33,9 @@ double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
 	t_vec *ray_u = set_vec_len(ray, 1); //
 	v_n = set_vec_len(orien, 1); //unnecessary?
 	ln = get_dot_product(ray_u, v_n); //which one??
-	// ln = get_dot_product(ray, v_n); //which one??
 	if (ln == 0.0)
 		return (INFINITY);//should i use infinity or -1
-	v_pl = substract_vectors(pl_pos, cam_pos);
+	v_pl = substract_vectors(pos, ray_start);
 	pln = get_dot_product(v_pl, v_n); //if 0, camera is inside the plane, so plane should be invisible as it is two dimensional
 	t = pln / ln;
 	if (t <= 0.0) //if t = 0, point is on top of you, so the same outcome as if pln == 0??
@@ -47,47 +43,16 @@ double pl_intersect(t_vec *orien, t_vec *cam_pos, t_vec *pl_pos, t_vec *ray)
 	return (t);
 }
 
-// double plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n)
-double plane_intersect(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_pl *pl, t_vec **n)
+double sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 {
 	double t;
-	double d;
-	t_vec *v_point;
-	t_vec *v_intersect;
 
-	t = pl_intersect(pl->orien, ray_start, pl->pos, ray);
-	if (t == INFINITY)
-		return (INFINITY);
-	//point of intersection
-	v_point = gen_coord(ray->x * t, ray->y * t, ray->z *t); //account for different camera position
-	v_intersect = add_vectors(ray_start, v_point); //accounting for camera position
-	// d = det_len_vec(v_intersect); //this breaks
-	//this should actually be distance
-	*n = set_vec_len(pl->orien, 1);
-	return (t); //t should be the actual distance as it's calculated with a unit vector
-}
-
-// double square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n)
-double square(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sq *sq, t_vec **n)
-{
-	t_vec *orien_u;
-	double t;
-
-	t_vec *BA = substract_vectors(sq->point2, sq->point1);
-	t_vec *CA = substract_vectors(sq->point3, sq->point1);
-	t_vec *normal = get_cross_product(BA, CA);
-	orien_u = set_vec_len(normal, 1.0);
-	// orien_u = set_vec_len(sq->orien, 1); // breaks when the same with camera orientation
-	//t may not be distance, is this calculated with unit vector
 	t = pl_intersect(sq->orien, ray_start, sq->point1, ray);
 	if (t == INFINITY)
 		return (INFINITY);
-	t_vec *ray_u = set_vec_len(ray, 1);
-	t_vec *point = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);//account for different camera pos
-	// t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
+	t_vec *point = gen_coord(t * ray->x, t * ray->y, t * ray->z);//account for different camera pos
 
-
-	t_vec *intersect = add_vectors(scene->cam->pos, point);
+	t_vec *intersect = add_vectors(ray_start, point);
 
 	t_vec *edge1 = substract_vectors(sq->point2, sq->point1);
 	t_vec *edge2 = substract_vectors(sq->point3, sq->point2); 
@@ -104,12 +69,11 @@ double square(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_sq *sq, t_vec *
 	t_vec *cross3 = get_cross_product(edge3, P3);
 	t_vec *cross4 = get_cross_product(edge4, P4);
 
-	if (get_dot_product(orien_u, cross1) > 0
-		&& get_dot_product(orien_u, cross2) > 0
-		&& get_dot_product(orien_u, cross3) > 0
-		&& get_dot_product(orien_u, cross4) > 0)
+	if (get_dot_product(sq->orien, cross1) > 0
+		&& get_dot_product(sq->orien, cross2) > 0
+		&& get_dot_product(sq->orien, cross3) > 0
+		&& get_dot_product(sq->orien, cross4) > 0)
 	{
-		*n = orien_u;
 		return (t);
 	}
 	else
@@ -126,7 +90,7 @@ double get_distance(t_vec *point1, t_vec *point2)
 	return (d);
 }
 
-double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene, t_cy *cy)
+double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_cy *cy)
 {
 	double t = pl_intersect(cy->orien, ray_start, pos, ray);
 	if (t == INFINITY) //if endcap is flat against the camera you won't see it
@@ -136,10 +100,6 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 	t_vec *intersect = add_vectors(ray_start, point);
 
 	double d = get_distance(intersect, pos);
-	
-	// t_vec *pos_start = substract_vectors(ray_start, cy->pos);
-	// if (det_len_vec(pos_start) < cy->height)
-		
 
 	if (d < cy->dia / 2.0)
 	{
@@ -149,35 +109,7 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_rt_scene *scene
 		return (INFINITY);
 }
 
-double solve_quadratic_two(double a, double b, double c)
-{
-	// printf("b: %f\n", b);
-	double disc_end = a * c;
-	double disc = pow(b, 2) - disc_end;
-	double t;
-	double t1 = -1;
-	double t2 = -1;
-	if (disc < 0)
-		return (INFINITY);
-	else if (disc > 0)
-	{
-		t1 = (-b + sqrt(disc)) / a;
-		t2 = (-b - sqrt(disc)) / a;
-		if (t1 < t2) //might need to change this so it never gets a negative value
-			t = t1;
-		else
-			t = t2;
-	}
-	else
-	{
-		t = -b / a;
-	}
-	// if (t > 0)
-		// printf("t: %f\n", t);
-	return (t);
-}
-
-double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
+double get_shaft_intersection_eight(t_vec *ray_start, t_vec *ray, t_cy *cy)
 {
 
 	t_vec *O; //check if vector starts inside the cylinder
@@ -187,35 +119,20 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	t_vec *OC_u = set_vec_len(OC, 1); //unit vector OC
 	t_vec *turn = orient_vector(cy->q, OC_u); //turned unit vector
 	t_vec *p = set_vec_len(turn, OC_len); // turned unit vector from ray start point to new cylinder position. Used to be cam_dist
-	// O = add_vectors(p, cy->pos); // move turned vector by  
 
-/*
-	// t_vec *p = substract_vectors(O, cy->pos);
-*/
-
-	t_vec *ray_u = set_vec_len(ray, 1);
-	t_vec *R = orient_vector(cy->q, ray_u);
+	t_vec *R = orient_vector(cy->q, ray);
 
     t_vec *O_2d = gen_coord(p->x, p->y, 0);
 
-	// t_vec *O_2d = gen_coord(p->x, p->y, 0);
-	// t_vec *O_2d = gen_coord(O->x, O->y, 0);
-	// t_vec *R_2d = gen_coord(R->x, R->y, 0);
-	
-
 
 	double a = pow(R->x, 2) + pow(R->y, 2);
-	double b = R->x * p->x + R->y *p->y;
+	double b = R->x * p->x * 2 + R->y * p->y * 2;
 	double c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
 
-	//might need to check if t is negative, though that shouldn't necessarily matter as I'm checking for the range of values anyway.
-	double t = solve_quadratic_two(a, b, c);
-	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
+	double t = solve_quadratic(a, b, c);
 	if (t <= 0)
 		return (INFINITY);
-
-	// if (t != INFINITY)
-		// printf("intersection: (%f, %f, %f)\n", intersection->x, intersection->y, intersection->z);
+	t_vec *intersection = gen_coord(p->x + t * R->x, p->y + t * R->y, p->z + t * R->z);
 
 	if ((intersection->z > cy->h / 2 || intersection->z < -cy->h / 2)
 		|| (intersection->y > cy->r || intersection->y < -cy->r)
@@ -223,84 +140,35 @@ double get_shaft_intersection_eight(t_camera *cam, t_vec *ray_start, t_vec *ray,
 	{
 		return (INFINITY);
 	}
-	//Get position along the orien of the cylinder
-	t_vec *pos_offset = set_vec_len(cy->orien, intersection->z); //works if this is unit vecs
-	t_vec *pos_c = substract_vectors(cy->pos, pos_offset);
-
-	// printf("orig z: %.15f\n", intersection->z);
-
-	// printf("old: (%.15f, %.15f, %.15f)\n", pos_c->x, pos_c->y, pos_c->z);
-
-
-	t_vec *i_real = gen_coord(t * ray_u->x, t * ray_u->y, t * ray_u->z);
-	t_vec *i_real_c = add_vectors(i_real, ray_start);
-	t_vec *normal = substract_vectors(i_real_c, pos_c);
-	*n = set_vec_len(normal, 1);//PROBLEM BE HERE BIRCHES
-	// printf("old: (%.15f, %.15f, %.15f)\n", normal->x, normal->y, normal->z);
-	// printf("old: (%f, %f, %f)\n", i_real_c->x, i_real_c->y, i_real_c->z);
-	
-
-
-	// if (t != INFINITY)
-		// printf("p->z: %f, h: %f\nlength: %f, r: %f\n", p->z, cy->h, det_len_vec(O_2d), cy->r);
-
 	if (det_len_vec(O_2d) <= cy->r
         && p->z <= cy->h / 2
         && p->z >= -cy->h / 2)
 	{
-        // printf("dist from (0,0) %.11f\n", det_len_vec(O_2d));
-        // printf("height: %.11f\n", p->z);
-        // printf("inside obj\n");
         return (-10);
 	}
 	return (t);
 }
 
-double cylinder(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n)
+double cy_intersect(t_vec *ray_start, t_vec *ray, t_cy *cy)
 {
-	// t_vec *mov = set_vec_len(cy->orien, cy->h / 2.0);
-	// t_vec *pos1 = add_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
-	// t_vec *pos2 = substract_vectors(cy->pos, mov);//account for camera position by turning position into a vector from cam pos
-	
-	// pos1 = cy->end1;
-	// pos2 = cy->end2;
-	double t1 = get_cy_endcap(cy->end1, ray_start, ray, scene, cy);
-	double t2 = get_cy_endcap(cy->end2, ray_start, ray, scene, cy); //endcaps have stopped working?
-	double t3 = get_shaft_intersection_eight(scene->cam, ray_start, ray, cy, n);
+	double t1 = get_cy_endcap(cy->end1, ray_start, ray, cy);
+	double t2 = get_cy_endcap(cy->end2, ray_start, ray, cy); //endcaps have stopped working?
+	double t3 = get_shaft_intersection_eight(ray_start, ray, cy);
     if (t3 == -10)
         return(-10);
-	// double t3 = get_shaft_intersection_eight(scene, cy, pos1, ray, pos2, n);
-	// t1 = INFINITY;
-	// t2 = INFINITY;
-	// t3 = INFINITY;
-
 	double t = t1;
-	// *n = set_vec_len(substract_vectors(gen_coord(0,0,0), cy->orien), 1);
 	if (t2 < t)
 	{
 		t = t2;
-		// *n = set_vec_len(cy->orien, 1);
 	}
 	if (t3 < t)
 	{
 		t = t3;
 	}
-	else
-	{
-		if (t == t2)
-			*n = set_vec_len(cy->orien, 1);
-		else if (t == t1)
-			*n = set_vec_len(substract_vectors(gen_coord(0,0,0), cy->orien), 1);
-
-		//can also be the invert of this
-	}
-	// if (t != INFINITY && t != 0)
-		// printf("t: %.16f, t1 = %f, t2 = %f, t3 = %.16f\n", t, t1, t2, t3);
 	return (t);
 }
 
-// double triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n)
-double triangle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_tr *tr, t_vec **n)
+double tr_intersect(t_vec *ray_start, t_vec *ray, t_tr *tr)
 {
 	//calculate normal
 	//is the positioning of my triangles strange?
@@ -332,7 +200,7 @@ double triangle(t_rt_scene *scene, t_vec *ray_start, t_vec *ray, t_tr *tr, t_vec
 		&& get_dot_product(normal_u, cross2) > 0
 		&& get_dot_product(normal_u, cross3) > 0)
 	{
-		*n = normal_u;
+		// *n = normal_u;
 		return (t); //t is always 10. It should not be? Calculate distance to current intersection point
 	}
 	else

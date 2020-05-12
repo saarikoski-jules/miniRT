@@ -51,7 +51,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 
 				// d_tmp = circle(scene, tmp->type.sp, ray, &n);
-				d_tmp = circle(scene->cam->pos, ray, tmp->type.sp, &n);
+				d_tmp = sp_intersect(scene->cam->pos, ray, tmp->type.sp);
 				// if (d_tmp == -10.0)
 					// printf("aaa\n");
 
@@ -61,7 +61,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == sq)
 			{
 				// d_tmp = square(scene, tmp->type.sq, ray, &n);
-				d_tmp = square(scene, scene->cam->pos, ray, tmp->type.sq, &n);
+				d_tmp = sq_intersect(scene->cam->pos, ray, tmp->type.sq);
 
 				// printf("sq\n");
 			}
@@ -69,7 +69,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 				// d_tmp = triangle(scene, tmp->type.tr, ray, &n);
 				// printf("tr\n");
-				d_tmp = triangle(scene, scene->cam->pos, ray, tmp->type.tr, &n);
+				d_tmp = tr_intersect(scene->cam->pos, ray, tmp->type.tr);
 			
 			}
 			else if (tmp->id == cy)
@@ -77,7 +77,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
 				// d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
 				// printf("cy\n");
-				d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
+				d_tmp = cy_intersect(scene->cam->pos, ray, tmp->type.cy);
 				// if (d == -10)
 					// printf("aaa\n");
 			}
@@ -85,7 +85,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			{
 				// d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
 				// printf("pl\n");
-				d_tmp = plane_intersect(scene, scene->cam->pos, ray, tmp->type.pl, &n);
+				d_tmp = pl_intersect(tmp->type.pl->orien, scene->cam->pos, tmp->type.pl->pos, ray);
 			
 			}
 			if (d_tmp == -10.0)
