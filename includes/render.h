@@ -6,6 +6,11 @@
 # include "rt.h"
 # include "object.h"
 
+# define EPSILON 0.0000001
+# define NO_INTERSECT -1
+# define INSIDE_OBJ -2
+
+
 typedef struct	s_grid
 {
 	t_vec	*up_left;
@@ -34,11 +39,13 @@ double pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 // double	plane_intersect(t_rt_scene *scene, t_vec *start, t_vec *ray, t_pl *pl, t_vec **n);
 // double	plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n);
 t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n);
-t_vec *find_point(t_vec *start, t_vec *dir, double t);
 
 
 //utils
 double solve_quadratic(double a, double b, double c);
+t_vec *find_point(t_vec *start, t_vec *dir, double t);
+double get_distance(t_vec *point1, t_vec *point2);
+double point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien);
 
 
 

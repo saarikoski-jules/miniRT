@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 12:19:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/11 12:33:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/13 18:59:43 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	validate_orien(t_vec **orien)
 	|| (*orien)->y < -1 || (*orien)->y > 1
 	|| (*orien)->z < -1 || (*orien)->z > 1)
 		error_exit_msg(C_INVALID_ORIEN_VEC, E_INVALID_ORIEN_VEC);
-	*orien = set_vec_len(*orien, 1);
+	*orien = set_vec_len(*orien, 1);//will leak
 }
 
 void	validate_fov(int fov)

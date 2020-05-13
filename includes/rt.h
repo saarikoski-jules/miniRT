@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 13:06:45 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/12 19:36:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/13 19:32:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@
 /*
 ** DATA STRUCTS
 */
-
-# define NO_INTERSECT -1
-# define INSIDE_OBJ -2
 
 typedef struct	s_resolution
 {
