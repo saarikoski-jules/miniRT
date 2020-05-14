@@ -83,6 +83,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			}
 			else if (tmp->id == pl)
 			{
+				// ft_printf("%f\n", det_len_vec(tmp->type.pl->orien));
 				// d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
 				// printf("pl\n");
 				d_tmp = pl_intersect(tmp->type.pl->orien, scene->cam->pos, tmp->type.pl->pos, ray);
