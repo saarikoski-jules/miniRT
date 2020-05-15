@@ -129,6 +129,9 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
 	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, -1);
+	// ft_printf("%f, %f, %f\n", vec->x, vec->y, vec->z);
+	// if (vec->x == 1 && vec->y == 0 && vec->z == 0)
+		// ft_printf("aa\n");
 	t_vec *ray = orient_vector(q, vec);
 	t_vec *ray_u = set_vec_len(ray, 1);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
@@ -230,6 +233,13 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	get_ndc_coords(scene, mlx_ptr, win_ptr);
 	// get_fisheye_ndc_coords(scene);
 }
+
+// void trace_them_rays(t_rt_scene *scene)
+// {
+// 	t_qua *q = determine_quaternion(gen_coord(0,1,0), gen_coord(0,0,-1));
+// 	ft_printf("q: %f, %f, %f, %f\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+// 	t_vec *v = orient_vector(q, gen_coord(1,0,0));
+// }
 
 void trace_them_rays(t_rt_scene *scene)
 {

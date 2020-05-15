@@ -5,7 +5,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-//TODO: Use defines for out of bounds, behind camera and inside obj
+// TODO: Use defines for out of bounds, behind camera and inside obj
+// TODO: multiple cameras
+// TODO: Save pixels to img and use put_img instead of put_pixel
+// TODO: --save to bmp
+// TODO: keybinds for rotating cameras 
+
+
 
 double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
 {	
