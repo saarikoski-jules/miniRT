@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/16 11:33:35 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/17 14:22:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "quaternion.h"
 #include "error.h"
 #include <math.h>
+#include "libft.h"//
 
 static t_qua	*gen_unit_quaternion(t_qua *q)
 {
@@ -63,7 +64,8 @@ static t_qua	*parallel_vecs(t_vec *base_u, t_vec *orien_u)
 	if (base_u->x == orien_u->x && base_u->y == orien_u->y && base_u->z == orien_u->z)
 		q->w = 1.0;
 	else
-		q->w = 0.0;
+		q->w = 0.0; //this is wrong
+	ft_printf("quat: %f\n", q->w);
 	q->vector = gen_coord(0.0, 0.0, 0.0);
 	return (q);
 }

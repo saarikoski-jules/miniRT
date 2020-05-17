@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/16 11:36:32 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/17 14:32:22 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,14 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 		&& q->vector->x == 0.0
 		&& q->vector->y == 0.0
 		&& q->vector->z == 0.0)
-		return (gen_coord(-v->x, -v->y, -v->z));
+		{
+			return (gen_coord(-v->x, v->y, -v->z));//this may still break
+		}
 	vec_one = orient_vec_util(q, v);
 	mul = q->w * 2;
 	cross = get_cross_product(q->vector, v);
-	if (cross->x == 0 && cross->y == 0 && cross->z == 0)
-		ft_printf("zeroooo\n");
+	// if (cross->x == 0 && cross->y == 0 && cross->z == 0) //this doesn't actually seem to break
+		// ft_printf("zeroooo\n");
 	vec_two = gen_coord(cross->x * mul,
 						cross->y * mul,
 						cross->z * mul);

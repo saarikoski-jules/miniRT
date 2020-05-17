@@ -47,48 +47,28 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			if (tmp->id == sp)
 			{
 
-				// d_tmp = circle(scene, tmp->type.sp, ray, &n);
 				d_tmp = sp_intersect(scene->cam->pos, ray, tmp->type.sp);
-				// if (d_tmp == -10.0)
-					// printf("aaa\n");
-
-				//fix when sphere is on top of me
-				// printf("sp\n");
 			}
 			else if (tmp->id == sq)
 			{
-				// d_tmp = square(scene, tmp->type.sq, ray, &n);
 				d_tmp = sq_intersect(scene->cam->pos, ray, tmp->type.sq);
-
-				// printf("sq\n");
 			}
 			else if (tmp->id == tr)
 			{
-				// d_tmp = triangle(scene, tmp->type.tr, ray, &n);
-				// printf("tr\n");
 				d_tmp = tr_intersect(scene->cam->pos, ray, tmp->type.tr);
 			
 			}
 			else if (tmp->id == cy)
 			{
-				// t_vec *ray_start, t_vec *ray, t_cy *cy, t_vec **n
-				// d_tmp = cylinder(scene, scene->cam->pos, ray, tmp->type.cy, &n);
-				// printf("cy\n");
 				d_tmp = cy_intersect(scene->cam->pos, ray, tmp->type.cy);
-				// if (d == -10)
-					// printf("aaa\n");
 			}
 			else if (tmp->id == pl)
 			{
-				// ft_printf("%f\n", det_len_vec(tmp->type.pl->orien));
-				// d_tmp = plane_intersect(scene, tmp->type.pl, ray, &n);
-				// printf("pl\n");
 				d_tmp = pl_intersect(tmp->type.pl->orien, scene->cam->pos, tmp->type.pl->pos, ray);
 			
 			}
 			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ)
 			{
-				// printf("-10\n");
 				return (INSIDE_OBJ);
 			}
 		}
@@ -96,19 +76,11 @@ int cast(t_rt_scene *scene, t_vec *ray)
 		if (d_tmp < d && d_tmp >= 0.0)
 		{
 			d = d_tmp;
-			// if (d == -10) //if camera is inside an object, give me all black
-			// {
-				// return (-10);
-			// }
-			//get position from d, ray and camera position. Trace vector from point to all cameras and calculate combined color including ambiance
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
-			// printf("dist: %f\n", d);
-			// t_color *rgb = tmp->color;
 		}
 		tmp = tmp->next;
 	}
-	// printf("\n");
 	return (color);
 }
 
@@ -129,8 +101,11 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	// ft_printf("%f, %f, %f\n", vec->x, vec->y, vec->z);
 	// if (vec->x == 1 && vec->y == 0 && vec->z == 0)
 		// ft_printf("aa\n");
+	// ft_printf("vec: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
+
 	t_vec *ray = orient_vector(q, vec);
 	t_vec *ray_u = set_vec_len(ray, 1);
+	// ft_printf("ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
 	
 	

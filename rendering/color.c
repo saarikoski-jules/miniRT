@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdio.h>//
 
-//TODO: remember to take into account opposite orientation
+//TODO: remember to take into account opposite orientation (should work now)
 
 int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 {
