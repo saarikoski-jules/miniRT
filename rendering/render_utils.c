@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-int translate_color(t_color *color)
+int		translate_color(t_color *color)
 {
 	int rgb;
 	rgb = (color->r * pow(16, 4)) + (color->g * pow(16, 2)) + (color->b);
@@ -24,7 +24,7 @@ t_vec	*find_point(t_vec *start, t_vec *dir, double t)
 	return (point);
 }
 
-double get_distance(t_vec *point1, t_vec *point2)
+double	get_distance(t_vec *point1, t_vec *point2)
 {
 	double x;
 	double y;
@@ -38,7 +38,7 @@ double get_distance(t_vec *point1, t_vec *point2)
 	return (d);
 }
 
-double point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien)
+double	point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien)
 {
 	t_vec *edge;
 	t_vec *to_p;

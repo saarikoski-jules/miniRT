@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/14 15:42:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/16 11:38:10 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,6 @@ double get_shaft_intersection(t_vec *ray_start, t_vec *ray, t_cy *cy)
 	t = validate_cy_intersect(p, R, t, cy);
 	free(p);
 	free(R);
-	// if (t != -1)
-		// ft_printf("t: %f\n", t);
 	return (t);
 }
 

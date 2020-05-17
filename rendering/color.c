@@ -9,12 +9,7 @@
 
 int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 {
-	//get point on object surface = cam->pos + d * ray
-	// double epsilon = 0.000001; //to prevent objects intersecting with themselves
-	// double epsilon = -0.000001; //to prevent objects intersecting with themselves
-	// t_vec *intersection = gen_coord(d * ray->x - epsilon, d * ray->y - epsilon, d * ray->z - epsilon); //wont work for everything, make sure to move intersection point a little towards the light
-    t_vec *ray_u = set_vec_len(ray, 1);
-	t_vec *intersection = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z); //wont work for everything, make sure to move intersection point a little towards the light
+	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z); //wont work for everything, make sure to move intersection point a little towards the light
 	t_vec *point = add_vectors(scene->cam->pos, intersection);
 
 	//check if there is an intersection on the vector between light and all objects
@@ -34,8 +29,8 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	t_vec *sec = substract_vectors(light->pos, point);
 	t_vec *sec_u = set_vec_len(sec, 1);
 	double sec_len = det_len_vec(sec); //sec is vector from point to light
-    t_vec *epsilon = set_vec_len(sec, 0.00000001); //to not intersect self
-    t_vec *point_new = add_vectors(point, epsilon); //to not intersect self
+    t_vec *eps = set_vec_len(sec, EPSILON); //to not intersect self
+    t_vec *point_new = add_vectors(point, eps); //to not intersect self
     //INSTEAD OF MOVING POINT TOWARD LIGHT, SHOULD MOVE POINT TOWARD SELF
     // t_vec *IC = add_vectors(point, scene->cam->pos);
     // t_vec *epsilon = set_vec_len(IC, 0.000000001);
@@ -133,104 +128,6 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	//return 0 if there are no intersections
 }
 
-t_vec *cy_normal(t_cy *cy, t_vec *intersect)
-{
-	t_vec *normal;
-
-	//INSTEAD DETERMINE FROM END TO UP. THIS WILL WORK
-
-	// normal == NULL;
-	//side1 get distance from centre to intersect
-	//side2 == r
-	//solve side 3 of straight triangle
-
-	//tan(angle) = opposite / adjacent
-
-	double min_angle = cy->r / cy->h;
-
-	// t_vec *hyp = sqrt(pow(cy->r, 2) - pow(cy->h, 2))
-
-
-	t_vec *v_len = substract_vectors(intersect, cy->end1);
-	double len = det_len_vec(v_len);
-	double len_z;
-
-	// printf("len: %f\n", pow(len, 2));
-	// printf("r: %f\n", cy->r);
-
-	t_vec *v_up = substract_vectors(intersect, cy->end2);
-	if (det_len_vec(v_up) <= cy->r)
-	{
-		return (cy->orien);
-	}
-	else if (len <= cy->r)
-	{
-		return (substract_vectors(gen_coord(0,0,0),cy->orien));
-	}
-	else
-	{
-		double tot = pow(len, 2) - pow(cy->r, 2);
-		// printf("tot: %f\n", tot);
-		len_z = sqrt(tot); //this seems right
-	// printf("new z: %.15f\n\n", len_z);
-
-	}
-	// printf("len_z: %f\n\n", len_z);
-	t_vec *z = set_vec_len(cy->orien, len_z);
-	t_vec *tmp = add_vectors(cy->end1, z);
-	// printf("new: (%.15f, %.15f, %.15f)\n\n", tmp->x, tmp->y, tmp->z);
-	// t_vec *real_inter = add_vectors(intersect, scene->cam->pos);
-	normal = substract_vectors(intersect, tmp);
-	
-
-	// printf("new: (%f, %f, %f)\n\n", intersect->x, intersect->y, intersect->z);
-
-	// t_vec *maybe_inter = add_vectors(z, normal);
-	// if (maybe_inter->x == intersect->x && maybe_inter->y == intersect->y && maybe_inter->z == intersect->z)
-	// {
-		return (normal);
-	// }
-	// printf("wrong\n");
-	// printf("maybe:\t\t(%.15f, %.15f, %.15f)\nintersect:\t(%.15f, %.15f, %.15f)\n\n", maybe_inter->x, maybe_inter->y, maybe_inter->z, intersect->x, intersect->y, intersect->z);
-// 
-	// return (NULL);
-
-}
-
-t_vec *calculate_normal(t_obj *obj, t_vec *intersect)
-{
-	t_vec *normal;
-	normal = NULL;
-
-
-	//for planes make sure normal is either correct or opposite orientation depending on where light comes
-	if (obj->id == cy)
-	{
-		normal = cy_normal(obj->type.cy, intersect);
-	}
-	else if (obj->id == sp)
-	{
-		normal = substract_vectors(intersect, obj->type.sp->pos);
-	}
-	else if (obj->id == pl)
-	{
-		normal = obj->type.pl->orien;
-	}
-	else if (obj->id == tr)
-	{
-		normal = obj->type.tr->orien;
-	}
-	else if (obj->id == sq)
-	{
-		normal = obj->type.sq->orien;
-	}
-	else if (normal != NULL)
-	{
-		t_vec *normal_u = set_vec_len(normal, 1);
-		return (normal_u);
-	}
-}
-
 t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
 {
 
@@ -248,14 +145,15 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 		return (color);
 	//calculate intersection here
 	// t_vec *N = calculate_normal(ray, intersection, obj); //normal to the hit point
-	t_vec *ray_u = set_vec_len(ray, 1);
-	t_vec *intersect = gen_coord(d * ray_u->x, d * ray_u->y, d * ray_u->z);
+	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
 	t_vec *point = add_vectors(intersect, scene->cam->pos);
 	t_vec *R;
 	t_vec *R_u;
 	double dot;
 
-	t_vec *normal = calculate_normal(obj, point);
+
+	//should be able to fix by comparing R_u with normal
+
 	// if (normal != NULL)
 	// {	
 		// if ((normal->x != n->x || normal->y != n->y || normal->z != n->z) && obj->id != sp)
@@ -263,6 +161,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	// }
 	// printf("new: (%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
+	t_vec *normal = calculate_normal(obj, point, scene->cam); //if normal is to the opposite direction, from light, r
 	//Get combined color effect on the pixel from all the lights
 	while(tmp != NULL)
 	{

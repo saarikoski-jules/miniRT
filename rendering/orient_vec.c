@@ -6,12 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/15 17:34:16 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/16 11:36:32 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "quaternion.h"
 #include "vec.h"
+#include "error.h"
 #include <math.h>
 #include "libft.h"//
 
@@ -23,7 +24,19 @@ v_new	= q*v*q_con
 		= 2(dot(qv,v)*qv) + (w*2*dot(-qv,qv)*v) + (2*w*cross(qv,v))
 */
 
-static t_vec *orient_vec_util_two(t_qua *q, t_vec *v)
+static t_qua	*gen_q_conjugate(t_qua *q)
+{
+	t_qua *q_c;
+
+	q_c = (t_qua*)e_malloc(sizeof(t_qua));
+	q_c->w = q->w;
+	q_c->vector = gen_coord(-q->vector->x,
+							-q->vector->y,
+							-q->vector->z);
+	return (q_c);
+}
+
+static t_vec	*orient_vec_util_two(t_qua *q, t_vec *v)
 {
 	t_qua	*q_con;
 	double	mul;
@@ -37,7 +50,7 @@ static t_vec *orient_vec_util_two(t_qua *q, t_vec *v)
 	return (vec);
 }
 
-static t_vec *orient_vec_util(t_qua *q, t_vec *v)
+static t_vec	*orient_vec_util(t_qua *q, t_vec *v)
 {
 	double	mul;
 	t_vec	*vec_one;
@@ -56,13 +69,13 @@ static t_vec *orient_vec_util(t_qua *q, t_vec *v)
 
 }
 
-t_vec *orient_vector(t_qua *q, t_vec *v)
+t_vec			*orient_vector(t_qua *q, t_vec *v)
 {
-	double mul;
-	t_vec *cross;
-	t_vec *vec_one;
-	t_vec *vec_two;
-	t_vec *vec_new;
+	double	mul;
+	t_vec	*cross;
+	t_vec	*vec_one;
+	t_vec	*vec_two;
+	t_vec	*vec_new;
 
 	if (q->w == 0.0
 		&& q->vector->x == 0.0
@@ -71,9 +84,9 @@ t_vec *orient_vector(t_qua *q, t_vec *v)
 		return (gen_coord(-v->x, -v->y, -v->z));
 	vec_one = orient_vec_util(q, v);
 	mul = q->w * 2;
-	cross = get_cross_product(q->vector, v); //fix if vectors point in opposite directions
+	cross = get_cross_product(q->vector, v);
 	if (cross->x == 0 && cross->y == 0 && cross->z == 0)
-		ft_printf("zeroooo\n"); // it shouldn't break anyway if v and q->v are parallel? //TODO: test if opposite v and q->v break THIS SHOULDN'T BREAK
+		ft_printf("zeroooo\n");
 	vec_two = gen_coord(cross->x * mul,
 						cross->y * mul,
 						cross->z * mul);

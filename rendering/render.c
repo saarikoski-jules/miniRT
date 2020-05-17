@@ -13,21 +13,18 @@
 //choose: default rotation of camera, should be changeable.
 
 
+
 // 	// ☺
 
+//TODO: fisheye lens for 180 fov
 //TODO: if two items are on the exact same 2D plane, which one displays? Right now the one mentioned earlier in the .rt file is displayed
 //TODO: square is not visible if your camera and square orientation are the same
 //TODO: cylinders break when seen more from the direction of the endcaps
 //TODO: cylinder is rendered slightly wider than it's meant to
 //TODO: what happens when any object is on top of me
 //TODO: make sure any invalid arguments aren't accepted. Make sure --saved is the only extra thing that works
-
-
-
-// t_vec *calculate_normal(t_vec *ray, t_vec *hit, t_obj *obj)
-// {
-
-// }
+//TODO: image flipped when looking behind. Is this bad?
+//TODO: quaternions break when camera pointing directly into 0,0,-1 or 0,0,1.
 
 int cast(t_rt_scene *scene, t_vec *ray)
 {

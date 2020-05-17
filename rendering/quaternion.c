@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   quaternion_utils.c                                 :+:    :+:            */
+/*   quaternion.c                                       :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/05/14 17:13:02 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/15 17:17:23 by jsaariko      ########   odam.nl         */
+/*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/05/16 11:33:35 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "quaternion.h"
 #include "error.h"
 #include <math.h>
-#include "libft.h"//
 
-t_qua	*gen_unit_quaternion(t_qua *q)
+static t_qua	*gen_unit_quaternion(t_qua *q)
 {
 	t_qua	*q_u;
 	double	val;
@@ -34,7 +34,7 @@ t_qua	*gen_unit_quaternion(t_qua *q)
 	return (q_u);
 }
 
-t_qua *calculate_q_values(t_vec *base_u, t_vec *orien_u, t_vec *axis_u)
+static t_qua	*calculate_q_values(t_vec *base_u, t_vec *orien_u, t_vec *axis_u)
 {
 	double dot;
 	double angle;
@@ -55,7 +55,7 @@ t_qua *calculate_q_values(t_vec *base_u, t_vec *orien_u, t_vec *axis_u)
 	return(q_u);
 }
 
-t_qua *parallel_vecs(t_vec *base_u, t_vec *orien_u)
+static t_qua	*parallel_vecs(t_vec *base_u, t_vec *orien_u)
 {
 	t_qua *q;
 
@@ -68,7 +68,7 @@ t_qua *parallel_vecs(t_vec *base_u, t_vec *orien_u)
 	return (q);
 }
 
-t_qua *determine_quaternion(t_vec *orien, t_vec *base)
+t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 {
 	t_vec *orien_u;
 	t_vec *base_u;
@@ -94,17 +94,3 @@ t_qua *determine_quaternion(t_vec *orien, t_vec *base)
 	free(axis);
 	return (q);
 }
-
-t_qua *gen_q_conjugate(t_qua *q)
-{
-	t_qua *q_c;
-
-	q_c = (t_qua*)e_malloc(sizeof(t_qua));
-	q_c->w = q->w;
-	q_c->vector = gen_coord(-q->vector->x,
-							-q->vector->y,
-							-q->vector->z);
-	return (q_c);
-}
-
-

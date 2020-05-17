@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/05/15 17:17:51 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/05/16 12:23:18 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,11 +25,13 @@ RT_SRCS =	test.c \
 			$(RENDER_DIR)render.c \
 			$(RENDER_DIR)render_utils.c \
 			$(RENDER_DIR)vector_utils.c \
-			$(RENDER_DIR)quaternion_utils.c \
+			$(RENDER_DIR)quaternion.c \
 			$(RENDER_DIR)orient_vec.c \
-			$(RENDER_DIR)collision.c \
-			$(RENDER_DIR)color.c \
+			$(RENDER_DIR)collision_2d.c \
+			$(RENDER_DIR)collision_sp.c \
 			$(RENDER_DIR)collision_cy.c \
+			$(RENDER_DIR)color.c \
+			$(RENDER_DIR)normal.c \
 
 MLXFLAGS_W = -lmlx -lXext -lX11
 MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread

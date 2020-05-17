@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 13:07:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/11 14:40:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/17 12:12:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ typedef struct	s_tr
 	t_vec	*point1;	
 	t_vec	*point2;	
 	t_vec	*point3;
-	t_vec	*orien;	
+	t_vec	*orien;
 }				t_tr;
 
 /*

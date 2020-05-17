@@ -1,34 +1,21 @@
-#include <stdio.h>//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   collision_2d.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/05/16 11:43:13 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "vec.h"
-#include "rt.h"
+#include "object.h"
 #include "render.h"
-#include <math.h>
 #include <stdlib.h>
 
-// TODO: Use defines for out of bounds, behind camera and inside obj
-// TODO: multiple cameras
-// TODO: Save pixels to img and use put_img instead of put_pixel
-// TODO: --save to bmp
-// TODO: keybinds for rotating cameras 
-
-
-
-double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
-{	
-	t_vec *len;
-	double b;
-	double c;
-
-	len = substract_vectors(ray_start, sp->pos);
-	if (det_len_vec(len) <= sp->r)
-		return (INSIDE_OBJ); //You're inside the circle
-	b = 2.0 * get_dot_product(ray, len);
-	c = get_dot_product(len, len) - pow(sp->r, 2);
-	free(len);
-	return (solve_quadratic(1.0, b, c));
-}
-
-double pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
+double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 {
 	t_vec *v_pl;
 	double ln;
@@ -47,14 +34,14 @@ double pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 	return (t);
 }
 
-double sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
+double	sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 {
 	double	t;
 	t_vec	*point;
 
 	t = pl_intersect(sq->orien, ray_start, sq->point1, ray);
-	if (t == INFINITY)
-		return (INFINITY);
+	if (t == NO_INTERSECT)
+		return (NO_INTERSECT);
 	point = find_point(ray_start, ray, t);
 	if (point_within_line(sq->point1, sq->point2, point, sq->orien) > 0
 	&&	point_within_line(sq->point2, sq->point3, point, sq->orien) > 0
@@ -68,7 +55,7 @@ double sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 	return (-1);
 }
 
-double tr_intersect(t_vec *ray_start, t_vec *ray, t_tr *tr)
+double	tr_intersect(t_vec *ray_start, t_vec *ray, t_tr *tr)
 {
 	double t;
 	t_vec *point;
