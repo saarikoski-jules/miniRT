@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/16 11:43:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/28 15:59:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ double	sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 		return (t);
 	}
 	free(point);
-	return (-1);
+	return (NO_INTERSECT);
 }
 
 double	tr_intersect(t_vec *ray_start, t_vec *ray, t_tr *tr)

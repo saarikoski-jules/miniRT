@@ -84,7 +84,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	return (color);
 }
 
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q, t_vec *base)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -97,13 +97,14 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q)
 	double PixelScreeny = (1 - (pos->y * 2)) * cam_data.len_y * cam_data.fov_ratio; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
-	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, -1);
+	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, base->z);
 	// ft_printf("%f, %f, %f\n", vec->x, vec->y, vec->z);
 	// if (vec->x == 1 && vec->y == 0 && vec->z == 0)
 		// ft_printf("aa\n");
 	// ft_printf("vec: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
 
 	t_vec *ray = orient_vector(q, vec);
+	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
 	t_vec *ray_u = set_vec_len(ray, 1);
 	// ft_printf("ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
@@ -135,14 +136,20 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	inc_x = 1.0/scene->res->res_x;
 	inc_y = 1.0/scene->res->res_y;
 	pos = (t_vec*)e_malloc(sizeof(t_vec));
-	pos->z = -1; //we'll need to find the real number for this
+	// if (scene->cam->orien->z > 0)
+		// pos->z = 1; //we'll need to find the real number for this
+	// else
+		pos->z = -1;
 	pos->x = inc_x / 2;
 	pos->y = inc_y / 2;
 
 	// pos->x = 0;//
 	// pos->y = 0;//
-
-	t_vec *base = gen_coord(0, 0, -1);
+	t_vec *base;
+	// if (scene->cam->orien->z > 0)
+		// base = gen_coord(0, 0, 1);
+	// else
+		base = gen_coord(0, 0, -1); 
 	t_qua *q = determine_quaternion(scene->cam->orien, base);
 	int color;
 
@@ -154,7 +161,7 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 		{
 			// if (i == 270 && j == 330)
 			// {
-				color = remap_coord(scene, pos, cam_data, q);
+				color = remap_coord(scene, pos, cam_data, q, base);
 				// color = 0xffffff;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
 			// }

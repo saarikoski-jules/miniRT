@@ -16,7 +16,10 @@ int get_int(char *line, size_t *i)
 		(*i)++;
 	*i += ft_strmatch(line + *i, "0123456789");
 	if (val > INT_MAX || val < INT_MIN)
+	{
+		ft_printf("%d\n", val);
 		error_exit_msg(C_PARSE_INVALID_INT, E_PARSE_INVALID_INT);
+	}
 	//error check
 	return ((int)val);
 }

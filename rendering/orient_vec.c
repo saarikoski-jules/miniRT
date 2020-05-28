@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/17 14:32:22 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/28 16:08:14 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@
 /*
 v_new	= q*v*q_con
 		= (w,qv)(0,v)(w,-qv) //scalar part results in 0
-		= 2(qv⋅v)qv+(w2−qv⋅qv)v+2w(qv×v)
-		= 2(dot(qv,v)*qv) + (w*2*dot(-qv,qv)*v) + (2*w*cross(qv,v))
+		= 2(qv⋅v)qv+(w^2−qv⋅qv)v+2w(qv×v)
 */
-
-static t_qua	*gen_q_conjugate(t_qua *q)
+t_qua	*gen_q_conjugate(t_qua *q)
 {
 	t_qua *q_c;
 
@@ -69,6 +67,40 @@ static t_vec	*orient_vec_util(t_qua *q, t_vec *v)
 
 }
 
+// double uhm(t_qua *q)
+// {
+// 	t_qua	*q_c;
+// 	double	t;
+
+// 	q_c = gen_q_conjugate(q);
+		
+// 	double x;
+// 	double y;
+// 	double z;
+// 	double w;
+// 	double sum;
+
+// 	x = q->vector->x * q_c->vector->x;
+// 	y = q->vector->y * q_c->vector->y;
+// 	z = q->vector->z * q_c->vector->z;
+// 	w = q->w * q_c->w;
+// 	sum = x + y + z + w;
+	
+	
+// 	// ft_printf("t: %f\n", sum);	
+// 	return (sum);
+// }
+	// if (sum < 0)
+	// {
+		// q->vector->y = -q->vector->y;
+		// return ();
+	// }
+	// else
+		// return (q);
+// }
+
+// (2*dot(qv,v)*qv) + (w^2+dot(-qv,qv)*v) + (2*w*cross(qv,v))
+// =2(u⋅v)u+   (s^2−u⋅u)v   +2s(u×v)
 t_vec			*orient_vector(t_qua *q, t_vec *v)
 {
 	double	mul;
@@ -82,7 +114,8 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 		&& q->vector->y == 0.0
 		&& q->vector->z == 0.0)
 		{
-			return (gen_coord(-v->x, v->y, -v->z));//this may still break
+			// ft_printf("quat aa\n");
+			return (gen_coord(-v->x, -v->y, -v->z));//this may still break
 		}
 	vec_one = orient_vec_util(q, v);
 	mul = q->w * 2;
@@ -96,5 +129,12 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 	free(cross);
 	free(vec_one);
 	free(vec_two);
+	// if (vec_new->z > 0)
+		// vec_new->y = vec_new->y * -1; //fixish??
+	// if (uhm(q) < 0)
+	// {
+		// vec_new->y = -vec_new->y;
+		// vec_new->x = -vec_new->x;
+	// }
 	return (vec_new);
 }

@@ -5,8 +5,8 @@
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/15 18:29:28 by jvisser        #+#    #+#                */
-/*   Updated: 2020/03/17 14:49:49 by jvisser       ########   odam.nl         */
+/*   Created: 2020/03/15 18:29:28 by jvisser       #+#    #+#                 */
+/*   Updated: 2020/05/23 14:37:04 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ void	validate_int(char *line)
 	if (ft_strchr("-+", (int)line[i]) != NULL)
 		i++;
 	if (ft_strchr("0123456789", (int)line[i]) == NULL)
+	{
+		ft_printf("error: '%d'\n", line[i]);
 		error_exit_msg(C_PARSE_INVALID_INT, E_PARSE_INVALID_INT);
+	}
 }
 
 void	validate_float(char *line)

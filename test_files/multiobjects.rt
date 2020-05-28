@@ -1,0 +1,9 @@
+R 400 400
+A 0.6       255,255,255
+c 0,3,-20.0  0,0,1  50
+sp 0,0,0 10     123,45,6
+cy 15,0,0 0,1,0 30 20   0,255,0
+pl 0,0,0 0,1,0        255,0,0
+pl 0,0,50 0,0,-1       0,255,0
+# these two commented-out planes are for the 2nd part of the test.
+# handling comments in .rt files isnt specified anywhere, so if your miniRT sees this as an invalid file, just remove it.

@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/05/16 12:23:18 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/05/25 13:51:22 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ RT_SRCS =	test.c \
 			$(RENDER_DIR)render_utils.c \
 			$(RENDER_DIR)vector_utils.c \
 			$(RENDER_DIR)quaternion.c \
+			$(RENDER_DIR)slerp.c \
 			$(RENDER_DIR)orient_vec.c \
 			$(RENDER_DIR)collision_2d.c \
 			$(RENDER_DIR)collision_sp.c \
@@ -51,3 +52,5 @@ fclean:
 	@make -C libft fclean
 
 re: fclean all
+
+			# $(RENDER_DIR)quaternion_utils.c \

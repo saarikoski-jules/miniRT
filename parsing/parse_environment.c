@@ -4,6 +4,7 @@
 #include "parse.h"//
 #include "rt.h"//
 #include "libft.h"
+#include <stdio.h>
 
 // #include <stdlib.h>
 
@@ -18,9 +19,15 @@ t_resolution	*get_resolution(char *line)
 	res->res_x = get_int(line, &i);
 	res->res_y = get_int(line, &i);
 	if (res->res_x < 0 || res->res_y < 0)
+	{
+		ft_printf("< 0\n");
 		error_exit_msg(C_INVALID_RES, E_INVALID_RES);
+	}
 	if (line[i] != '\0')
+	{
+		printf("%d\n", line[i]);
 		error_exit_msg(C_INVALID_RES, E_INVALID_RES);
+	}
 	// ft_printf("Resolution:\nres_x %d, res_y %d\n\n", res->res_x, res->res_y);
 	return (res);
 }
