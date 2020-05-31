@@ -139,23 +139,32 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 	// if (scene->cam->orien->z > 0)
 		// pos->z = 1; //we'll need to find the real number for this
 	// else
-		pos->z = -1;
-	pos->x = inc_x / 2;
+		// pos->z = -1;
 	pos->y = inc_y / 2;
 
 	// pos->x = 0;//
 	// pos->y = 0;//
 	t_vec *base;
-	// if (scene->cam->orien->z > 0)
-		// base = gen_coord(0, 0, 1);
-	// else
+	if (scene->cam->orien->z > 0)
+	{
+		base = gen_coord(0, 0, 1);
+		inc_x = inc_x * (-1);
+		pos->x = 1 + (inc_x / 2);
+	}
+	else
+	{
 		base = gen_coord(0, 0, -1); 
+		pos->x = inc_x / 2;
+	}
 	t_qua *q = determine_quaternion(scene->cam->orien, base);
 	int color;
 
 	// while (j <= 2)
+			// ft_printf("pos %f\n", pos->x);
 	while (j <= scene->res->res_y)
 	{
+		// if (pos->x < 0)
+			// ft_printf("pos %f\n", pos->x);
 		// while (i <= 2)
 		while (i <= scene->res->res_x)
 		{
@@ -167,17 +176,24 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 			// }
 			if (color == INSIDE_OBJ)
 			{
-				printf("inside obj\n");
+				// printf("inside obj\n");
 				return;
 			}
 			if (i != scene->res->res_x)
 			{
+				// ft_printf("inc_x: %f\n", inc_x);
 				pos->x += inc_x;
+				// ft_printf("pos->x: %f, i: %d\n", pos->x, i);
 			}
 			i++;
 		}
 		i = 1;
-		pos->x = inc_x /2;
+		if (scene->cam->orien->z > 0)
+		{
+			pos->x = 1 + (inc_x / 2);
+		}
+		else
+			pos->x = inc_x /2;
 		if (j != scene->res->res_y)
 		{
 			pos->y += inc_y;
