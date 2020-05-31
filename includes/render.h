@@ -18,6 +18,14 @@ typedef struct	s_grid //get rid of this
 	t_vec	*down_right;
 }				t_grid;
 
+typedef struct	s_mlx_data
+{
+	void *mlx_ptr;
+	void *win_ptr;
+	void *img_ptr;
+	t_rt_scene *scene;
+}				t_mlx_data;
+
 typedef struct	s_cam_info
 {
 	double	aspect_ratio;

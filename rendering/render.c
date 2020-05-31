@@ -203,7 +203,7 @@ t_camera *find_cam(t_camera *cam_orig, int i)
 	cam_new = cam_orig;
 	if (i < 0)
 		return (NULL);
-	if (i == 0)
+	if (i <= 0)
 		return (cam_orig);
 	while(j < i && cam_new->next != NULL)
 	{
@@ -213,24 +213,26 @@ t_camera *find_cam(t_camera *cam_orig, int i)
 	return (cam_new);
 }
 
-int	deal_key(int key, void *cam)
+int	deal_key(int key, void *mlx_data)
 {
-	t_camera *cam_orig = (t_camera *)cam;
+	t_mlx_data *data = (t_mlx_data *)mlx_data;
+	t_rt_scene *scene = data->scene;
+	t_camera *cam_orig = scene->cam;
 	t_camera *cam_cur = NULL;
-	ssize_t i = 0;
-	if (cam == NULL)
+	ssize_t i = 1;
+	if (cam_orig == NULL)
 	{
 		return (0);
 	}
 	else
 	{
-		ft_printf("cam: %p\n", cam);
+		ft_printf("cam: %p\n", cam_orig);
 		ft_printf("%d\n", key);
 		if (key == 65363)
 		{
 			i++;
 		}
-		else if (key == 65365)
+		else if (key == 65361)
 		{
 			i--;
 		}
@@ -240,6 +242,8 @@ int	deal_key(int key, void *cam)
 			return (0);
 		}
 		cam_cur = find_cam(cam_orig, i);
+		ft_printf("camera fov: %d\n", cam_cur->fov);
+		trace(scene, data->mlx_ptr, data->win_ptr, cam_cur);
 	}
 	// trace(scene, mlx_ptr, win_ptr, cam);
 	return (key);
@@ -307,17 +311,21 @@ void trace_them_rays(t_rt_scene *scene)
 	int color;
 
 	y = 100;
-	mlx_ptr = mlx_init();
-	if (!mlx_ptr)
+	t_mlx_data *mlx_data;
+
+	mlx_data = (t_mlx_data *)e_malloc(sizeof(mlx_data));
+	mlx_data->mlx_ptr = mlx_init();
+	if (!mlx_data->mlx_ptr)
 		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT);
 	//direction vector for a straight vector for collision checking.
 	// t_vec *dir = determine_vector(scene->cam->pos, scene->cam->orien);
 	// ft_printf("vector: (%f, %f, %f)\n", dir->x, dir->y, dir->z);
 
 
-	win_ptr = mlx_new_window(mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
-	mlx_key_hook(win_ptr, deal_key, scene->cam->next);
-	trace(scene, mlx_ptr, win_ptr, scene->cam);
+	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
+	mlx_data->scene = scene;
+	mlx_key_hook(mlx_data->win_ptr, deal_key, mlx_data);
+	trace(scene, mlx_data->mlx_ptr, mlx_data->win_ptr, scene->cam);
 
 	//get straight vector
 	//get position of current pixel
@@ -330,10 +338,10 @@ void trace_them_rays(t_rt_scene *scene)
 	// ft_printf("%x\n", color);
 	// while(y < 300)
 	// {
-	// 	mlx_pixel_put(mlx_ptr, win_ptr, 100, y, color);
+	// 	mlx_pixel_put(mlx_data->mlx_ptr, mlx_data->win_ptr, 100, y, color);
 	// 	color += 1;
 	// 	y++;
 	// }
-	mlx_loop(mlx_ptr);
+	mlx_loop(mlx_data->mlx_ptr);
 	// img_ptr = mlx_new_image(mlx_ptr, 12, 12);
 }
