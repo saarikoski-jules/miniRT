@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/16 11:38:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/31 16:47:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <math.h>
 #include "render.h"
 #include "libft.h"
+
+//TODO: If cylinder is barely touching camera, epsilon issues
 
 double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_cy *cy)
 {
@@ -124,5 +126,7 @@ double cy_intersect(t_vec *ray_start, t_vec *ray, t_cy *cy)
 		t = t2;
 	if ( t3 != NO_INTERSECT && t3 < t)
 		t = t3;
+	if (t == INFINITY)
+		t = NO_INTERSECT;
 	return (t);
 }

@@ -25,6 +25,7 @@
 //TODO: make sure any invalid arguments aren't accepted. Make sure --saved is the only extra thing that works
 //TODO: image flipped when looking behind. Is this bad?
 //TODO: quaternions break when camera pointing directly into 0,0,-1 or 0,0,1.
+//TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 
 int cast(t_rt_scene *scene, t_vec *ray)
 {
@@ -56,11 +57,11 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			else if (tmp->id == tr)
 			{
 				d_tmp = tr_intersect(scene->cam->pos, ray, tmp->type.tr);
-			
 			}
 			else if (tmp->id == cy)
 			{
 				d_tmp = cy_intersect(scene->cam->pos, ray, tmp->type.cy);
+				// if (d_tmp != 0.0 && d_tmp != NO_INTERSECT)
 			}
 			else if (tmp->id == pl)
 			{
@@ -73,8 +74,10 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			}
 		}
 
-		if (d_tmp < d && d_tmp >= 0.0)
+		if (d_tmp < d && d_tmp > EPSILON)
 		{
+			// if (tmp->id == cy)
+				// printf("d_tmp: %.15f\n", d_tmp);
 			d = d_tmp;
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
@@ -168,6 +171,8 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 		// while (i <= 2)
 		while (i <= scene->res->res_x)
 		{
+			if (pos->x < 0)
+				ft_printf("pos->x: %f\n", pos->x);
 			// if (i == 270 && j == 330)
 			// {
 				color = remap_coord(scene, pos, cam_data, q, base);
