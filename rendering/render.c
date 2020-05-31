@@ -87,7 +87,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	return (color);
 }
 
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q, t_vec *base)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t_vec *base)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -96,8 +96,8 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q, t_
 	// ft_printf("aspect ratio: %f\n", aspect_ratio);
 	// double fov_y = tan(FOV_VERT / 2 * M_PI / 180);
 	// double fov_x = tan(scene->cam->fov / 2 * M_PI / 180);
-	double PixelScreenx = ((pos->x * 2) - 1) * cam_data.aspect_ratio * cam_data.len_x;
-	double PixelScreeny = (1 - (pos->y * 2)) * cam_data.len_y * cam_data.fov_ratio; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
+	double PixelScreenx = ((pos->x * 2) - 1) * cam_data->aspect_ratio * cam_data->len_x;
+	double PixelScreeny = (1 - (pos->y * 2)) * cam_data->len_y; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
 	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, base->z);
@@ -120,48 +120,15 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info cam_data, t_qua *q, t_
 
 
 //get ndc space
-void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
+void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qua *q, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y)
 {
 	size_t i;
 	size_t j;
-	double inc_x;
-	double inc_y;
-	t_vec *pos;
-	t_cam_info cam_data;
+	int color;
 
-	cam_data.aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
-	cam_data.fov_ratio = (double)scene->cam->fov / (double)FOV_VERT; //changing maybe
-	cam_data.len_x = tan(scene->cam->fov / 2 * M_PI / 180);
-	cam_data.len_y = tan(FOV_VERT / 2 * M_PI / 180);
 
 	i = 1;
 	j = 1;
-	inc_x = 1.0/scene->res->res_x;
-	inc_y = 1.0/scene->res->res_y;
-	pos = (t_vec*)e_malloc(sizeof(t_vec));
-	// if (scene->cam->orien->z > 0)
-		// pos->z = 1; //we'll need to find the real number for this
-	// else
-		// pos->z = -1;
-	pos->y = inc_y / 2;
-
-	// pos->x = 0;//
-	// pos->y = 0;//
-	t_vec *base;
-	if (scene->cam->orien->z > 0)
-	{
-		base = gen_coord(0, 0, 1);
-		inc_x = inc_x * (-1);
-		pos->x = 1 + (inc_x / 2);
-	}
-	else
-	{
-		base = gen_coord(0, 0, -1); 
-		pos->x = inc_x / 2;
-	}
-	t_qua *q = determine_quaternion(scene->cam->orien, base);
-	int color;
-
 	// while (j <= 2)
 			// ft_printf("pos %f\n", pos->x);
 	while (j <= scene->res->res_y)
@@ -171,8 +138,8 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 		// while (i <= 2)
 		while (i <= scene->res->res_x)
 		{
-			if (pos->x < 0)
-				ft_printf("pos->x: %f\n", pos->x);
+			// if (pos->x < 0)
+				// ft_printf("pos->x: %f\n", pos->x);
 			// if (i == 270 && j == 330)
 			// {
 				color = remap_coord(scene, pos, cam_data, q, base);
@@ -228,9 +195,99 @@ void get_ndc_coords(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
 // 	}
 // }
 
-void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr)
+t_camera *find_cam(t_camera *cam_orig, int i)
 {
-	get_ndc_coords(scene, mlx_ptr, win_ptr);
+	t_camera *cam_new;
+	int j = 0;
+
+	cam_new = cam_orig;
+	if (i < 0)
+		return (NULL);
+	if (i == 0)
+		return (cam_orig);
+	while(j < i && cam_new->next != NULL)
+	{
+		cam_new = cam_new->next;
+		j++;
+	}
+	return (cam_new);
+}
+
+int	deal_key(int key, void *cam)
+{
+	t_camera *cam_orig = (t_camera *)cam;
+	t_camera *cam_cur = NULL;
+	ssize_t i = 0;
+	if (cam == NULL)
+	{
+		return (0);
+	}
+	else
+	{
+		ft_printf("cam: %p\n", cam);
+		ft_printf("%d\n", key);
+		if (key == 65363)
+		{
+			i++;
+		}
+		else if (key == 65365)
+		{
+			i--;
+		}
+		else
+		{
+			ft_printf("invalid key\n");
+			return (0);
+		}
+		cam_cur = find_cam(cam_orig, i);
+	}
+	// trace(scene, mlx_ptr, win_ptr, cam);
+	return (key);
+}
+
+void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
+{
+	double inc_x;
+	double inc_y;
+	t_vec *pos;
+	t_cam_info *cam_data;
+	// t_camera *cam_cur;
+
+	
+	// cam_cur = scene->cam;
+		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
+		cam_data->aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
+		cam_data->fov_ratio = (double)scene->cam->fov / (double)FOV_VERT; //changing maybe
+		cam_data->len_x = tan(scene->cam->fov / 2 * M_PI / 180);
+		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180);
+		inc_x = 1.0/scene->res->res_x;
+		inc_y = 1.0/scene->res->res_y;
+		pos = (t_vec*)e_malloc(sizeof(t_vec));
+		// if (scene->cam->orien->z > 0)
+			// pos->z = 1; //we'll need to find the real number for this
+		// else
+			// pos->z = -1;
+		pos->y = inc_y / 2;
+
+		// pos->x = 0;//
+		// pos->y = 0;//
+		t_vec *base;
+		if (scene->cam->orien->z > 0)
+		{
+			base = gen_coord(0, 0, 1);
+			inc_x = inc_x * (-1);
+			pos->x = 1 + (inc_x / 2);
+			pos->z = 1;
+		}
+		else
+		{
+			base = gen_coord(0, 0, -1); 
+			pos->x = inc_x / 2;
+			pos->z = -1;
+		}
+		t_qua *q = determine_quaternion(scene->cam->orien, base);
+
+		get_ndc_coords(cam_data, cam, scene->res, q, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
 	// get_fisheye_ndc_coords(scene);
 }
 
@@ -259,7 +316,8 @@ void trace_them_rays(t_rt_scene *scene)
 
 
 	win_ptr = mlx_new_window(mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
-	trace(scene, mlx_ptr, win_ptr);
+	mlx_key_hook(win_ptr, deal_key, scene->cam->next);
+	trace(scene, mlx_ptr, win_ptr, scene->cam);
 
 	//get straight vector
 	//get position of current pixel

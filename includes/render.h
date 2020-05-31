@@ -10,7 +10,7 @@
 # define NO_INTERSECT -1
 # define INSIDE_OBJ -2
 
-typedef struct	s_grid
+typedef struct	s_grid //get rid of this
 {
 	t_vec	*up_left;
 	t_vec	*up_right;
