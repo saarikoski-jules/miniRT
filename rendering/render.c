@@ -76,8 +76,8 @@ int cast(t_rt_scene *scene, t_vec *ray)
 
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
-			// if (tmp->id == cy)
-				// printf("d_tmp: %.15f\n", d_tmp);
+			if (tmp->id == sq)
+				printf("sq: %f\n", d_tmp);
 			d = d_tmp;
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);

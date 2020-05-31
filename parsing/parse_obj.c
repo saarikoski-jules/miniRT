@@ -50,7 +50,8 @@ void find_square_corners(t_sq **square)
 
 	// ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", c1->x, c1->y, c1->z, c2->x, c2->y, c2->z, c3->x, c3->y, c3->z, c4->x, c4->y, c4->z);
 
-	t_vec *base = gen_coord(0, 0, 1);
+	//TODO: None of this will work anymore. Make work for multiple cameras when implementing multicam
+	t_vec *base = gen_coord(0, 0, 1);// will not work anymore
 
 	t_qua *q = determine_quaternion((*square)->orien, base);
 

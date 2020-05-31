@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/28 15:59:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/05/31 17:16:32 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "object.h"
 #include "render.h"
 #include <stdlib.h>
+
+#include "libft.h"//
 
 double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 {
@@ -39,15 +41,19 @@ double	sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 	double	t;
 	t_vec	*point;
 
+	// ft_printf("orien: %f, %f, %f\n", sq->orien->x, sq->orien->y, sq->orien->z);
 	t = pl_intersect(sq->orien, ray_start, sq->point1, ray);
 	if (t == NO_INTERSECT)
 		return (NO_INTERSECT);
+	// ft_printf("reaches?\n");
+	
 	point = find_point(ray_start, ray, t);
 	if (point_within_line(sq->point1, sq->point2, point, sq->orien) > 0
 	&&	point_within_line(sq->point2, sq->point3, point, sq->orien) > 0
 	&&	point_within_line(sq->point3, sq->point4, point, sq->orien) > 0
 	&&	point_within_line(sq->point4, sq->point1, point, sq->orien) > 0)
 	{
+	// ft_printf("t %f\n", t);
 		free(point);
 		return (t);
 	}
