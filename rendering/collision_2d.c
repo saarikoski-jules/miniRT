@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/31 17:16:32 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/01 14:16:38 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,11 @@ double	sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 	&&	point_within_line(sq->point3, sq->point4, point, sq->orien) > 0
 	&&	point_within_line(sq->point4, sq->point1, point, sq->orien) > 0)
 	{
-	// ft_printf("t %f\n", t);
+		// ft_printf("t %f\n", t);
 		free(point);
 		return (t);
 	}
+	// ft_printf("\n");
 	free(point);
 	return (NO_INTERSECT);
 }

@@ -67,7 +67,7 @@ void find_square_corners(t_sq **square)
 
 
 
-	// ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
+	ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
 
 	// (*square)->point1 = orient_vector()
 
@@ -85,6 +85,8 @@ t_sq	*get_square(char *line, size_t *i)
 	square->pos = get_vec(line, i);
 	square->orien = get_vec(line, i);
 	validate_orien(&square->orien);
+	if (square->orien->x == 0 && square->orien->y == 0 && square->orien->z == -1)
+		square->orien->z = 1;
 	square->side = get_float(line, i);
 	find_square_corners(&square);
 	if (square->side < 0.0)

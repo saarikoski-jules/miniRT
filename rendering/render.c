@@ -52,6 +52,8 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 			}
 			else if (tmp->id == sq)
 			{
+				// if (get_dot_product(cam->orien, tmp->type.sq->orien) < 0)
+					// ft_printf("breaks? %f\n", get_dot_product(cam->orien, tmp->type.sq->orien));
 				d_tmp = sq_intersect(cam->pos, ray, tmp->type.sq);
 			}
 			else if (tmp->id == tr)
@@ -76,8 +78,8 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
-			if (tmp->id == sq)
-				printf("sq: %f\n", d_tmp);
+			// if (tmp->id == sq)
+				// printf("sq: %f\n", d_tmp);
 			d = d_tmp;
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
@@ -142,8 +144,11 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 				// ft_printf("pos->x: %f\n", pos->x);
 			// if (i == 270 && j == 330)
 			// {
-				color = remap_coord(scene, pos, cam_data, q, base, cam);
 				// color = 0xffffff;
+				// if (j < 400 && j > 300 && i < 150 && i > 100)
+					color = remap_coord(scene, pos, cam_data, q, base, cam);
+				// else
+					// color = 200;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
 			// }
 			if (color == INSIDE_OBJ)
@@ -259,7 +264,7 @@ t_camera *find_cam(t_camera *cam_orig, int i)
 	cam_new = cam_orig;
 	if (i < 0)
 		return (NULL);
-	if (i <= 0)
+	if (i == 0)
 		return (cam_orig);
 	while(j != i && cam_new->next != NULL)
 	{

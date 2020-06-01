@@ -6,6 +6,9 @@
 #include <stdio.h>//
 
 //TODO: remember to take into account opposite orientation (should work now)
+// TODO: squares break with some orientations
+// TODO: triangles break in some positions
+
 
 int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light, t_camera *cam)
 {
