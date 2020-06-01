@@ -195,6 +195,60 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 // 	}
 // }
 
+void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
+{
+	double inc_x;
+	double inc_y;
+	t_vec *pos;
+	t_cam_info *cam_data;
+	// t_camera *cam_cur;
+
+	
+	// cam_cur = scene->cam;
+		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
+		cam_data->aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
+		cam_data->fov_ratio = (double)cam->fov / (double)FOV_VERT; //changing maybe
+		cam_data->len_x = tan(cam->fov / 2 * M_PI / 180);
+		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180);
+		inc_x = 1.0/scene->res->res_x;
+		inc_y = 1.0/scene->res->res_y;
+		pos = (t_vec*)e_malloc(sizeof(t_vec));
+		// if (cam->orien->z > 0)
+			// pos->z = 1; //we'll need to find the real number for this
+		// else
+			// pos->z = -1;
+		pos->y = inc_y / 2;
+
+		// pos->x = 0;//
+		// pos->y = 0;//
+		t_vec *base;
+		if (cam->orien->z > 0)
+		{
+			base = gen_coord(0, 0, 1);
+			inc_x = inc_x * (-1);
+			pos->x = 1 + (inc_x / 2);
+			pos->z = 1;
+		}
+		else
+		{
+			base = gen_coord(0, 0, -1); 
+			pos->x = inc_x / 2;
+			pos->z = -1;
+		}
+		t_qua *q = determine_quaternion(cam->orien, base);
+
+		get_ndc_coords(cam_data, cam, scene->res, q, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
+	// get_fisheye_ndc_coords(scene);
+}
+
+// void trace_them_rays(t_rt_scene *scene)
+// {
+// 	t_qua *q = determine_quaternion(gen_coord(0,1,0), gen_coord(0,0,-1));
+// 	ft_printf("q: %f, %f, %f, %f\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+// 	t_vec *v = orient_vector(q, gen_coord(1,0,0));
+// }
+
+
 t_camera *find_cam(t_camera *cam_orig, int i)
 {
 	t_camera *cam_new;
@@ -248,59 +302,6 @@ int	deal_key(int key, void *mlx_data)
 	// trace(scene, mlx_ptr, win_ptr, cam);
 	return (key);
 }
-
-void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
-{
-	double inc_x;
-	double inc_y;
-	t_vec *pos;
-	t_cam_info *cam_data;
-	// t_camera *cam_cur;
-
-	
-	// cam_cur = scene->cam;
-		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
-		cam_data->aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
-		cam_data->fov_ratio = (double)scene->cam->fov / (double)FOV_VERT; //changing maybe
-		cam_data->len_x = tan(scene->cam->fov / 2 * M_PI / 180);
-		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180);
-		inc_x = 1.0/scene->res->res_x;
-		inc_y = 1.0/scene->res->res_y;
-		pos = (t_vec*)e_malloc(sizeof(t_vec));
-		// if (scene->cam->orien->z > 0)
-			// pos->z = 1; //we'll need to find the real number for this
-		// else
-			// pos->z = -1;
-		pos->y = inc_y / 2;
-
-		// pos->x = 0;//
-		// pos->y = 0;//
-		t_vec *base;
-		if (scene->cam->orien->z > 0)
-		{
-			base = gen_coord(0, 0, 1);
-			inc_x = inc_x * (-1);
-			pos->x = 1 + (inc_x / 2);
-			pos->z = 1;
-		}
-		else
-		{
-			base = gen_coord(0, 0, -1); 
-			pos->x = inc_x / 2;
-			pos->z = -1;
-		}
-		t_qua *q = determine_quaternion(scene->cam->orien, base);
-
-		get_ndc_coords(cam_data, cam, scene->res, q, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
-	// get_fisheye_ndc_coords(scene);
-}
-
-// void trace_them_rays(t_rt_scene *scene)
-// {
-// 	t_qua *q = determine_quaternion(gen_coord(0,1,0), gen_coord(0,0,-1));
-// 	ft_printf("q: %f, %f, %f, %f\n", q->w, q->vector->x, q->vector->y, q->vector->z);
-// 	t_vec *v = orient_vector(q, gen_coord(1,0,0));
-// }
 
 void trace_them_rays(t_rt_scene *scene)
 {
