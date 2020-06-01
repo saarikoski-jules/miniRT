@@ -27,7 +27,7 @@
 //TODO: quaternions break when camera pointing directly into 0,0,-1 or 0,0,1.
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 
-int cast(t_rt_scene *scene, t_vec *ray)
+int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
 	t_obj *tmp;
 	double d;
@@ -48,24 +48,24 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			if (tmp->id == sp)
 			{
 
-				d_tmp = sp_intersect(scene->cam->pos, ray, tmp->type.sp);
+				d_tmp = sp_intersect(cam->pos, ray, tmp->type.sp);
 			}
 			else if (tmp->id == sq)
 			{
-				d_tmp = sq_intersect(scene->cam->pos, ray, tmp->type.sq);
+				d_tmp = sq_intersect(cam->pos, ray, tmp->type.sq);
 			}
 			else if (tmp->id == tr)
 			{
-				d_tmp = tr_intersect(scene->cam->pos, ray, tmp->type.tr);
+				d_tmp = tr_intersect(cam->pos, ray, tmp->type.tr);
 			}
 			else if (tmp->id == cy)
 			{
-				d_tmp = cy_intersect(scene->cam->pos, ray, tmp->type.cy);
+				d_tmp = cy_intersect(cam->pos, ray, tmp->type.cy);
 				// if (d_tmp != 0.0 && d_tmp != NO_INTERSECT)
 			}
 			else if (tmp->id == pl)
 			{
-				d_tmp = pl_intersect(tmp->type.pl->orien, scene->cam->pos, tmp->type.pl->pos, ray);
+				d_tmp = pl_intersect(tmp->type.pl->orien, cam->pos, tmp->type.pl->pos, ray);
 			
 			}
 			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ)
@@ -79,7 +79,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 			if (tmp->id == sq)
 				printf("sq: %f\n", d_tmp);
 			d = d_tmp;
-			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n);  //fix this so it's only ran once per pixel??
+			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
 		}
 		tmp = tmp->next;
@@ -87,7 +87,7 @@ int cast(t_rt_scene *scene, t_vec *ray)
 	return (color);
 }
 
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t_vec *base)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t_vec *base, t_camera *cam)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -115,7 +115,7 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t
 	
 	// ft_printf("ray: (%f, %f, %f), len: %f\n", ray->x, ray->y, ray->z, det_len_vec(ray));
 	
-	return (cast(scene, ray_u));
+	return (cast(scene, ray_u, cam));
 }
 
 
@@ -142,7 +142,7 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 				// ft_printf("pos->x: %f\n", pos->x);
 			// if (i == 270 && j == 330)
 			// {
-				color = remap_coord(scene, pos, cam_data, q, base);
+				color = remap_coord(scene, pos, cam_data, q, base, cam);
 				// color = 0xffffff;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
 			// }
@@ -160,7 +160,7 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 			i++;
 		}
 		i = 1;
-		if (scene->cam->orien->z > 0)
+		if (cam->orien->z > 0)
 		{
 			pos->x = 1 + (inc_x / 2);
 		}

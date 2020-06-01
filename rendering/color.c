@@ -7,10 +7,10 @@
 
 //TODO: remember to take into account opposite orientation (should work now)
 
-int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
+int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light, t_camera *cam)
 {
 	t_vec *intersection = gen_coord(d * ray->x, d * ray->y, d * ray->z); //wont work for everything, make sure to move intersection point a little towards the light
-	t_vec *point = add_vectors(scene->cam->pos, intersection);
+	t_vec *point = add_vectors(cam->pos, intersection);
 
 	//check if there is an intersection on the vector between light and all objects
 
@@ -128,7 +128,7 @@ int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light)
 	//return 0 if there are no intersections
 }
 
-t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
+t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n, t_camera *cam)
 {
 
 	// printf("lights\n");
@@ -146,7 +146,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	//calculate intersection here
 	// t_vec *N = calculate_normal(ray, intersection, obj); //normal to the hit point
 	t_vec *intersect = gen_coord(d * ray->x, d * ray->y, d * ray->z);
-	t_vec *point = add_vectors(intersect, scene->cam->pos);
+	t_vec *point = add_vectors(intersect, cam->pos);
 	t_vec *R;
 	t_vec *R_u;
 	double dot;
@@ -161,7 +161,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	// }
 	// printf("new: (%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 	t_color *final_color = (t_color*)e_malloc(sizeof(t_color));
-	t_vec *normal = calculate_normal(obj, point, scene->cam); //if normal is to the opposite direction, from light, r
+	t_vec *normal = calculate_normal(obj, point, cam); //if normal is to the opposite direction, from light, r
 	//Get combined color effect on the pixel from all the lights
 	while(tmp != NULL)
 	{
@@ -173,7 +173,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 			// printf("light: (%d, %d, %d)\n", tmp->color->r, tmp->color->g, tmp->color->b);
 
 			//if light hits object, i++
-			if (check_intersections(scene, ray, d, tmp))
+			if (check_intersections(scene, ray, d, tmp, cam))
 			{
 				// printf("Calculate shadow\n");
                 // final_color->r = 255;
@@ -257,7 +257,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 	return (final_color);
 }
 
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n)
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n, t_camera *cam)
 {
 	// printf("color: (%d, %d, %d)\n", color->r, color->g, color->b);
 	// printf("Ambiance: ratio: %f, color: (%d, %d, %d)\n", scene->amb->ratio, scene->amb->color->r, scene->amb->color->g, scene->amb->color->b);
@@ -291,7 +291,7 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 	
 
 
-	light_base = calculate_shading(scene, ray, amb_base, d, obj, n);
+	light_base = calculate_shading(scene, ray, amb_base, d, obj, n, cam);
 
 	final_color->r = (light_base->r + amb_base->r) / 2;
 	final_color->g = (light_base->g + amb_base->g) / 2;

@@ -48,7 +48,7 @@ double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 // double	plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n);
 
 //color
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n);
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n, t_camera *cam);
 
 //normal
 t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
