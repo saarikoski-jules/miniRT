@@ -54,7 +54,7 @@ t_obj	*get_object(char *line)
 		error_exit_errno();
 	get_object_type(line, &i, &obj);
 	obj->color = get_color(line, &i);
-	// ft_printf("color: (%d, %d, %d)\n\n", obj->color->r, obj->color->g, obj->color->b);
+	ft_printf("color: (%d, %d, %d)\n\n", obj->color->r, obj->color->g, obj->color->b);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_OBJ, E_INVALID_OBJ);
 	obj->next = NULL;

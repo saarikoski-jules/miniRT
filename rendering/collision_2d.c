@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/01 14:16:38 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/01 14:21:30 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 #include <stdlib.h>
 
 #include "libft.h"//
+
+// TODO: squares break with some orientations
+// TODO: triangles break in some positions
 
 double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 {

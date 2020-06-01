@@ -70,7 +70,7 @@ t_color *get_color(char *line, size_t *i)
 	t_color *color;
 
 	*i += ft_strmatch(line + *i, " ");
-	color = (t_color*)malloc(sizeof(t_color));
+	color = (t_color *)malloc(sizeof(t_color));
 	color->r = validate_color(line, i);
 	skip_comma(line, i);
 	color->g = validate_color(line, i);

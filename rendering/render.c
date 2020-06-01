@@ -43,6 +43,7 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 		return (0);
 	while(tmp != NULL)
 	{
+
 		if (tmp != NULL)
 		{
 			if (tmp->id == sp)
@@ -80,6 +81,8 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 		{
 			// if (tmp->id == sq)
 				// printf("sq: %f\n", d_tmp);
+			// ft_printf("type: %d\nobj->color (%d, %d, %d)\n", tmp->id, tmp->color->r, tmp->color->g, tmp->color->b);
+			
 			d = d_tmp;
 			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
 			color = translate_color(rgb);
@@ -319,7 +322,17 @@ int	deal_key(int key, void *mlx_data)
 
 int	get_cam_amt(t_camera *cam_head)
 {
-	return (2);
+	int amt;
+	t_camera *cur;
+
+	amt = 0;
+	cur = cam_head;
+	while(cur->next != NULL)
+	{
+		amt++;
+		cur = cur->next;
+	}
+	return (amt);
 }
 
 void trace_them_rays(t_rt_scene *scene)
@@ -332,7 +345,11 @@ void trace_them_rays(t_rt_scene *scene)
 
 	y = 100;
 	t_mlx_data *mlx_data;
-	mlx_data = (t_mlx_data *)e_malloc(sizeof(mlx_data));
+	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
+
+	mlx_data->scene = scene;
+	ft_printf("sp color: (%d, %d, %d)", scene->obj->next->color->r, scene->obj->next->color->g, scene->obj->next->color->b);
+	
 	mlx_data->mlx_ptr = mlx_init();
 	if (!mlx_data->mlx_ptr)
 		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT);
@@ -342,7 +359,6 @@ void trace_them_rays(t_rt_scene *scene)
 
 	mlx_data->cam_amt = get_cam_amt(scene->cam);
 	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
-	mlx_data->scene = scene;
 	mlx_data->i = 0;
 	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 	trace(scene, mlx_data->mlx_ptr, mlx_data->win_ptr, scene->cam);

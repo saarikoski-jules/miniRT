@@ -10,13 +10,13 @@
 # define NO_INTERSECT -1
 # define INSIDE_OBJ -2
 
-typedef struct	s_grid //get rid of this
-{
-	t_vec	*up_left;
-	t_vec	*up_right;
-	t_vec	*down_left;
-	t_vec	*down_right;
-}				t_grid;
+// typedef struct	s_grid //get rid of this
+// {
+// 	t_vec	*up_left;
+// 	t_vec	*up_right;
+// 	t_vec	*down_left;
+// 	t_vec	*down_right;
+// }				t_grid;
 
 typedef struct	s_mlx_data
 {

@@ -5,9 +5,10 @@
 #include <math.h>
 #include <stdio.h>//
 
+#include "libft.h"//
+
 //TODO: remember to take into account opposite orientation (should work now)
-// TODO: squares break with some orientations
-// TODO: triangles break in some positions
+
 
 
 int check_intersections(t_rt_scene *scene, t_vec *ray, double d, t_light *light, t_camera *cam)
@@ -262,6 +263,7 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *ray, t_color *color, double
 
 t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_vec *n, t_camera *cam)
 {
+	// ft_printf("type: %d\nobj->color (%d, %d, %d)\n", obj->id, obj->color->r, obj->color->g, obj->color->b);
 	// printf("color: (%d, %d, %d)\n", color->r, color->g, color->b);
 	// printf("Ambiance: ratio: %f, color: (%d, %d, %d)\n", scene->amb->ratio, scene->amb->color->r, scene->amb->color->g, scene->amb->color->b);
 	// scene->amb->ratio
