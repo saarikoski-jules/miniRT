@@ -195,6 +195,8 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 // 	}
 // }
 
+
+
 void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
 {
 	double inc_x;
@@ -259,48 +261,60 @@ t_camera *find_cam(t_camera *cam_orig, int i)
 		return (NULL);
 	if (i <= 0)
 		return (cam_orig);
-	while(j < i && cam_new->next != NULL)
+	while(j != i && cam_new->next != NULL)
 	{
+		ft_printf("j: %d, i: %d\n", j, i);
 		cam_new = cam_new->next;
 		j++;
 	}
 	return (cam_new);
 }
 
+
 int	deal_key(int key, void *mlx_data)
 {
-	t_mlx_data *data = (t_mlx_data *)mlx_data;
-	t_rt_scene *scene = data->scene;
+	t_mlx_data **data = (t_mlx_data **)mlx_data;
+	ft_printf("actual i: %d\n", (*data)->i);
+	t_rt_scene *scene = (*data)->scene;
 	t_camera *cam_orig = scene->cam;
 	t_camera *cam_cur = NULL;
-	ssize_t i = 1;
+	int i = (*data)->i;
 	if (cam_orig == NULL)
 	{
 		return (0);
 	}
 	else
 	{
-		ft_printf("cam: %p\n", cam_orig);
-		ft_printf("%d\n", key);
+		// ft_printf("cam: %p\n", cam_orig);
+		// ft_printf("%d\n", key);
 		if (key == 65363)
 		{
-			i++;
+			if (i < (*data)->cam_amt)
+				i++;
 		}
 		else if (key == 65361)
 		{
-			i--;
+			if (i > 0)
+				i--;
 		}
 		else
 		{
 			ft_printf("invalid key\n");
 			return (0);
 		}
+		ft_printf("i: %d\n", i);
 		cam_cur = find_cam(cam_orig, i);
 		ft_printf("camera fov: %d\n", cam_cur->fov);
-		trace(scene, data->mlx_ptr, data->win_ptr, cam_cur);
+		(*data)->i = i;
+		trace(scene, (*data)->mlx_ptr, (*data)->win_ptr, cam_cur);
 	}
 	// trace(scene, mlx_ptr, win_ptr, cam);
-	return (key);
+	return (0);
+}
+
+int	get_cam_amt(t_camera *cam_head)
+{
+	return (2);
 }
 
 void trace_them_rays(t_rt_scene *scene)
@@ -313,7 +327,6 @@ void trace_them_rays(t_rt_scene *scene)
 
 	y = 100;
 	t_mlx_data *mlx_data;
-
 	mlx_data = (t_mlx_data *)e_malloc(sizeof(mlx_data));
 	mlx_data->mlx_ptr = mlx_init();
 	if (!mlx_data->mlx_ptr)
@@ -322,10 +335,11 @@ void trace_them_rays(t_rt_scene *scene)
 	// t_vec *dir = determine_vector(scene->cam->pos, scene->cam->orien);
 	// ft_printf("vector: (%f, %f, %f)\n", dir->x, dir->y, dir->z);
 
-
+	mlx_data->cam_amt = get_cam_amt(scene->cam);
 	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
 	mlx_data->scene = scene;
-	mlx_key_hook(mlx_data->win_ptr, deal_key, mlx_data);
+	mlx_data->i = 0;
+	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 	trace(scene, mlx_data->mlx_ptr, mlx_data->win_ptr, scene->cam);
 
 	//get straight vector

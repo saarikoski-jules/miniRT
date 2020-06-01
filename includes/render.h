@@ -23,6 +23,8 @@ typedef struct	s_mlx_data
 	void *mlx_ptr;
 	void *win_ptr;
 	void *img_ptr;
+	int i;
+	int cam_amt;
 	t_rt_scene *scene;
 }				t_mlx_data;
 
