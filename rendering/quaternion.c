@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/28 15:40:38 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/02 13:47:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 // TODO: Up seems to tilt rather than turn
 // TODO: Y AXIS IS ENTIRELY FLIPPED BEHIND THE NORMAL ORIENTATION
 
+// TODO: Y axis tilts when manipulating the y orientation coord. 
+
 
 t_qua	*gen_unit_quaternion(t_qua *q)
 {
@@ -30,12 +32,14 @@ t_qua	*gen_unit_quaternion(t_qua *q)
 	double	val;
 	double	len;
 
-	q_u = (t_qua*)e_malloc(sizeof(t_qua));
 	val = pow(q->w, 2) +
 				pow(q->vector->x, 2) +
 				pow(q->vector->y, 2) +
 				pow(q->vector->z, 2);
 	len = sqrt(val);
+	// if (len == 1.0)
+		// return (q);
+	q_u = (t_qua*)e_malloc(sizeof(t_qua));
 	q_u->w = q->w / len;
 	q_u->vector = gen_coord(q->vector->x / len,
 							q->vector->y / len,

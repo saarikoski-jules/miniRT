@@ -287,6 +287,7 @@ int	deal_key(int key, void *mlx_data)
 	t_camera *cam_orig = scene->cam;
 	t_camera *cam_cur = NULL;
 	int i = (*data)->i;
+	ft_printf("key: %d\n", key);
 	if (cam_orig == NULL)
 	{
 		return (0);
@@ -295,12 +296,12 @@ int	deal_key(int key, void *mlx_data)
 	{
 		// ft_printf("cam: %p\n", cam_orig);
 		// ft_printf("%d\n", key);
-		if (key == 65363)
+		if (key == 65363 || key == 124)//65363 for windows
 		{
 			if (i < (*data)->cam_amt)
 				i++;
 		}
-		else if (key == 65361)
+		else if (key == 65361 || key == 123)//65361 for windows
 		{
 			if (i > 0)
 				i--;
