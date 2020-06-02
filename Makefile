@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/05/25 13:51:22 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/02 09:54:18 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,5 +52,3 @@ fclean:
 	@make -C libft fclean
 
 re: fclean all
-
-			# $(RENDER_DIR)quaternion_utils.c \

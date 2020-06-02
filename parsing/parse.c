@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/01 14:32:29 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/02 10:30:17 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 void parse_line(char *line, t_rt_scene **scene)
 {
-	ft_printf("IN PARSE LINE: %s\n", line);
+	// ft_printf("IN PARSE LINE: %s\n", line);
 	if (line[0] == '#')
 		return ;
 	else if (line[0] == 'R')

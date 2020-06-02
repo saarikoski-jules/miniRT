@@ -348,7 +348,7 @@ void trace_them_rays(t_rt_scene *scene)
 	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
 
 	mlx_data->scene = scene;
-	ft_printf("sp color: (%d, %d, %d)", scene->obj->next->color->r, scene->obj->next->color->g, scene->obj->next->color->b);
+	// ft_printf("sp color: (%d, %d, %d)", scene->obj->next->color->r, scene->obj->next->color->g, scene->obj->next->color->b);
 	
 	mlx_data->mlx_ptr = mlx_init();
 	if (!mlx_data->mlx_ptr)

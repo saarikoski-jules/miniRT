@@ -66,6 +66,7 @@ t_light *get_light(char *line)
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_LIGHT, E_INVALID_LIGHT);
 	light->next = NULL;
+	return (light);
 	// ft_printf("Light:\ncoords, x: %f, y: %f, z: %f\nbrightness: %f\ncolor: r: %d, g: %d, b: %d\n\n", light->pos->x, light->pos->y,  light->pos->z, light->brightness, light->color->r, light->color->g, light->color->b);
 }
 
@@ -106,6 +107,7 @@ t_camera	*get_camera(char *line)
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
 	cam->next = NULL;
+	return (cam);
 	// ft_printf("Camera:\n\
 	Pos:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
 	Orient:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\

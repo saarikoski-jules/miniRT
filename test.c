@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/01 14:31:40 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/02 10:26:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int main(int ac, char **av)
 	else
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);
 	
-	print_scene(scene);
+	// print_scene(scene);
 
 	trace_them_rays(scene);
 	return (0);
