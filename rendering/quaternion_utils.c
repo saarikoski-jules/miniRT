@@ -6,12 +6,12 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/25 13:07:30 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/25 13:49:20 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/04 12:18:40 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "quaternion.h"
-// #include "vec.h"
+#include "quaternion.h"
+#include "vec.h"
 
 #include <math.h>
 #include <stdlib.h>

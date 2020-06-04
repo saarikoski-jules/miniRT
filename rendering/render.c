@@ -112,7 +112,9 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t
 	// ft_printf("vec: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
 
 	t_vec *ray = orient_vector(q, vec);
+	t_vec *ray_aa = orient_vector_attempt2(q, vec);
 	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
+	// t_vec *ray_u = set_vec_len(ray, 1);
 	t_vec *ray_u = set_vec_len(ray, 1);
 	// ft_printf("ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
@@ -246,6 +248,9 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
 			pos->z = -1;
 		}
 		t_qua *q = determine_quaternion(cam->orien, base);
+		t_qua *q_matrix = determine_quaternion_matrix(cam->orien, base);
+		ft_printf("q:\t%f (%f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+		ft_printf("q_m:\t%f (%f, %f, %f)\n", q_matrix->w, q_matrix->vector->x, q_matrix->vector->y, q_matrix->vector->z);
 
 		get_ndc_coords(cam_data, cam, scene->res, q, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
 	// get_fisheye_ndc_coords(scene);

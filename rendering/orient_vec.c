@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/28 16:08:14 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/04 17:06:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,4 +137,38 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 		// vec_new->x = -vec_new->x;
 	// }
 	return (vec_new);
+}
+
+t_qua *multiply_quats(t_qua *q1, t_qua *q2)
+{
+	double w = (q1->w * q2->w) - get_dot_product(q1->vector, q2->vector);
+
+	t_vec *vec = gen_coord(q2->vector->x * q1->w, q1->w * q2->vector->y, q1->w * q2->vector->z);
+	t_vec *vec2 = gen_coord(q1->vector->x * q2->w, q2->w * q1->vector->y, q2->w * q1->vector->z);
+	t_vec *cross = get_cross_product(q1->vector, q2->vector);
+	t_vec *vec1 = add_vectors(vec, vec2);
+	t_vec *final = add_vectors(vec1, cross);
+	t_qua *final_q = (t_qua *)e_malloc(sizeof(t_qua));
+	final_q->w = w;
+	final_q->vector = final;
+	return (final_q);
+}
+
+#include <stdio.h>
+
+t_vec *orient_vector_attempt2(t_qua *q, t_vec *v)
+{
+	t_vec *v_u = set_vec_len(v, 1.0);
+	t_qua *q_v = (t_qua *)e_malloc(sizeof(t_qua));
+	q_v->w = 0.0;
+	q_v->vector = gen_coord(v_u->x, v_u->y, v_u->z);
+	// if (det_len_vec(q_v->vector) != 1.0)
+	// {
+		// printf("%f\n", det_len_vec(v_u));
+	// }
+	t_qua *tmp = multiply_quats(q, q_v);
+	t_qua *q_c = gen_q_conjugate(q);
+	t_qua *final = multiply_quats(tmp, q_c);
+	return (final->vector);
+	
 }
