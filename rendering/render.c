@@ -92,7 +92,7 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	return (color);
 }
 
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t_vec *base, t_camera *cam)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -105,17 +105,51 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t
 	double PixelScreeny = (1 - (pos->y * 2)) * cam_data->len_y; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
+	//will it work if i just say 
+
+// F = normalize(target - camera);   // lookAt
+// R = normalize(cross(F, worldUp)); // sideaxis
+// U = cross(R, F);                  // rotatedup
+
+
+	//cam_right = cross()
+	//cam_up = 0,1,0
+	//cam_pos = 0 (cam_pos (i think im just going to assume it to be at 0 as before))
+	//cam_orien = cam->orien
+
+//   Vector3 image_point = normalized_i * camera_right +
+//                         normalized_j * camera_up +
+//                         camera_position + camera_direction;
+//   Vector3 ray_direction = image_point - camera_position;
+
+	t_vec *world_up = gen_coord(0,1,0);
+	t_vec *cam_right = get_cross_product(cam->orien, world_up);
+	t_vec *cam_right_u = set_vec_len(cam_right, 1.0);
+	t_vec *cam_up = get_cross_product(cam_right_u, cam->orien);
+
+	t_vec *trying_shit_x = gen_coord(PixelScreenx * cam_right->x, PixelScreenx * cam_right->y, PixelScreenx * cam_right->z);
+	t_vec *trying_shit_y = gen_coord(PixelScreeny * cam_up->x, PixelScreeny * cam_up->y, PixelScreeny * cam_up->z);
+	t_vec *trying_shit1 = add_vectors(trying_shit_x, trying_shit_y);
+	t_vec *trying_shit2 = add_vectors(trying_shit1, cam->orien);
+
+
+
+
+	// t_vec *trying_shit = gen_coord();
+
 	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, base->z);
 	// ft_printf("%f, %f, %f\n", vec->x, vec->y, vec->z);
 	// if (vec->x == 1 && vec->y == 0 && vec->z == 0)
 		// ft_printf("aa\n");
 	// ft_printf("vec: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
 
-	t_vec *ray = orient_vector(q, vec);
-	t_vec *ray_aa = orient_vector_attempt2(q, vec);
+	// t_vec *ray = orient_vector(q, vec);
+	// t_vec *ray_aa = orient_vector_attempt2(q, vec);
 	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
 	// t_vec *ray_u = set_vec_len(ray, 1);
-	t_vec *ray_u = set_vec_len(ray, 1);
+	// t_vec *ray_u = set_vec_len(ray, 1);
+	t_vec *ray_u = set_vec_len(trying_shit2, 1);
+	// ft_printf("%f, %f, %f\n", ray_u->x, ray_u->y, ray_u->z);
 	// ft_printf("ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
 	// t_vec *ray = gen_coord(PixelScreenx, PixelScreeny, pos->z); //Ray's direction ray
 	
@@ -125,9 +159,20 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_qua *q, t
 	return (cast(scene, ray_u, cam));
 }
 
+// Ray ComputeCameraRay(int i, int j) {
+//   const float width = 512.0;  // pixels across
+//   const float height = 512.0;  // pixels high
+//   double normalized_i = (i / width) - 0.5;
+//   double normalized_j = (j / height) - 0.5;
+//   Vector3 image_point = normalized_i * camera_right +
+//                         normalized_j * camera_up +
+//                         camera_position + camera_direction;
+//   Vector3 ray_direction = image_point - camera_position;
+//   return Ray(camera_position, ray_direction);
+// }
 
 //get ndc space
-void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qua *q, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y)
+void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y)
 {
 	size_t i;
 	size_t j;
@@ -151,7 +196,8 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 			// {
 				// color = 0xffffff;
 				// if (j < 400 && j > 300 && i < 150 && i > 100)
-					color = remap_coord(scene, pos, cam_data, q, base, cam);
+					// if (i == 250 && j == 250)
+						color = remap_coord(scene, pos, cam_data, base, cam);
 				// else
 					// color = 200;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
@@ -184,6 +230,9 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_qu
 	}
 	printf("done\n");
 }
+
+
+
 
 // void get_fisheye_ndc_coords(t_rt_scene *scene)
 // {
@@ -234,25 +283,25 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
 		// pos->x = 0;//
 		// pos->y = 0;//
 		t_vec *base;
-		if (cam->orien->z > 0)
-		{
-			base = gen_coord(0, 0, 1);
-			inc_x = inc_x * (-1);
-			pos->x = 1 + (inc_x / 2);
-			pos->z = 1;
-		}
-		else
-		{
+		// if (cam->orien->z > 0)
+		// {
+			// base = gen_coord(0, 0, 1);
+			// inc_x = inc_x * (-1);
+			// pos->x = 1 + (inc_x / 2);
+			// pos->z = 1;
+		// }
+		// else
+		// {
 			base = gen_coord(0, 0, -1); 
 			pos->x = inc_x / 2;
 			pos->z = -1;
-		}
-		t_qua *q = determine_quaternion(cam->orien, base);
-		t_qua *q_matrix = determine_quaternion_matrix(cam->orien, base);
-		ft_printf("q:\t%f (%f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
-		ft_printf("q_m:\t%f (%f, %f, %f)\n", q_matrix->w, q_matrix->vector->x, q_matrix->vector->y, q_matrix->vector->z);
+		// }
+		// t_qua *q = determine_quaternion(cam->orien, base);
+		// t_qua *q_matrix = determine_quaternion_matrix(cam->orien, base);
+		// ft_printf("q:\t%f (%f, %f, %f)\n", q->w, q->vector->x, q->vector->y, q->vector->z);
+		// ft_printf("q_m:\t%f (%f, %f, %f)\n", q_matrix->w, q_matrix->vector->x, q_matrix->vector->y, q_matrix->vector->z);
 
-		get_ndc_coords(cam_data, cam, scene->res, q, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
+		get_ndc_coords(cam_data, cam, scene->res, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
 	// get_fisheye_ndc_coords(scene);
 }
 
