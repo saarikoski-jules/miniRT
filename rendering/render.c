@@ -105,6 +105,8 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base
 	double PixelScreeny = (1 - (pos->y * 2)) * cam_data->len_y; //changes vertical fov slightly, so i can see a bit further/less depending on horizontal fov. Makes squishing slightly better, but I might want to use a different value or pillarbox instead. Quickie solution
 	// ft_printf("ray: (%f, %f, %f), pos: (%f, %f, %f) fov_a_ratio: %f\n", PixelScreenx, PixelScreeny, pos->z, pos->x, pos->y, pos->z, fov_a_ratio);
 	
+	// ft_printf("Pixel x: %f\n", pos->x);
+
 	//will it work if i just say 
 
 // F = normalize(target - camera);   // lookAt
@@ -122,23 +124,52 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base
 //                         camera_position + camera_direction;
 //   Vector3 ray_direction = image_point - camera_position;
 
-	t_vec *world_up = gen_coord(0,1,0);
-	t_vec *cam_right = get_cross_product(cam->orien, world_up);
-	t_vec *cam_right_u = set_vec_len(cam_right, 1.0);
-	t_vec *cam_up = get_cross_product(cam_right_u, cam->orien);
+	t_vec *orien = set_vec_len(cam->orien, 1);
+	if (det_len_vec(orien) != 1.0)
+		ft_printf("will break\n");
 
-	t_vec *trying_shit_x = gen_coord(PixelScreenx * cam_right->x, PixelScreenx * cam_right->y, PixelScreenx * cam_right->z);
+	t_vec *cam_right;
+	t_vec *world_up = gen_coord(0,1,0);
+	if (orien->x == 0.0 && orien->z == 0.0) //cam orien must be normalized, otherwise this breaks
+	{
+		if (orien->y == -1.0)
+			cam_right = gen_coord(1,0,0);
+		else
+			cam_right = gen_coord(-1,0,0);
+	}
+	else
+		cam_right = get_cross_product(orien, world_up); //try when cam facing directly up
+	// ft_printf("cam_right: %f, %f, %f\n", cam_right->x, cam_right->y, cam_right->z);
+	t_vec *cam_right_u = set_vec_len(cam_right, 1.0);
+	// t_vec *cam_right_u = cam_right;
+
+	// ft_printf("cam_right_u:\t%f, %f, %f\n", cam_right_u->x, cam_right_u->y, cam_right_u->z);
+
+	t_vec *cam_up = get_cross_product(cam_right_u, orien); //not possible these are the same?
+	// t_vec *cam_up_u = set_vec_len(cam_up, 1);
+	if (cam_right_u->x == orien->x && cam_right_u->y == orien->y && cam_right_u->z == orien->z)
+		ft_printf("cross product fail in remap_coord\n");
+	// ft_printf("cam_up:\t\t%f, %f, %f\n", cam_up->x, cam_up->y, cam_up->z);
+
+	t_vec *trying_shit_x = gen_coord(PixelScreenx * cam_right_u->x, PixelScreenx * cam_right_u->y, PixelScreenx * cam_right_u->z);
+
+	// ft_printf("pix_x:\t%f\n\t%f, %f, %f\n\n", PixelScreenx, trying_shit_x->x, trying_shit_x->y, trying_shit_x->z);
+	
 	t_vec *trying_shit_y = gen_coord(PixelScreeny * cam_up->x, PixelScreeny * cam_up->y, PixelScreeny * cam_up->z);
+
+	// ft_printf("pix_y:\t%f\n\t%f, %f, %f\n\n", PixelScreeny, trying_shit_y->x, trying_shit_y->y, trying_shit_y->z);
+
 	t_vec *trying_shit1 = add_vectors(trying_shit_x, trying_shit_y);
-	t_vec *trying_shit2 = add_vectors(trying_shit1, cam->orien);
+	t_vec *trying_shit2 = add_vectors(trying_shit1, orien);
+	// trying_shit2->x = trying_shit2->x * -1;
+	//x coord breaks when orien is 0,0,1
 
 
 
 
 	// t_vec *trying_shit = gen_coord();
 
-	t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, base->z);
-	// ft_printf("%f, %f, %f\n", vec->x, vec->y, vec->z);
+	// t_vec *vec = gen_coord(PixelScreenx, PixelScreeny, base->z);
 	// if (vec->x == 1 && vec->y == 0 && vec->z == 0)
 		// ft_printf("aa\n");
 	// ft_printf("vec: (%f, %f, %f)\n", vec->x, vec->y, vec->z);
@@ -148,6 +179,7 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base
 	// ft_printf("ray: (%f, %f, %f)\n", ray->x, ray->y, ray->z);
 	// t_vec *ray_u = set_vec_len(ray, 1);
 	// t_vec *ray_u = set_vec_len(ray, 1);
+	// ft_printf("ray:\t\t%f, %f, %f\n", trying_shit2->x, trying_shit2->y, trying_shit2->z);
 	t_vec *ray_u = set_vec_len(trying_shit2, 1);
 	// ft_printf("%f, %f, %f\n", ray_u->x, ray_u->y, ray_u->z);
 	// ft_printf("ray: (%f, %f, %f)\n\n", ray_u->x, ray_u->y, ray_u->z);
@@ -197,7 +229,10 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 				// color = 0xffffff;
 				// if (j < 400 && j > 300 && i < 150 && i > 100)
 					// if (i == 250 && j == 250)
+					// {
+						// ft_printf("pos: %f, %f, %f\n", pos->x, pos->y, pos->z);
 						color = remap_coord(scene, pos, cam_data, base, cam);
+					// }
 				// else
 					// color = 200;
 				mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
@@ -216,11 +251,11 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 			i++;
 		}
 		i = 1;
-		if (cam->orien->z > 0)
-		{
-			pos->x = 1 + (inc_x / 2);
-		}
-		else
+		// if (orien->z > 0)
+		// {
+			// pos->x = 1 + (inc_x / 2);
+		// }
+		// else
 			pos->x = inc_x /2;
 		if (j != scene->res->res_y)
 		{
