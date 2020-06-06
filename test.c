@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/06 17:33:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/06 18:04:37 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,30 +166,30 @@ void print_scene(t_rt_scene *scene)
 // }
 
 
-typedef struct	s_file_header
-{
-	uint8_t		file_type1; //BM (should i do two uint8 for B and M ?)
-	uint8_t		file_type2; //BM (should i do two uint8 for B and M ?)
-	uint32_t	file_size; //? 54 bytes header + pixels
-	uint16_t	reserved; //0
-	uint16_t	reserved2; //maybe you dont need this and they can be one uint32 with value 0
-	uint32_t	pixel_offset; // 54? AAA 14 bytes for file header + 40 bytes for info header
-}				t_file_header;
+// typedef struct	s_file_header
+// {
+// 	uint8_t		file_type1; //BM (should i do two uint8 for B and M ?)
+// 	uint8_t		file_type2; //BM (should i do two uint8 for B and M ?)
+// 	uint32_t	file_size; //? 54 bytes header + pixels
+// 	uint16_t	reserved; //0
+// 	uint16_t	reserved2; //maybe you dont need this and they can be one uint32 with value 0
+// 	uint32_t	pixel_offset; // 54? AAA 14 bytes for file header + 40 bytes for info header
+// }				t_file_header;
 
-typedef struct	s_info_header
-{
-	uint32_t	info_header_size; //40
-	uint32_t	pixel_x; //res_x
-	uint32_t	pixel_y; //res_y
-	uint16_t	planes; //1 ????
-	uint16_t	bits_per_pixel; //24 ??
-	uint32_t	compression; // 0 (no compression used)
-	uint32_t	img_size; //when no compression used can be set to 0 ????
-	uint32_t	pix_p_meter_x; //can be set to 0 ????
-	uint32_t	pix_p_meter_y; //can be set to 0 ????
-	uint32_t	colors; //can be set to 0
-	uint32_t	important_colors; //0 (all colors important)
-}				t_info_header;
+// typedef struct	s_info_header
+// {
+// 	uint32_t	info_header_size; //40
+// 	uint32_t	pixel_x; //res_x
+// 	uint32_t	pixel_y; //res_y
+// 	uint16_t	planes; //1 ????
+// 	uint16_t	bits_per_pixel; //24 ??
+// 	uint32_t	compression; // 0 (no compression used)
+// 	uint32_t	img_size; //when no compression used can be set to 0 ????
+// 	uint32_t	pix_p_meter_x; //can be set to 0 ????
+// 	uint32_t	pix_p_meter_y; //can be set to 0 ????
+// 	uint32_t	colors; //can be set to 0
+// 	uint32_t	important_colors; //0 (all colors important)
+// }				t_info_header;
 
 int	gen_bmp_header(int fd, size_t img_size)
 {
