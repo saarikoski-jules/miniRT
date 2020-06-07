@@ -27,7 +27,7 @@
 //TODO: quaternions break when camera pointing directly into 0,0,-1 or 0,0,1.
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 
-int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
+t_color *cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
 	t_obj *tmp;
 	double d;
@@ -41,6 +41,7 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	n = gen_coord(0, 0, 0);
 	if (tmp == NULL)
 		return (0);
+	t_color *rgb;
 	while(tmp != NULL)
 	{
 
@@ -71,9 +72,9 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 				d_tmp = pl_intersect(tmp->type.pl->orien, cam->pos, tmp->type.pl->pos, ray);
 			
 			}
-			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ)
+			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ) //change
 			{
-				return (INSIDE_OBJ);
+				return (NULL);
 			}
 		}
 
@@ -84,15 +85,15 @@ int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 			// ft_printf("type: %d\nobj->color (%d, %d, %d)\n", tmp->id, tmp->color->r, tmp->color->g, tmp->color->b);
 			
 			d = d_tmp;
-			t_color *rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
-			color = translate_color(rgb);
+			rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
+			// color = translate_color(rgb);
 		}
 		tmp = tmp->next;
 	}
-	return (color);
+	return (rgb);
 }
 
-int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
+t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -150,41 +151,89 @@ int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base
 	return (cast(scene, ray_u, cam));
 }
 
+void	copy_pixel(t_color *color, int new, unsigned int rgb, size_t i, size_t j, void *mlx_ptr, char *img_addr, int screen_width, int pos)
+{
+	// ((unsigned int *)(img_addr))[(i + (500 * j))] = rgb;
+	// ft_printf("i: %d, j: %d, pos %d\n", i, j, (i + screen_width * j));
+	//500 is file pixels y
+	// ft_memcpy(&img_addr[(4 * i + (4 * 500 * j))], &new, 3);
+}
+
 //get ndc space
 void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y)
 {
 	size_t i;
 	size_t j;
-	int color;
+	// int color;
+	t_color *color;
 	void *image; //pls no
 
 	i = 1;
 	j = 1;
 	int k;
 	k = 0;
-	ft_printf("pixels: %d\n", scene->res->res_x * scene->res->res_y);
 	image = mlx_new_image(mlx_ptr, scene->res->res_x, scene->res->res_y);
 	if (image == NULL)
 		error_exit_errno();
-	int bpp = 8;
-	int size_line = scene->res->res_x;
-	int endian = 0; // 0 little endian, 1 big endian
+	int bpp;
+	int size_line;
+	int endian; // 0 little endian, 1 big endian
 	unsigned int *img_byte;			//img ptr, 
 	char *img_addr = mlx_get_data_addr(image, &bpp, &size_line, &endian);//have to use this for img to work
+	unsigned int *img_addr_uint = (unsigned int *)img_addr;
 	// img_byte = (unsigned int *)image
+	ft_bzero(img_addr, scene->res->res_x * scene->res->res_y * 4);
+	// ft_printf("%d, %d, %d", bpp, size_line, endian);
+	int new;
 	while (j <= scene->res->res_y)
 	{
 		while (i <= scene->res->res_x)
 		{
-			ft_printf("i: %d, j: %d, k = %d\n", i - 1, j - 1, k);
+			// ft_printf("i: %d, j: %d, k = %d\n", i - 1, j - 1, k);
 			color = remap_coord(scene, pos, cam_data, base, cam);
-			img_addr[k] = mlx_get_color_value(mlx_ptr, 0);
+			// ft_printf("pixels: %d\n", scene->res->res_x * scene->res->res_y);
+			if (color == NULL)
+			{
+				new = 0;
+				// ft_printf("0\n");
+			}
+			else
+			{
+				// ft_printf("translate color\n");
+				new = translate_color(color);
+			}
+			unsigned int rgb = mlx_get_color_value(mlx_ptr, new);
+
+			int pix_pos = (j * size_line + i * (bpp / 8));
+			// img_addr[pix_pos] = rgb;
+			ft_memcpy(img_addr + pix_pos, &rgb, 3);
+			// copy_pixel(color, new, rgb, i, j, mlx_ptr, img_addr, scene->res->res_x, pix_pos);
+
+			
+			// img_addr[k] = 0;
+			// k++;
+			// img_addr = rgb;
+			// k += 3;
+			if (new != rgb)
+				ft_printf("%X, %X\n", new, rgb);
+			
+			// *img_addr = mlx_get_color_value(mlx_ptr, color);
+			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->r);
+			// ft_printf("%s\n", img_addr);
+			// k++;
+			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->g);
+			// k++;
+			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->b);
+			// k++;
+			// img_addr[k] = 0;
+			// k++;
+			// *img_addr = color;
 			// img_byte++;
-			k++;
+			// img_addr;
 			// *image = color;
 			// image[i * j];
-			// mlx_pixel_put(mlx_ptr, win_ptr, i, j, color); //create image and put all at once instead.
-			if (color == INSIDE_OBJ)
+			// mlx_pixel_put(mlx_ptr, win_ptr, i, j, new); //create image and put all at once instead.
+			if (color == NULL)
 			{
 				// printf("inside obj\n");
 				return;
@@ -232,7 +281,7 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam)
 		pos = (t_vec*)e_malloc(sizeof(t_vec));
 		pos->y = inc_y / 2;
 		t_vec *base;
-			base = gen_coord(0, 0, -1); 
+			base = gen_coord(0, 0, -1);
 			pos->x = inc_x / 2;
 			pos->z = -1;
 		get_ndc_coords(cam_data, cam, scene->res, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);

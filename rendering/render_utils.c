@@ -6,9 +6,12 @@
 #include <math.h>
 #include <stdio.h>
 
-int		translate_color(t_color *color)
+int		translate_color(t_color *color) // COLOR MIGHT NOT ALWAYS EXIST, PLEASE FIX WITH TEST.RT
 {
 	int rgb;
+	// ft_printf("not broken?? %p\n", color);
+	// ft_printf("%d,", color->g);
+	// ft_printf("not broken?? %d, %d, %d\n", color->r, color->g, color->b);
 	rgb = (color->r * pow(16, 4)) + (color->g * pow(16, 2)) + (color->b);
 	return (rgb);
 }
