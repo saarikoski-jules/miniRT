@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-int		translate_color(t_color *color) // COLOR MIGHT NOT ALWAYS EXIST, PLEASE FIX WITH TEST.RT
+unsigned int translate_color(t_color *color) // COLOR MIGHT NOT ALWAYS EXIST, PLEASE FIX WITH TEST.RT
 {
 	int rgb;
 	// ft_printf("not broken?? %p\n", color);
