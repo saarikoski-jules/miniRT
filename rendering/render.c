@@ -166,7 +166,9 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	size_t j;
 	// int color;
 	unsigned int color;
-	void *image; //pls no
+	void *image;
+
+	//i could save images to a list in case of multiple cameras
 
 	i = 1;
 	j = 1;
@@ -178,65 +180,23 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	int bpp;
 	int size_line;
 	int endian; // 0 little endian, 1 big endian
-	unsigned int *img_byte;			//img ptr, 
+	// unsigned int *img_byte;			//img ptr, 
 	char *img_addr = mlx_get_data_addr(image, &bpp, &size_line, &endian);//have to use this for img to work
-	unsigned int *img_addr_uint = (unsigned int *)img_addr;
+	// unsigned int *img_addr_uint = (unsigned int *)img_addr;
 	// img_byte = (unsigned int *)image
-	ft_bzero(img_addr, scene->res->res_x * scene->res->res_y * 4);
+	ft_bzero(img_addr, scene->res->res_x * scene->res->res_y * 4); //make sure img is initialized to zero
 	// ft_printf("%d, %d, %d", bpp, size_line, endian);
 	int new;
 	while (j <= scene->res->res_y)
 	{
 		while (i <= scene->res->res_x)
 		{
-			// ft_printf("i: %d, j: %d, k = %d\n", i - 1, j - 1, k);
 			color = remap_coord(scene, pos, cam_data, base, cam);
-			// ft_printf("pixels: %d\n", scene->res->res_x * scene->res->res_y);
-			// if (color == NULL)
-			// {
-				// new = 0;
-				// ft_printf("0\n");
-			// }
-			// else
-			// {
-				// ft_printf("translate color\n");
-				// new = translate_color(color);
-			// }
-			// unsigned int rgb = mlx_get_color_value(mlx_ptr, new); //do not need this
-
 			int pix_pos = (j * size_line + i * (bpp / 8));
-			// img_addr[pix_pos] = rgb;
 			ft_memcpy(img_addr + pix_pos, &color, 3);
-			// copy_pixel(color, new, rgb, i, j, mlx_ptr, img_addr, scene->res->res_x, pix_pos);
-
-			
-			// img_addr[k] = 0;
-			// k++;
-			// img_addr = rgb;
-			// k += 3;
-			// if (new != rgb)
-				// ft_printf("%X, %X\n", new, rgb);
-			
-			// *img_addr = mlx_get_color_value(mlx_ptr, color);
-			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->r);
-			// ft_printf("%s\n", img_addr);
-			// k++;
-			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->g);
-			// k++;
-			// img_addr[k] = mlx_get_color_value(mlx_ptr, color->b);
-			// k++;
-			// img_addr[k] = 0;
-			// k++;
-			// *img_addr = color;
-			// img_byte++;
-			// img_addr;
-			// *image = color;
-			// image[i * j];
-			// mlx_pixel_put(mlx_ptr, win_ptr, i, j, new); //create image and put all at once instead.
 			if (color == INSIDE_OBJ)
 			{
-				// printf("inside obj\n");
-				return;
+				return; //maybe not? just paste all black?
 			}
 			if (i != scene->res->res_x)
 			{
