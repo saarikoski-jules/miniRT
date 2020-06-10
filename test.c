@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/06 18:04:37 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/10 15:33:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,17 +191,20 @@ void print_scene(t_rt_scene *scene)
 // 	uint32_t	important_colors; //0 (all colors important)
 // }				t_info_header;
 
-int	gen_bmp_header(int fd, size_t img_size)
+int	gen_bmp_header(int fd, t_rt_scene *scene)
 {
 	char f_header[14];
-	size_t file_size = 54 + img_size;
+	int bpp = 24; //get value from get_img_address or whatever that func is
+	int amt_pixels = scene->res->res_x * scene->res->res_y;
+	int img_size = (bpp / 8) * amt_pixels;
+	size_t file_size = 54 + img_size + (amt_pixels / 2); //plus padding bytes
 
 	ft_bzero(f_header, 14);
 
 	f_header[0] = 'B'; //8 file type
 	f_header[1] = 'M'; //16
 	//might need a padding byte here??
-	f_header[2] = (uint32_t)file_size; //16 + 32 = 48
+	f_header[2] = (uint32_t)file_size; //16 + 32 = 48 
 	f_header[6] = (uint32_t)0; //reserved
 	f_header[10] = (uint32_t)54; //pixel offset
 
@@ -212,10 +215,10 @@ int	gen_bmp_header(int fd, size_t img_size)
 	ft_bzero(i_header, 40);
 
 	i_header[0] = (uint32_t)40; //header size
-	i_header[4] = (uint32_t)1; //res_x
-	i_header[8] = (uint32_t)1; //res_y
+	i_header[4] = (uint32_t)scene->res->res_x; //res_x
+	i_header[8] = (uint32_t)scene->res->res_y; //res_y
 	i_header[12] = (uint16_t)1; //planes
-	i_header[14] = (uint16_t)24; //bits per pixel
+	i_header[14] = (uint16_t)bpp; //bits per pixel
 	i_header[16] = (uint32_t)0; //compression
 	i_header[20] = (uint32_t)0; // img size, (can be set to 0 when no compression used)
 	i_header[24] = (uint32_t)0; //pix per meter x (can be set to zero)
@@ -224,7 +227,7 @@ int	gen_bmp_header(int fd, size_t img_size)
 	i_header[36] = (uint32_t)0; //important colors (0 means all colors are important)
 	write(1, "\nlol\n", 5);
 
-	write(1, &i_header, 40);
+	write(1, &i_header, 40);//if write fails, exit
 	write(fd, &i_header, 40);
 
 	// fwrite(&f_header, 2, 1, fd);
@@ -242,27 +245,28 @@ int append_pixels(int fd)
 int main(int ac, char **av)
 {
 	t_rt_scene	*scene;
-	if (ac == 3 && ft_strncmp("--save", av[2], 7) == 0) //make sure there's a valid path
+	if (ac >= 2)
 	{
-
-		// ft_printf("%s\n", av[2]);
-		size_t len = ft_strlen(av[1]);
-		char *name = ft_substr(av[1], 0, len - 3);
-		char *name_bmp = ft_strjoin(name, ".bmp");
-		// char *name_bmp = ft_strjoin(name, ".bmp");
-		ft_printf("%s\n", name_bmp);
-		// write(1, "name", 4);
-		int fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND); //will not overwrite with new .bmp.
-
-		size_t img_size = 1;
-		
-		gen_bmp_header(fd, img_size);
-		append_pixels(fd);
-		// write(fd, name_bmp, len + 1);
-		return (0);
+		scene = get_scene(av[1]); //make sure anything but .rt works
+		if (ac == 3 && ft_strncmp("--save", av[2], 7) == 0) //make sure there's a valid path
+		{
+			size_t len = ft_strlen(av[1]);
+			char *name = ft_substr(av[1], 0, len - 3);
+			char *name_bmp = ft_strjoin(name, ".bmp");
+			ft_printf("%s\n", name_bmp);
+			int fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
+			size_t img_size = 1;
+			gen_bmp_header(fd, scene); //i can move all this to trace em rays to loop over cameras
+			// append_pixels(fd);
+			trace_them_rays(scene, fd);
+			close(fd);
+			return (0);//
+		}
+		else if (ac == 2)
+		{
+			trace_them_rays(scene, -1);
+		}		
 	}
-	else if (ac == 2)
-		scene = get_scene(av[1]);
 	else
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);
 	// else if (ac == 3 && ft_strncmp("--save", av[2]))
@@ -270,6 +274,5 @@ int main(int ac, char **av)
 	
 	// print_scene(scene);
 
-	trace_them_rays(scene);
 	return (0);
 }

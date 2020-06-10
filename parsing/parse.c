@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/02 10:30:17 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/10 15:31:26 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ t_rt_scene *get_scene(char *path)
 {
 	t_rt_scene *scene;
 
-	scene = (t_rt_scene*)malloc(sizeof(t_rt_scene));
-	if (!scene)
-		error_exit_errno();
+	scene = (t_rt_scene*)e_malloc(sizeof(t_rt_scene));
+	// if (!scene)
+		// error_exit_errno();
 	scene->res = NULL;
 	scene->amb = NULL;
 	scene->light = NULL;
