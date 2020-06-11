@@ -247,7 +247,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	// unsigned int color;
 	t_color *color;
 	// void *image;
-
+	// int row_size = 
 	//i could save images to a list in case of multiple cameras
 
 	i = 0;
@@ -257,9 +257,18 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	char *image;
 	int bpp = 24;//idk
 	int size_line = scene->res->res_x * (bpp / 8);//idk
+	// if (size_line % 4 == 0)
+		// size_line += 4;
+	// else
+	// {
+		while(size_line % 4 != 0)
+			size_line++;
+		
+	// }
+	
 	int endian = 0; // 0 little endian, 1 big endian, idk
 	int amt_pixels = scene->res->res_y * scene->res->res_x; 
-	int img_size = amt_pixels * 3 + (amt_pixels); //amt_pixels * 3 bytes + scene->res->res_y * scene->res->res_x 
+	int img_size = size_line * scene->res->res_y; //amt_pixels * 3 bytes + scene->res->res_y * scene->res->res_x 
 	ft_printf("sizeline: %d\n", size_line);
 	image = (char *)e_malloc(img_size);
 	ft_printf("img_size: %d\n", img_size);
@@ -281,25 +290,37 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	unsigned char b;
 	int pix_pos;
 
-	int colorr = 0;
-	int colorg = 0;
-	int colorb = 79; //i should do this with bitmasks
+	// int colorr = 0;
+	// int colorg = 0;
+	// int colorb = 0; //i should do this with bitmasks
 	// int colorr = 255;
 	// int colorg = 255;
 	// int colorb = 0;
 	unsigned int bgr;
+	
+	// int color1r = 255;
+	// int color1g = 255;
+	// int color1b = 255;
+
+	int black = 0;
+	int white = 255;
+
 	while (j < scene->res->res_y)
 	{
 		while (i < scene->res->res_x)
 		{
-			color = remap_coord(scene, pos, cam_data, base, cam);
+			// ft_printf("aa\n");
+			color = remap_coord(scene, pos, cam_data, base, cam); //TODO: make sure color value is good when no intersections
 
 			// pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 
 			// ft_memcpy(image + pix_pos, &color, 3);
 			// ft_printf("here: %p\n", color);
-			if (color == NULL)
-				return ;
+			// if (color == NULL)
+			// {
+				// co
+			// }
+				// return ;
 
 			r = color->r;
 			g = color->g;
@@ -310,9 +331,23 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 			// ft_printf("color g %d\n", g);
 			// ft_printf("color b %d\n", b);
 			// r = color;
-			ft_memcpy(image + k, &b, 1);
-			ft_memcpy(image + k + 1, &g, 1);
-			ft_memcpy(image + k + 2, &r, 1);
+			// if (j % 2 == 0)
+			// {
+				// ft_memcpy(image + k, &black, 1);
+				// ft_memcpy(image + k + 1, &black, 1);
+				// ft_memcpy(image + k + 2, &black, 1);
+			// }
+			// else
+			// {
+				// ft_memcpy(image + k, &white, 1);
+				// ft_memcpy(image + k + 1, &white, 1);
+				// ft_memcpy(image + k + 2, &white, 1);
+			// }
+				ft_memcpy(image + k, &b, 1);
+				ft_memcpy(image + k + 1, &g, 1);
+				ft_memcpy(image + k + 2, &r, 1);				
+			// }
+			
 			// ft_memcpy(image + k, &color, 3);
 			// append_color(color, i, j, size_line, bpp, endian, image, k);
 			// if (k % 2 == 0)
@@ -322,10 +357,10 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 			k += 3;
 			// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 			// ft_memcpy(img_addr + pix_pos, &color, 3);
-			if (color == NULL)
-			{
-				return; //maybe not? just paste all black? //already pasting all black (bzero)
-			}
+			// if (color == NULL)
+			// {
+				// return; //maybe not? just paste all black? //already pasting all black (bzero)
+			// }
 			if (i != scene->res->res_x)
 			{
 				pos->x += inc_x;
@@ -339,6 +374,12 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 			pos->y += inc_y;
 		}
 		j++;
+		k = size_line * j;
+		// while ((k) % 4 != 0)
+		// {
+			// ft_printf("??\n");
+			// k++;
+		// }
 
 	}
 	ft_printf("here\n");
@@ -347,7 +388,9 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	// if (fd == -1)
 	// mlx_put_image_to_window(mlx_ptr, win_ptr, image, 0, 0);
 	// else
-	write(fd, image, res->res_x * res->res_y * (bpp / 8)); //check for bad return value
+	write(fd, image, img_size); //check for bad return value
+	// write(1, image, img_size); //check for bad return value
+	// ft_printf("'%s'\n", image);
 	printf("done\n");
 }
 

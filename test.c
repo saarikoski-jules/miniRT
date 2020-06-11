@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/10 15:33:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/11 15:42:53 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,16 +195,36 @@ int	gen_bmp_header(int fd, t_rt_scene *scene)
 {
 	char f_header[14];
 	int bpp = 24; //get value from get_img_address or whatever that func is
-	int amt_pixels = scene->res->res_x * scene->res->res_y;
-	int img_size = (bpp / 8) * amt_pixels;
-	size_t file_size = 54 + img_size + (amt_pixels / 2); //plus padding bytes
+	// int amt_pixels = scene->res->res_x * scene->res->res_y;
+	int row_size = scene->res->res_x * (bpp / 8);
 
+	// if (row_size % 4 == 0)
+		// row_size += 4;
+	// else
+	// {
+		while (row_size % 4 != 0)
+		{
+			ft_printf("pad\n");
+			row_size++;
+		}
+	// }
+	ft_printf("row_size %d\n", row_size);
+	ft_printf("mabe row? %d\n", ((bpp * scene->res->res_x) / 32) * 4);
+	// int img_size = (bpp / 8) * amt_pixels;
+	int f_header_size = 14;
+	int i_header_size = 40;
+	int header_size = f_header_size + i_header_size;
+	// size_t file_size = 54 + img_size; //plus padding bytes
+	int amt_bytes = row_size * scene->res->res_y;
+	int file_size = amt_bytes + header_size;
+	
+	ft_printf("amt_bytes: %d\n", amt_bytes);
 	ft_bzero(f_header, 14);
 
 	f_header[0] = 'B'; //8 file type
 	f_header[1] = 'M'; //16
 	//might need a padding byte here??
-	f_header[2] = (uint32_t)file_size; //16 + 32 = 48 
+	f_header[2] = (uint32_t)file_size; //16 + 32 = 48
 	f_header[6] = (uint32_t)0; //reserved
 	f_header[10] = (uint32_t)54; //pixel offset
 
