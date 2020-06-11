@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/11 15:42:53 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/11 18:50:26 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,16 +197,16 @@ int	gen_bmp_header(int fd, t_rt_scene *scene)
 	int bpp = 24; //get value from get_img_address or whatever that func is
 	// int amt_pixels = scene->res->res_x * scene->res->res_y;
 	int row_size = scene->res->res_x * (bpp / 8);
-
+	int height = -scene->res->res_y;
 	// if (row_size % 4 == 0)
 		// row_size += 4;
 	// else
 	// {
 		while (row_size % 4 != 0)
-		{
-			ft_printf("pad\n");
 			row_size++;
-		}
+		// {
+			// ft_printf("pad\n");
+		// }
 	// }
 	ft_printf("row_size %d\n", row_size);
 	ft_printf("mabe row? %d\n", ((bpp * scene->res->res_x) / 32) * 4);
@@ -217,38 +217,51 @@ int	gen_bmp_header(int fd, t_rt_scene *scene)
 	// size_t file_size = 54 + img_size; //plus padding bytes
 	int amt_bytes = row_size * scene->res->res_y;
 	int file_size = amt_bytes + header_size;
-	
+	// int size = 
 	ft_printf("amt_bytes: %d\n", amt_bytes);
+	ft_printf("file size: %d\n", file_size);
 	ft_bzero(f_header, 14);
 
-	f_header[0] = 'B'; //8 file type
-	f_header[1] = 'M'; //16
-	//might need a padding byte here??
-	f_header[2] = (uint32_t)file_size; //16 + 32 = 48
-	f_header[6] = (uint32_t)0; //reserved
-	f_header[10] = (uint32_t)54; //pixel offset
+	ft_memcpy(f_header, "BM", 2);
+	ft_memcpy(f_header + 2, &file_size, 4);
+	ft_memcpy(f_header + 10, &header_size, 4);
+	// f_header[0] = 'B'; //8 file type
+	// f_header[1] = 'M'; //16
+	// might need a padding byte here??
+	// f_header[2] = (uint32_t)file_size; //16 + 32 = 48
+	// *((u_int32_t *)&f_header[0x02]) = (u_int32_t)file_size;
+	// ft_memcpy(f_header + 2, &file_size, 4);
+	// f_header[6] = (uint32_t)0; //reserved
+	// f_header[10] = (uint32_t)54; //pixel offset
 
-	write(1, &f_header, 14);
-	write(fd, &f_header, 14);
+	// write(1, &f_header, 14);
+	// ft_putbytes_fd(&f_header, 14, 1);
 
 	char i_header[40];
 	ft_bzero(i_header, 40);
 
-	i_header[0] = (uint32_t)40; //header size
-	i_header[4] = (uint32_t)scene->res->res_x; //res_x
-	i_header[8] = (uint32_t)scene->res->res_y; //res_y
+	// i_header[0] = (uint32_t)40; //header size
+	ft_memcpy(i_header, &i_header_size, 4);
+	// i_header[4] = (uint32_t)scene->res->res_x; //res_x
+	ft_memcpy(i_header + 4, &scene->res->res_x, 4);
+	// i_header[8] = (uint32_t)scene->res->res_y; //res_y
+	ft_memcpy(i_header + 8, &height, 4);
 	i_header[12] = (uint16_t)1; //planes
-	i_header[14] = (uint16_t)bpp; //bits per pixel
-	i_header[16] = (uint32_t)0; //compression
-	i_header[20] = (uint32_t)0; // img size, (can be set to 0 when no compression used)
-	i_header[24] = (uint32_t)0; //pix per meter x (can be set to zero)
-	i_header[28] = (uint32_t)0; //pix per meter y (can be set to zero)
-	i_header[32] = (uint32_t)0; //colors (can be set to zero?)
-	i_header[36] = (uint32_t)0; //important colors (0 means all colors are important)
+	// ft_memcpy(i_header + 12, , 2);
+	// i_header[14] = (uint16_t)bpp; //bits per pixel
+	ft_memcpy(i_header + 14, &bpp, 2);
+	// i_header[16] = (uint32_t)0; //compression
+	// i_header[20] = (uint32_t)0; // img size, (can be set to 0 when no compression used)
+	// i_header[24] = (uint32_t)0; //pix per meter x (can be set to zero)
+	// i_header[28] = (uint32_t)0; //pix per meter y (can be set to zero)
+	// i_header[32] = (uint32_t)0; //colors (can be set to zero?)
+	// i_header[36] = (uint32_t)0; //important colors (0 means all colors are important)
 	write(1, "\nlol\n", 5);
 
-	write(1, &i_header, 40);//if write fails, exit
-	write(fd, &i_header, 40);
+	// write(1, &i_header, 40);//if write fails, exit
+	// ft_putbytes_fd(&i_header, 40, 1);
+	write(fd, f_header, 14);
+	write(fd, i_header, 40);
 
 	// fwrite(&f_header, 2, 1, fd);
 	return (1);
