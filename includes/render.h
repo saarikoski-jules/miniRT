@@ -36,7 +36,7 @@ typedef struct	s_cam_info
 	double	len_y;
 }				t_cam_info;
 
-unsigned int		translate_color(t_color *color);
+int		translate_color(t_color *color);
 // double	circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n);
 // double	square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n);
 // double	triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n);
