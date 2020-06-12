@@ -28,7 +28,7 @@
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 //TODO: is there a random segfault with file breaks_cy.rt
 
-t_color *cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
+int cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
 	t_obj *tmp;
 	double d;
@@ -79,7 +79,7 @@ t_color *cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 			}
 			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ) //change
 			{
-				return (NULL);
+				return (INSIDE_OBJ);
 			}
 		}
 
@@ -92,14 +92,14 @@ t_color *cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 			// ft_printf("aa\n");
 			d = d_tmp;
 			rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
-			// color = translate_color(rgb);
+			color = translate_color(rgb);
 		}
 		tmp = tmp->next;
 	}
-	return (rgb);
+	return (color);
 }
 
-t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
+int remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -172,7 +172,7 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	size_t j;
 	// int color;
 	// unsigned int color;
-	t_color *color;
+	int color;
 	void *image;
 
 	//i could save images to a list in case of multiple cameras
@@ -201,10 +201,10 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 		while (i <= scene->res->res_x)
 		{
 			color = remap_coord(scene, pos, cam_data, base, cam);
-			unsigned int rgb = translate_color(color);
+			// unsigned int rgb = translate_color(color);
 			pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
-			ft_memcpy(img_addr + pix_pos, &rgb, 3);
-			if (color == NULL)
+			ft_memcpy(img_addr + pix_pos, &color, 3);
+			if (color == INSIDE_OBJ)
 			{
 				return; //maybe not? just paste all black?
 			}
@@ -239,13 +239,15 @@ void append_color(int color, int i, int j, int size_line, int bpp, int endian, c
 	// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 }
 
+
+
 void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y, int fd) // if write fails, exit instead of bad return
 {
 	size_t i;
 	size_t j;
 	// int color;
 	// unsigned int color;
-	t_color *color;
+	unsigned int color;
 	// void *image;
 	// int row_size = 
 	//i could save images to a list in case of multiple cameras
@@ -272,25 +274,20 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	ft_printf("sizeline: %d\n", size_line);
 	image = (char *)e_malloc(img_size);
 	ft_printf("img_size: %d\n", img_size);
-	// image = mlx_new_image(mlx_ptr, scene->res->res_x, scene->res->res_y);
-	// if (image == NULL)
-		// error_exit_errno();
-	// unsigned int *img_byte;			//img ptr, 
-	// char *img_addr = mlx_get_data_addr(image, &bpp, &size_line, &endian);//have to use this for img to work
-	// unsigned int *img_addr_uint = (unsigned int *)img_addr;
-	// img_byte = (unsigned int *)image
-	// ft_bzero(img_addr, scene->res->res_x * scene->res->res_y * 4); //make sure img is initialized to zero
 	ft_bzero(image, img_size); //make sure img is initialized to zero
-	// ft_printf("%d, %d, %d", bpp, size_line, endian);
 	int new;
-	// int k;
-	// k = 0;
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
 	int pix_pos;
 	int black = 0;
 	int white = 255;
+
+	int r_bit;
+	int g_bit;
+	int b_bit;
+
+	int rgb;
 
 	while (j <= scene->res->res_y)
 	{
@@ -301,13 +298,23 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 		{
 			// ft_printf("aa\n");
 			color = remap_coord(scene, pos, cam_data, base, cam); //TODO: make sure color value is good when no intersections
-			r = color->r;
-			g = color->g;
-			b = color->b;
+			// r = color->r;
+			// g = color->g;
+			// b = color->b;
+			
+			// rgb = translate_color(color);
+			int r_bit = (0xff && color);
+			int g_bit = (0xff00 && color) >> 8;
+			int b_bit = (0xff0000 && color) >> 16;
+			ft_printf("%x\n", color);
+			ft_printf("%x\n", r_bit);
+			// if (r != r_bit)
+				// ft_printf("r_bit: %d, real %d\n", r_bit, r);
+		
 			// bgr = translate_color(color);
-				ft_memcpy(image + k, &b, 1);
-				ft_memcpy(image + k + 1, &g, 1);
-				ft_memcpy(image + k + 2, &r, 1);		
+				ft_memcpy(image + k, &b_bit, 1);
+				ft_memcpy(image + k + 1, &g_bit, 1);
+				ft_memcpy(image + k + 2, &r_bit, 1);		
 			k += 3;
 			// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 			// ft_memcpy(img_addr + pix_pos, &color, 3);
