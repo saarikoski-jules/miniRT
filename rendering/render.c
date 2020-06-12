@@ -7,9 +7,11 @@
 #include <math.h>
 #include <stdio.h>//
 #include <parse.h>
+#include "xevents.h"
+// #include <X11/X.h> //TODO: should I use this, also <X11/keysymdef.h> for keycodes
 
 #define DIST 1 //choose: determine camera distance from grid
-#define FOV_VERT 60 //choose: determine vertical fov
+#define FOV_VERT 60 //choose: determine vertical fov //TODO: calculate resolution ration and retermine vertical fov based on it?
 //choose: default rotation of camera, should be changeable.
 
 
@@ -301,6 +303,10 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 		{
 			// ft_printf("aa\n");
 			color = remap_coord(scene, pos, cam_data, base, cam); //TODO: make sure color value is good when no intersections
+			if (color == NULL)
+			{
+				//just zeroes
+			}
 			r = color->r;
 			g = color->g;
 			b = color->b;
@@ -401,6 +407,9 @@ t_camera *find_cam(t_camera *cam_orig, int i)
 }
 
 
+
+
+
 int	deal_key(int key, void *mlx_data)
 {
 	t_mlx_data **data = (t_mlx_data **)mlx_data;
@@ -410,21 +419,31 @@ int	deal_key(int key, void *mlx_data)
 	t_camera *cam_cur = NULL;
 	int i = (*data)->i;
 	ft_printf("key: %d\n", key);
+	// if (key == 53) //XK_Escape                        0xff1b
+	if (key == KEYCODE_ESC) //XK_Escape                        0xff1b
+	{
+		exit(0); //uhm??
+	}
 	if (cam_orig == NULL)
 	{
 		return (0);
 	}
 	else
 	{
-		if (key == 65363 || key == 124)//65363 for windows
+		// if (key == XK_KP_Right)//65363 for windows
+		// if (key == 65363 || key = 124)//65363 for windows
+		if (key == KEYCODE_RIGHT)//65363 for windows
 		{
+			ft_printf("works?\n");
 			if (i < (*data)->cam_amt)
-				i++;
+				i++; //only do this if camera is found successfully
 		}
-		else if (key == 65361 || key == 123)//65361 for windows
+		// else if (key == 65361 || key == 123)//65361 for windows
+		// else if (key == 65361 || key == 123)//65361 for windows
+		else if (key == KEYCODE_LEFT)//65361 for windows
 		{
-			if (i > 0)
-				i--;
+			if (i > 0) //TODO: segfaults when pressing back first
+				i--; //only do this if camera is found successfully
 		}
 		else
 		{
@@ -437,6 +456,12 @@ int	deal_key(int key, void *mlx_data)
 		(*data)->i = i;
 		trace(scene, (*data)->mlx_ptr, (*data)->win_ptr, cam_cur, -1);
 	}
+	return (0);
+}
+
+int expose(void *mlx_data)//when you click on your window and it comes out from behind another window //TODO: find out if i need this for smooth moving and exposing the window
+{
+	// ft_printf("expose event??\n");
 	return (0);
 }
 
@@ -453,6 +478,11 @@ int	get_cam_amt(t_camera *cam_head)
 		cur = cur->next;
 	}
 	return (amt);
+}
+
+int close_program(void *mlx_data)
+{
+	exit(0);//exit success??
 }
 
 void trace_them_rays(t_rt_scene *scene, int fd)
@@ -474,6 +504,9 @@ void trace_them_rays(t_rt_scene *scene, int fd)
 	if (fd == -1)
 	{
 		mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
+		// mlx_expose_hook(mlx_data->win_ptr, expose, &mlx_data);//not sure if i need this
+		// mlx_hook(mlx_data->win_ptr, int x_event, int x_mask, int func, void *param);	
+		mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, SUBSTRUCTURE_NOTIFY_MASK, close_program, &mlx_data);
 		mlx_loop(mlx_data->mlx_ptr);
 	}
 }
