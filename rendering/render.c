@@ -241,6 +241,8 @@ void append_color(int color, int i, int j, int size_line, int bpp, int endian, c
 	// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 }
 
+
+
 void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y, int fd) // if write fails, exit instead of bad return
 {
 	size_t i;
@@ -358,7 +360,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 
 
 
-void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam, int fd)
+void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd)
 {
 	double inc_x;
 	double inc_y;
@@ -369,12 +371,12 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam, int f
 	
 	// cam_cur = scene->cam;
 		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
-		cam_data->aspect_ratio = (double)scene->res->res_x / (double)scene->res->res_y;
+		cam_data->aspect_ratio = (double)mlx_data->scene->res->res_x / (double)mlx_data->scene->res->res_y;
 		cam_data->fov_ratio = (double)cam->fov / (double)FOV_VERT; //changing maybe
 		cam_data->len_x = tan(cam->fov / 2 * M_PI / 180);
 		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180);
-		inc_x = 1.0/scene->res->res_x;
-		inc_y = 1.0/scene->res->res_y;
+		inc_x = 1.0/mlx_data->scene->res->res_x;
+		inc_y = 1.0/mlx_data->scene->res->res_y;
 		pos = (t_vec*)e_malloc(sizeof(t_vec));
 		pos->y = inc_y / 2;
 		t_vec *base;
@@ -382,9 +384,9 @@ void	trace(t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_camera *cam, int f
 			pos->x = inc_x / 2;
 			pos->z = -1;
 		if (fd == -1)
-			get_ndc_coords(cam_data, cam, scene->res, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y);
+			get_ndc_coords(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y);
 		else
-			get_ndc_coords_save(cam_data, cam, scene->res, pos, scene, mlx_ptr, win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
+			get_ndc_coords_save(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
 }
 
 t_camera *find_cam(t_camera *cam_orig, int i)
@@ -454,7 +456,7 @@ int	deal_key(int key, void *mlx_data)
 		cam_cur = find_cam(cam_orig, i);
 		ft_printf("camera fov: %d\n", cam_cur->fov);
 		(*data)->i = i;
-		trace(scene, (*data)->mlx_ptr, (*data)->win_ptr, cam_cur, -1);
+		trace(mlx_data, cam_cur, -1);
 	}
 	return (0);
 }
@@ -485,28 +487,61 @@ int close_program(void *mlx_data)
 	exit(0);//exit success??
 }
 
-void trace_them_rays(t_rt_scene *scene, int fd)
+void manage_window(t_mlx_data *mlx_data)
 {
-	void *mlx_ptr;
-	void *win_ptr;
-	void *img_ptr;
-	t_mlx_data *mlx_data;
+	// void *mlx_ptr;
+	// void *win_ptr;
+	// void *img_ptr;
+	// t_mlx_data *mlx_data;
 
-	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
-	mlx_data->scene = scene;
-	mlx_data->mlx_ptr = mlx_init();
-	if (!mlx_data->mlx_ptr)
-		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT);
-	mlx_data->cam_amt = get_cam_amt(scene->cam);
-	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, scene->res->res_x, scene->res->res_y, "miniRT");
-	mlx_data->i = 0;
-	trace(scene, mlx_data->mlx_ptr, mlx_data->win_ptr, scene->cam, fd);
-	if (fd == -1)
-	{
+	// mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
+	// mlx_data->mlx_ptr = mlx_init();
+	// int sizex;
+	// int sizey;
+	// mlx_get_screen_size(mlx_data->mlx_ptr, &sizex, &sizey);
+	// if (scene->res->res_x > sizex) //TODO: save breaks with huge sizes
+		// scene->res->res_x = sizex;
+	// if (scene->res->res_y > sizey)
+		// scene->res->res_y = sizey;
+	// ft_printf("sizex: %d, sizey: %d, x: %d, y: %d\n", sizex, sizey, scene->res->res_x, scene->res->res_y);
+	// mlx_data->scene = scene;
+	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, mlx_data->scene->res->res_x, mlx_data->scene->res->res_y, "miniRT"); //dont want this is --save
+	trace(mlx_data, mlx_data->scene->cam, -1);
+	// if (fd == -1)
+	// {
 		mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 		// mlx_expose_hook(mlx_data->win_ptr, expose, &mlx_data);//not sure if i need this
 		// mlx_hook(mlx_data->win_ptr, int x_event, int x_mask, int func, void *param);	
 		mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, SUBSTRUCTURE_NOTIFY_MASK, close_program, &mlx_data);
 		mlx_loop(mlx_data->mlx_ptr);
-	}
+	// }
+}
+
+t_mlx_data *init_mlx_data(t_rt_scene *scene)
+{
+	t_mlx_data	*mlx_data;
+	// void		*mlx_ptr;
+	int			screen_max_x;
+	int			screen_max_y;
+	// void *win_ptr;
+	// void *img_ptr;
+
+	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
+	mlx_data->mlx_ptr = mlx_init();
+	if (!mlx_data->mlx_ptr)
+		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
+	mlx_get_screen_size(mlx_data->mlx_ptr, &screen_max_x, &screen_max_y);
+	if (scene->res->res_x > screen_max_x) //TODO: save breaks with huge sizes
+		scene->res->res_x = screen_max_x;
+	if (scene->res->res_y > screen_max_y)
+		scene->res->res_y = screen_max_y;
+	// ft_printf("sizex: %d, sizey: %d, x: %d, y: %d\n", sizex, sizey, scene->res->res_x, scene->res->res_y);
+	mlx_data->scene = scene;
+	mlx_data->cam_amt = get_cam_amt(scene->cam);
+	mlx_data->i = 0;
+	if (!mlx_data->mlx_ptr)
+		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
+	mlx_data->cam_amt = get_cam_amt(scene->cam);
+	mlx_data->i = 0;
+	return(mlx_data);
 }

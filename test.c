@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/11 18:50:26 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/12 16:26:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "error.h"
 #include "libft.h"
 #include "rt.h"
+#include "render.h"
 #include <fcntl.h>//
 
 void print_scene(t_rt_scene *scene)
@@ -191,6 +192,8 @@ void print_scene(t_rt_scene *scene)
 // 	uint32_t	important_colors; //0 (all colors important)
 // }				t_info_header;
 
+#include <limits.h>
+
 int	gen_bmp_header(int fd, t_rt_scene *scene)
 {
 	char f_header[14];
@@ -217,7 +220,11 @@ int	gen_bmp_header(int fd, t_rt_scene *scene)
 	// size_t file_size = 54 + img_size; //plus padding bytes
 	int amt_bytes = row_size * scene->res->res_y;
 	int file_size = amt_bytes + header_size;
+	// long long l_file_size = row_size * scene->res->res_y + header_size;
+	// if (l_file_size > INT_MAX)
+		// ft_printf("too bigg\n");
 	// int size = 
+	ft_printf("x: %d, y: %d\n", scene->res->res_x, scene->res->res_y);
 	ft_printf("amt_bytes: %d\n", amt_bytes);
 	ft_printf("file size: %d\n", file_size);
 	ft_bzero(f_header, 14);
@@ -275,30 +282,39 @@ int append_pixels(int fd)
 	return(1);
 }
 
+void	save_img(t_mlx_data *mlx_data, const char *path)
+{
+	size_t len = ft_strlen(path);
+	char *name = ft_substr(path, 0, len - 3);
+	char *name_bmp = ft_strjoin(name, ".bmp");
+	ft_printf("%s\n", name_bmp);
+	int fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
+	size_t img_size = 1;
+	gen_bmp_header(fd, mlx_data->scene); //i can move all this to trace em rays to loop over cameras
+	// append_pixels(fd);
+	trace(mlx_data, mlx_data->scene->cam, fd);
+	close(fd);
+}
+
 int main(int ac, char **av)
 {
 	t_rt_scene	*scene;
-	if (ac >= 2)
+	t_mlx_data	*mlx_data;
+
+	if (ac == 2 || (ac == 3 && ft_strncmp("--save", av[2], 7) == 0))
 	{
 		scene = get_scene(av[1]); //make sure anything but .rt works
-		if (ac == 3 && ft_strncmp("--save", av[2], 7) == 0) //make sure there's a valid path
+		mlx_data = init_mlx_data(scene);
+		if (ac == 2)
 		{
-			size_t len = ft_strlen(av[1]);
-			char *name = ft_substr(av[1], 0, len - 3);
-			char *name_bmp = ft_strjoin(name, ".bmp");
-			ft_printf("%s\n", name_bmp);
-			int fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
-			size_t img_size = 1;
-			gen_bmp_header(fd, scene); //i can move all this to trace em rays to loop over cameras
-			// append_pixels(fd);
-			trace_them_rays(scene, fd);
-			close(fd);
-			return (0);//
+			// init_mlx(scene);
+			manage_window(mlx_data); //TODO: make sure screensize is fine
 		}
-		else if (ac == 2)
+		else //TODO: make sure there's a valid path (done in get_scene?)
 		{
-			trace_them_rays(scene, -1);
-		}		
+			save_img(mlx_data, av[1]);
+			// return (0);//
+		}
 	}
 	else
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);

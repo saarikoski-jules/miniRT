@@ -56,6 +56,13 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
 
 
+void		manage_window(t_mlx_data *mlx_data);
+t_mlx_data *init_mlx_data(t_rt_scene *scene);
+void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd);
+
+
+
+
 //utils
 double solve_quadratic(double a, double b, double c);
 t_vec *find_point(t_vec *start, t_vec *dir, double t);
