@@ -203,6 +203,7 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	{
 		while (i < scene->res->res_x)
 		{
+			ft_printf("inc x: %f, y: %f\nres x: %d, y: %d\n\n", pos->x, pos->y, i, j);
 			// ft_printf("mlx_shit cam: %p\n", cam);
 			rgb = remap_coord(scene, pos, cam_data, base, cam);
 			color = translate_color(rgb);
@@ -219,21 +220,22 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 			{
 				return; //maybe not? just paste all black?
 			}
-			if (i != scene->res->res_x)
+			if (i < scene->res->res_x)
 			{
 				pos->x += inc_x;
 			}
 			i++;
 		}
-		i = 1;
+		i = 0;
 			pos->x = inc_x /2;
-		if (j != scene->res->res_y)
+		if (j < scene->res->res_y)//TODO: Make sure all of these are correct
 		{
 			pos->y += inc_y;
 		}
 		j++;
 
 	}
+	ft_printf("incrememnt max values: %f, %f\n", pos->y, pos->x);
 	ft_printf("here\n");
 	ft_printf("img_ptr %p\n", image);
 	// if (fd == -1)
@@ -258,10 +260,10 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	size_t j;
 	t_color *color;
 
-	i = 1;
-	j = 1;
+	i = 0;
+	j = 0;
 	int k;
-	k = 1;
+	k = 0;
 	char *image;
 	int bpp = 24;//idk
 	int size_line = scene->res->res_x * (bpp / 8);//idk
@@ -287,12 +289,12 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 
 	int rgb;
 
-	while (j <= scene->res->res_y)
+	while (j < scene->res->res_y)
 	{
-		k = size_line * (j - 1);
+		k = size_line * j;
 		if (j < 3)
 			ft_printf("k1 : %d\n", k);
-		while (i <= scene->res->res_x)
+		while (i < scene->res->res_x)
 		{
 			// ft_printf("aa\n");
 			color = remap_coord(scene, pos, cam_data, base, cam); //TODO: make sure color value is good when no intersections
@@ -315,15 +317,15 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 			// {
 				// return; //maybe not? just paste all black? //already pasting all black (bzero)
 			// }
-			if (i != scene->res->res_x)
+			if (i < scene->res->res_x)
 			{
 				pos->x += inc_x;
 			}
 			i++;
 		}
-		i = 1;
+		i = 0;
 			pos->x = inc_x / 2;
-		if (j != scene->res->res_y)
+		if (j < scene->res->res_y)
 		{
 			pos->y += inc_y;
 		}
