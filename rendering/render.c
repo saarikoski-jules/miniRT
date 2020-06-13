@@ -101,7 +101,7 @@ t_color *cast(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	return (rgb);
 }
 
-t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec *base, t_camera *cam)
+t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data)
 {
 
 	//currently I'm stretching image based on fov and aspect ratio difference. Do i want to??
@@ -118,7 +118,7 @@ t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec 
 // U = cross(R, F);                  // rotatedup
 
 
-	t_vec *orien = set_vec_len(cam->orien, 1);
+	t_vec *orien = set_vec_len(cam_data->cam->orien, 1);
 	if (det_len_vec(orien) != 1.0)
 		ft_printf("will break\n");
 
@@ -156,19 +156,18 @@ t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data, t_vec 
 	t_vec *trying_shit1 = add_vectors(trying_shit_x, trying_shit_y);
 	t_vec *trying_shit2 = add_vectors(trying_shit1, orien);
 	t_vec *ray_u = set_vec_len(trying_shit2, 1);
-	return (cast(scene, ray_u, cam));
+	return (cast(scene, ray_u, cam_data->cam));
 }
 
-void	copy_pixel(t_color *color, int new, unsigned int rgb, size_t i, size_t j, void *mlx_ptr, char *img_addr, int screen_width, int pos)
-{
+// void	copy_pixel(t_color *color, int new, unsigned int rgb, size_t i, size_t j, void *mlx_ptr, char *img_addr, int screen_width, int pos)
+// {
 	// ((unsigned int *)(img_addr))[(i + (500 * j))] = rgb;
 	// ft_printf("i: %d, j: %d, pos %d\n", i, j, (i + screen_width * j));
 	//500 is file pixels y
 	// ft_memcpy(&img_addr[(4 * i + (4 * 500 * j))], &new, 3);
-}
+// }
 
-//get ndc space
-void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y)
+void *dat_loop(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, double inc_x, double inc_y)
 {
 	size_t i;
 	size_t j;
@@ -203,58 +202,47 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	{
 		while (i < scene->res->res_x)
 		{
-			ft_printf("inc x: %f, y: %f\nres x: %d, y: %d\n\n", pos->x, pos->y, i, j);
-			// ft_printf("mlx_shit cam: %p\n", cam);
-			rgb = remap_coord(scene, pos, cam_data, base, cam);
+			rgb = remap_coord(scene, pos, cam_data);
+			if (rgb == NULL)
+				return (image); //maybe not? just paste all black?
 			color = translate_color(rgb);
-			// ft_printf("i * j: %d, i: %d, j: %d\n", i * j, i, j);
-			// if (pix_pos > img_size)
-
-				// ft_printf("pix_pos %d\n", pix_pos);
-			// unsigned int rgb = translate_color(color);
 			pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
-			// ft_printf("pix_pos: %d, img_size %d\n", pix_pos, img_size);
-			// ft_printf("pix_pos: %d\n", pix_pos);
 			ft_memcpy(img_addr + pix_pos, &color, 3);
-			if (color == INSIDE_OBJ)
-			{
-				return; //maybe not? just paste all black?
-			}
-			if (i < scene->res->res_x)
-			{
-				pos->x += inc_x;
-			}
+			pos->x += inc_x;
 			i++;
 		}
 		i = 0;
-			pos->x = inc_x /2;
-		if (j < scene->res->res_y)//TODO: Make sure all of these are correct
-		{
-			pos->y += inc_y;
-		}
+		pos->x = inc_x /2;
+		pos->y += inc_y;
 		j++;
-
 	}
-	ft_printf("incrememnt max values: %f, %f\n", pos->y, pos->x);
-	ft_printf("here\n");
-	ft_printf("img_ptr %p\n", image);
+	return (image);
+}
+
+//get ndc space
+void get_ndc_coords(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, double inc_x, double inc_y)
+{
+	// ft_printf("incrememnt max values: %f, %f\n", pos->y, pos->x);
+	// ft_printf("here\n");
+	// ft_printf("img_ptr %p\n", image);
 	// if (fd == -1)
-	mlx_put_image_to_window(mlx_ptr, win_ptr, image, 0, 0);
-	ft_printf("size_line: %d\n", size_line);
-	ft_printf("final pix_pos: %d\n", pix_pos);
+	mlx_put_image_to_window(mlx_ptr, win_ptr, dat_loop(cam_data, pos, scene, mlx_ptr, win_ptr, inc_x, inc_y), 0, 0);
+	// ft_printf("size_line: %d\n", size_line);
+	// ft_printf("final pix_pos: %d\n", pix_pos);
 	// else
 		// write(fd, image, res->res_x * res->res_y); //check for bad return value
 	printf("done\n");
 }
 
-void append_color(int color, int i, int j, int size_line, int bpp, int endian, char *image, int k)
-{
+
+// void append_color(int color, int i, int j, int size_line, int bpp, int endian, char *image, int k)
+// {
 	// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
-}
+// }
 
 
 
-void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, t_vec *base, double inc_x, double inc_y, int fd) // if write fails, exit instead of bad return
+void get_ndc_coords_save(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, double inc_x, double inc_y, int fd) // if write fails, exit instead of bad return
 {
 	size_t i;
 	size_t j;
@@ -297,7 +285,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 		while (i < scene->res->res_x)
 		{
 			// ft_printf("aa\n");
-			color = remap_coord(scene, pos, cam_data, base, cam); //TODO: make sure color value is good when no intersections
+			color = remap_coord(scene, pos, cam_data); //TODO: make sure color value is good when no intersections
 			if (color == NULL)
 			{
 				//just zeroes
@@ -354,7 +342,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 
 
 
-void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
+t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
 {
 	double inc_x;
 	double inc_y;
@@ -366,19 +354,21 @@ void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
 		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
 		cam_data->aspect_ratio = (double)mlx_data->scene->res->res_x / (double)mlx_data->scene->res->res_y;
 		cam_data->fov_ratio = (double)cam->fov / (double)FOV_VERT; //changing maybe
+		cam_data->cam = cam;
+
 		cam_data->len_x = tan(cam->fov / 2 * M_PI / 180);
 		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180); //TODO: calculate new FOV_VERT
 		inc_x = 1.0/mlx_data->scene->res->res_x;
 		inc_y = 1.0/mlx_data->scene->res->res_y;
 		pos = (t_vec*)e_malloc(sizeof(t_vec));
 		pos->y = inc_y / 2;
-		t_vec *base;
-		base = gen_coord(0, 0, -1);
 		pos->x = inc_x / 2;
 		pos->z = -1;
-	ft_printf("cam: %p\n", cam);
-		if (fd == -1)
-			get_ndc_coords(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y);
-		else
-			get_ndc_coords_save(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
+
+	// ft_printf("cam: %p\n", cam);
+		if (fd == -1) //put_img_to_screen
+			get_ndc_coords(cam_data, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, inc_x, inc_y);
+		else //write()
+			get_ndc_coords_save(cam_data, pos, mlx_data->scene, inc_x, inc_y, fd); //if fails, exit??
+		return (cam_data);
 }

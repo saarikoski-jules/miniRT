@@ -30,10 +30,11 @@ typedef struct	s_mlx_data
 
 typedef struct	s_cam_info
 {
-	double	aspect_ratio;
-	double	fov_ratio;
-	double	len_x;
-	double	len_y;
+	double		aspect_ratio;
+	double		fov_ratio;
+	double		len_x;
+	double		len_y;
+	t_camera	*cam;
 }				t_cam_info;
 
 int		translate_color(t_color *color);
@@ -58,7 +59,7 @@ t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
 //maybe put these elsewhere
 void		manage_window(t_mlx_data *mlx_data);
 t_mlx_data *init_mlx_data(t_rt_scene *scene);
-void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd);
+t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam, int fd);
 
 
 //

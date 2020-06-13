@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/12 16:26:24 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/13 15:53:20 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,7 +292,10 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	size_t img_size = 1;
 	gen_bmp_header(fd, mlx_data->scene); //i can move all this to trace em rays to loop over cameras
 	// append_pixels(fd);
-	trace(mlx_data, mlx_data->scene->cam, fd);
+	t_cam_info *cam_data = trace(mlx_data, mlx_data->scene->cam, fd);
+	//TODO: Call trace from here, write to img here?
+	// get_ndc_coords_save(cam_data, mlx_data->scene->cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
+	
 	close(fd);
 }
 

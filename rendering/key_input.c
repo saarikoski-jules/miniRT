@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 12:35:40 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/13 13:23:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/13 14:49:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,10 @@ int	deal_key(int key, void *mlx_data)
 	data = (t_mlx_data **)mlx_data;
 	if (key == KEYCODE_RIGHT || key == KEYCODE_LEFT)
 		(*data)->i = select_cam(key, *data); //TODO if return -1, exit, or see if this isnt possible
-	if (key == KEYCODE_ESC)
+	else if (key == KEYCODE_ESC)
 		exit(0); //uhm??
 	else
-	{
 		ft_printf("invalid key\n");
-		return (0);
-	}
 	return (0);
 }
 
