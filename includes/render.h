@@ -55,10 +55,13 @@ t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, do
 //normal
 t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
 
-
+//maybe put these elsewhere
 void		manage_window(t_mlx_data *mlx_data);
 t_mlx_data *init_mlx_data(t_rt_scene *scene);
 void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd);
+
+
+//
 
 
 

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 13:06:45 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/12 16:29:00 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/13 13:14:55 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ typedef struct	s_rt_scene
 }				t_rt_scene;
 
 t_rt_scene	*get_scene(char *path);
+// t_camera *find_cam(t_camera *cam_orig, int i);// maybe not here?
+
 // void		get_input(char *path, t_rt_scene **scene);
 // void		parse_line(char *line, t_rt_scene **scene);
 

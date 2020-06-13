@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>//
 #include <parse.h>
-#include "xevents.h"
+// #include "xevents.h"
 // #include <X11/X.h> //TODO: should I use this, also <X11/keysymdef.h> for keycodes
 
 #define DIST 1 //choose: determine camera distance from grid
@@ -179,9 +179,8 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	void *image;
 
 	//i could save images to a list in case of multiple cameras
-
-	i = 1;
-	j = 1;
+	i = 0;
+	j = 0;
 	int k;
 	k = 0;
 	image = mlx_new_image(mlx_ptr, scene->res->res_x, scene->res->res_y);
@@ -194,19 +193,27 @@ void get_ndc_coords(t_cam_info *cam_data, t_camera *cam, t_resolution *res, t_ve
 	char *img_addr = mlx_get_data_addr(image, &bpp, &size_line, &endian);//have to use this for img to work
 	// unsigned int *img_addr_uint = (unsigned int *)img_addr;
 	// img_byte = (unsigned int *)image
+	int img_size =  size_line * scene->res->res_y;
 
-	ft_bzero(img_addr, scene->res->res_x * scene->res->res_y * 4); //make sure img is initialized to zero
+	ft_bzero(img_addr, img_size); //make sure img is initialized to zero
 	// ft_printf("%d, %d, %d", bpp, size_line, endian);
 	int new;
 	int pix_pos;
-	while (j <= scene->res->res_y)
+	while (j < scene->res->res_y)
 	{
-		while (i <= scene->res->res_x)
+		while (i < scene->res->res_x)
 		{
+			// ft_printf("mlx_shit cam: %p\n", cam);
 			rgb = remap_coord(scene, pos, cam_data, base, cam);
 			color = translate_color(rgb);
+			// ft_printf("i * j: %d, i: %d, j: %d\n", i * j, i, j);
+			// if (pix_pos > img_size)
+
+				// ft_printf("pix_pos %d\n", pix_pos);
 			// unsigned int rgb = translate_color(color);
 			pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
+			// ft_printf("pix_pos: %d, img_size %d\n", pix_pos, img_size);
+			// ft_printf("pix_pos: %d\n", pix_pos);
 			ft_memcpy(img_addr + pix_pos, &color, 3);
 			if (color == INSIDE_OBJ)
 			{
@@ -249,12 +256,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 {
 	size_t i;
 	size_t j;
-	// int color;
-	// unsigned int color;
 	t_color *color;
-	// void *image;
-	// int row_size = 
-	//i could save images to a list in case of multiple cameras
 
 	i = 1;
 	j = 1;
@@ -263,21 +265,14 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	char *image;
 	int bpp = 24;//idk
 	int size_line = scene->res->res_x * (bpp / 8);//idk
-	// if (size_line % 4 == 0)
-		// size_line += 4;
-	// else
-	// {
 		while(size_line % 4 != 0)
 			size_line++;
-		
-	// }
-	
 	int endian = 0; // 0 little endian, 1 big endian, idk
 	int amt_pixels = scene->res->res_y * scene->res->res_x; 
 	int img_size = size_line * scene->res->res_y; //amt_pixels * 3 bytes + scene->res->res_y * scene->res->res_x 
-	ft_printf("sizeline: %d\n", size_line);
+	// ft_printf("sizeline: %d\n", size_line);
 	image = (char *)e_malloc(img_size);
-	ft_printf("img_size: %d\n", img_size);
+	// ft_printf("img_size: %d\n", img_size);
 	ft_bzero(image, img_size); //make sure img is initialized to zero
 	int new;
 	unsigned char r;
@@ -286,7 +281,6 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 	int pix_pos;
 	int black = 0;
 	int white = 255;
-
 	int r_bit;
 	int g_bit;
 	int b_bit;
@@ -310,9 +304,10 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 			g = color->g;
 			b = color->b;
 			// bgr = translate_color(color);
-				ft_memcpy(image + k, &b_bit, 1);
-				ft_memcpy(image + k + 1, &g_bit, 1);
-				ft_memcpy(image + k + 2, &r_bit, 1);		
+			// ft_printf("k: %d\n", k);
+				ft_memcpy(image + k, &b, 1);
+				ft_memcpy(image + k + 1, &g, 1);
+				ft_memcpy(image + k + 2, &r, 1);	
 			k += 3;
 			// int pix_pos = (j * size_line + i * (bpp / 8)); //should this be zero indexed?
 			// ft_memcpy(img_addr + pix_pos, &color, 3);
@@ -357,7 +352,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_camera *cam, t_resolution *res,
 
 
 
-void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd)
+void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
 {
 	double inc_x;
 	double inc_y;
@@ -365,180 +360,23 @@ void	trace(t_mlx_data *mlx_data, t_camera *cam, int fd)
 	t_cam_info *cam_data;
 	// t_camera *cam_cur;
 
-	
 	// cam_cur = scene->cam;
 		cam_data = (t_cam_info *)e_malloc(sizeof(t_cam_info));
 		cam_data->aspect_ratio = (double)mlx_data->scene->res->res_x / (double)mlx_data->scene->res->res_y;
 		cam_data->fov_ratio = (double)cam->fov / (double)FOV_VERT; //changing maybe
 		cam_data->len_x = tan(cam->fov / 2 * M_PI / 180);
-		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180);
+		cam_data->len_y = tan(FOV_VERT / 2 * M_PI / 180); //TODO: calculate new FOV_VERT
 		inc_x = 1.0/mlx_data->scene->res->res_x;
 		inc_y = 1.0/mlx_data->scene->res->res_y;
 		pos = (t_vec*)e_malloc(sizeof(t_vec));
 		pos->y = inc_y / 2;
 		t_vec *base;
-			base = gen_coord(0, 0, -1);
-			pos->x = inc_x / 2;
-			pos->z = -1;
+		base = gen_coord(0, 0, -1);
+		pos->x = inc_x / 2;
+		pos->z = -1;
+	ft_printf("cam: %p\n", cam);
 		if (fd == -1)
 			get_ndc_coords(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y);
 		else
 			get_ndc_coords_save(cam_data, cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
-}
-
-t_camera *find_cam(t_camera *cam_orig, int i)
-{
-	t_camera *cam_new;
-	int j = 0;
-
-	cam_new = cam_orig;
-	if (i < 0)
-		return (NULL);
-	if (i == 0)
-		return (cam_orig);
-	while(j != i && cam_new->next != NULL)
-	{
-		ft_printf("j: %d, i: %d\n", j, i);
-		cam_new = cam_new->next;
-		j++;
-	}
-	return (cam_new);
-}
-
-
-
-
-
-int	deal_key(int key, void *mlx_data)
-{
-	t_mlx_data **data = (t_mlx_data **)mlx_data;
-	ft_printf("actual i: %d\n", (*data)->i);
-	t_rt_scene *scene = (*data)->scene;
-	t_camera *cam_orig = scene->cam;
-	t_camera *cam_cur = NULL;
-	int i = (*data)->i;
-	ft_printf("key: %d\n", key);
-	// if (key == 53) //XK_Escape                        0xff1b
-	if (key == KEYCODE_ESC) //XK_Escape                        0xff1b
-	{
-		exit(0); //uhm??
-	}
-	if (cam_orig == NULL)
-	{
-		return (0);
-	}
-	else
-	{
-		// if (key == XK_KP_Right)//65363 for windows
-		// if (key == 65363 || key = 124)//65363 for windows
-		if (key == KEYCODE_RIGHT)//65363 for windows //TODO: segfaults hard in any case
-		{
-			ft_printf("works?\n");
-			if (i < (*data)->cam_amt)
-				i++; //only do this if camera is found successfully
-		}
-		// else if (key == 65361 || key == 123)//65361 for windows
-		// else if (key == 65361 || key == 123)//65361 for windows
-		else if (key == KEYCODE_LEFT)//65361 for windows
-		{
-			if (i > 0) //TODO: segfaults when pressing back first
-				i--; //only do this if camera is found successfully
-		}
-		else
-		{
-			ft_printf("invalid key\n");
-			return (0);
-		}
-		ft_printf("i: %d\n", i);
-		cam_cur = find_cam(cam_orig, i);
-		ft_printf("camera fov: %d\n", cam_cur->fov);
-		(*data)->i = i;
-		trace(mlx_data, cam_cur, -1);
-	}
-	return (0);
-}
-
-int expose(void *mlx_data)//when you click on your window and it comes out from behind another window //TODO: find out if i need this for smooth moving and exposing the window
-{
-	// ft_printf("expose event??\n");
-	return (0);
-}
-
-int	get_cam_amt(t_camera *cam_head)
-{
-	int amt;
-	t_camera *cur;
-
-	amt = 0;
-	cur = cam_head;
-	while(cur->next != NULL)
-	{
-		amt++;
-		cur = cur->next;
-	}
-	return (amt);
-}
-
-int close_program(void *mlx_data)
-{
-	exit(0);//exit success??
-}
-
-void manage_window(t_mlx_data *mlx_data)
-{
-	// void *mlx_ptr;
-	// void *win_ptr;
-	// void *img_ptr;
-	// t_mlx_data *mlx_data;
-
-	// mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
-	// mlx_data->mlx_ptr = mlx_init();
-	// int sizex;
-	// int sizey;
-	// mlx_get_screen_size(mlx_data->mlx_ptr, &sizex, &sizey);
-	// if (scene->res->res_x > sizex) //TODO: save breaks with huge sizes
-		// scene->res->res_x = sizex;
-	// if (scene->res->res_y > sizey)
-		// scene->res->res_y = sizey;
-	// ft_printf("sizex: %d, sizey: %d, x: %d, y: %d\n", sizex, sizey, scene->res->res_x, scene->res->res_y);
-	// mlx_data->scene = scene;
-	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, mlx_data->scene->res->res_x, mlx_data->scene->res->res_y, "miniRT"); //dont want this is --save
-	trace(mlx_data, mlx_data->scene->cam, -1);
-	// if (fd == -1)
-	// {
-		mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
-		// mlx_expose_hook(mlx_data->win_ptr, expose, &mlx_data);//not sure if i need this
-		// mlx_hook(mlx_data->win_ptr, int x_event, int x_mask, int func, void *param);	
-		mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, SUBSTRUCTURE_NOTIFY_MASK, close_program, &mlx_data);
-		mlx_loop(mlx_data->mlx_ptr);
-	// }
-}
-
-t_mlx_data *init_mlx_data(t_rt_scene *scene)
-{
-	t_mlx_data	*mlx_data;
-	// void		*mlx_ptr;
-	int			screen_max_x;
-	int			screen_max_y;
-	// void *win_ptr;
-	// void *img_ptr;
-
-	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
-	mlx_data->mlx_ptr = mlx_init();
-	if (!mlx_data->mlx_ptr)
-		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
-	mlx_get_screen_size(mlx_data->mlx_ptr, &screen_max_x, &screen_max_y);
-	if (scene->res->res_x > screen_max_x) //TODO: save breaks with huge sizes
-		scene->res->res_x = screen_max_x;
-	if (scene->res->res_y > screen_max_y)
-		scene->res->res_y = screen_max_y;
-	// ft_printf("sizex: %d, sizey: %d, x: %d, y: %d\n", sizex, sizey, scene->res->res_x, scene->res->res_y);
-	mlx_data->scene = scene;
-	mlx_data->cam_amt = get_cam_amt(scene->cam);
-	mlx_data->i = 0;
-	if (!mlx_data->mlx_ptr)
-		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
-	mlx_data->cam_amt = get_cam_amt(scene->cam);
-	mlx_data->i = 0;
-	return(mlx_data);
 }

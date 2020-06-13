@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/12 14:20:44 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/12 14:30:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/13 12:38:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 //masks
 # define SUBSTRUCTURE_NOTIFY_MASK 1L<<19
+
+
 
 
 #endif

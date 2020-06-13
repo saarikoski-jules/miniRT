@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/12 13:50:29 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/13 13:17:14 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,9 @@ RT_SRCS =	test.c \
 			$(PARSE_DIR)parse_validation.c \
 			\
 			$(RENDER_DIR)render.c \
+			$(RENDER_DIR)mlx_manage.c \
+			$(RENDER_DIR)key_input.c \
+			$(RENDER_DIR)select_cam.c \
 			$(RENDER_DIR)render_utils.c \
 			$(RENDER_DIR)vector_utils.c \
 			$(RENDER_DIR)quaternion.c \
