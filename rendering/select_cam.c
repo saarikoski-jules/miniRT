@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 13:55:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/14 17:25:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "xevents.h"
 #include "render.h"
 #include <stdlib.h>
+#include "mlx.h"//
 
 int			get_cam_amt(t_camera *cam_head)
 {
@@ -51,13 +52,11 @@ t_camera	*find_cam(t_camera *cam_orig, int i)
 
 int			select_cam(int key, t_mlx_data *data)
 {
-	t_rt_scene	*scene;
 	t_camera	*cam_orig;
 	t_camera	*cam_cur;
 	int			i;
 	
-	scene = data->scene;
-	cam_orig = scene->cam;
+	cam_orig = data->scene->cam;
 	cam_cur = NULL;
 	i = data->i;
 	if (cam_orig == NULL)
@@ -73,7 +72,11 @@ int			select_cam(int key, t_mlx_data *data)
 			i--; //only do this if camera is found successfully
 	}
 	cam_cur = find_cam(cam_orig, i);
-	t_cam_info *cam_data = trace(data, cam_cur);
-	get_ndc_coords(cam_data, cam_data->screen_intersect, data->scene, data->mlx_ptr, data->win_ptr, cam_data->increment_x, cam_data->increment_y);
+	t_cam_info *cam_data = gen_cam_data(data, cam_cur);
+	// void *image = gen_image(cam_data, data->scene, data->mlx_ptr, data->win_ptr);
+	render_image(data, cam_data);
+
+	// gen_image(mlx_data->cam_info, mlx_data->scene, &img_addr, size_line, bpp);
+	// mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, image, 0, 0);
 	return (i);
 }

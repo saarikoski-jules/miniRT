@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 13:54:02 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/14 17:50:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,36 @@
 #include "key_functions.h"//
 #include "manage_cameras.h"//
 
+void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
+{
+	void	*image;
+	int		bpp;
+	int		size_line;
+	int		endian; // 0 little endian, 1 big endian
+	char	*img_addr;
+
+	image = mlx_new_image(mlx_data->mlx_ptr,
+						mlx_data->scene->res->res_x,
+						mlx_data->scene->res->res_y);
+	if (image == NULL)
+		error_exit_errno();
+	img_addr = mlx_get_data_addr(image, &bpp, &size_line, &endian);
+	ft_bzero(img_addr, size_line * mlx_data->scene->res->res_y);
+	gen_image(cam_info, mlx_data->scene, &img_addr, size_line, bpp);
+	mlx_put_image_to_window(mlx_data->mlx_ptr, mlx_data->win_ptr, image, 0, 0);
+}
 
 void manage_window(t_mlx_data *mlx_data)
 {
-	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr, mlx_data->scene->res->res_x, mlx_data->scene->res->res_y, "miniRT"); //dont want this is --save
-	// trace(mlx_data, mlx_data->scene->cam, -1);
-	get_ndc_coords(mlx_data->cam_info, mlx_data->cam_info->screen_intersect, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, mlx_data->cam_info->increment_x, mlx_data->cam_info->increment_y);
+	void *image;
+	
+	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr,
+										mlx_data->scene->res->res_x,
+										mlx_data->scene->res->res_y, "miniRT");
+	render_image(mlx_data, mlx_data->cam_info);
 	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 	mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, SUBSTRUCTURE_NOTIFY_MASK, close_program, &mlx_data);
 	mlx_loop(mlx_data->mlx_ptr);
-	
 }
 
 t_mlx_data *init_mlx_data(t_rt_scene *scene)

@@ -10,19 +10,21 @@
 # define NO_INTERSECT -1
 # define INSIDE_OBJ -2
 
-typedef struct	s_cam_info
+typedef struct	s_screen_details
 {
 	double		aspect_ratio;
-	double		fov_ratio; //likely wont need this
 	double		len_x;
 	double		len_y;
-	t_camera	*cam;
-	t_vec		*screen_intersect; //i can construct this in ndc coords
-	double		increment_x;
-	double		increment_y;
-	t_vec		*cam_right;
-	t_vec		*cam_up;
-	t_vec		*orien_u; //dont need this, please just normalize orientation in parsing
+	double		inc_x;
+	double		inc_y;
+}				t_screen_details;
+
+typedef struct	s_cam_info
+{
+	t_screen_details	*screen;
+	t_camera			*cam;
+	t_vec				*cam_right;
+	t_vec				*cam_up;
 }				t_cam_info;
 
 typedef struct	s_mlx_data
@@ -59,11 +61,15 @@ t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
 //maybe put these elsewhere
 void		manage_window(t_mlx_data *mlx_data);
 t_mlx_data *init_mlx_data(t_rt_scene *scene);
-t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam);
+t_cam_info	*gen_cam_data(t_mlx_data *mlx_data, t_camera *cam);
+void	save_img(t_mlx_data *mlx_data, const char *path);
+
 
 // get_ndc_coords_save(tcam_info, mlx_data->cam_info->screen_intersect, mlx_data->scene, mlx_data->cam_info->increment_x, mlx_data->cam_info->increment_x, fd); //if fails, exit??
-void get_ndc_coords_save(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, double inc_x, double inc_y, int fd); // if write fails, exit instead of bad return
-void get_ndc_coords(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, void *mlx_ptr, void *win_ptr, double inc_x, double inc_y);
+char *save_image(t_cam_info *cam_data, t_rt_scene *scene); // if write fails, exit instead of bad return
+void gen_image(t_cam_info *cam_data, t_rt_scene *scene, char **image, int size_line, int bpp);
+t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam);
+void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info);
 
 
 //
