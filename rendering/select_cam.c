@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/13 14:54:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/14 13:55:42 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int			select_cam(int key, t_mlx_data *data)
 			i--; //only do this if camera is found successfully
 	}
 	cam_cur = find_cam(cam_orig, i);
-	trace(data, cam_cur, -1);
+	t_cam_info *cam_data = trace(data, cam_cur);
+	get_ndc_coords(cam_data, cam_data->screen_intersect, data->scene, data->mlx_ptr, data->win_ptr, cam_data->increment_x, cam_data->increment_y);
 	return (i);
 }

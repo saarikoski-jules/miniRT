@@ -118,43 +118,17 @@ t_color *remap_coord(t_rt_scene *scene, t_vec *pos, t_cam_info *cam_data)
 // U = cross(R, F);                  // rotatedup
 
 
-	t_vec *orien = set_vec_len(cam_data->cam->orien, 1);
-	if (det_len_vec(orien) != 1.0)
-		ft_printf("will break\n");
 
-	t_vec *cam_right;
-	t_vec *world_up = gen_coord(0,1,0);
-	if (orien->x == 0.0 && orien->z == 0.0) //cam orien must be normalized, otherwise this breaks
-	{
-		if (orien->y == -1.0)
-			cam_right = gen_coord(1,0,0);
-		else
-			cam_right = gen_coord(-1,0,0);
-	}
-	else
-		cam_right = get_cross_product(orien, world_up); //try when cam facing directly up
-	// ft_printf("cam_right: %f, %f, %f\n", cam_right->x, cam_right->y, cam_right->z);
-	t_vec *cam_right_u = set_vec_len(cam_right, 1.0);
-	// t_vec *cam_right_u = cam_right;
-
-	// ft_printf("cam_right_u:\t%f, %f, %f\n", cam_right_u->x, cam_right_u->y, cam_right_u->z);
-
-	t_vec *cam_up = get_cross_product(cam_right_u, orien); //not possible these are the same?
-	// t_vec *cam_up_u = set_vec_len(cam_up, 1);
-	if (cam_right_u->x == orien->x && cam_right_u->y == orien->y && cam_right_u->z == orien->z)
-		ft_printf("cross product fail in remap_coord\n");
-	// ft_printf("cam_up:\t\t%f, %f, %f\n", cam_up->x, cam_up->y, cam_up->z);
-
-	t_vec *trying_shit_x = gen_coord(PixelScreenx * cam_right_u->x, PixelScreenx * cam_right_u->y, PixelScreenx * cam_right_u->z);
+	t_vec *trying_shit_x = gen_coord(PixelScreenx * cam_data->cam_right->x, PixelScreenx * cam_data->cam_right->y, PixelScreenx * cam_data->cam_right->z);
 
 	// ft_printf("pix_x:\t%f\n\t%f, %f, %f\n\n", PixelScreenx, trying_shit_x->x, trying_shit_x->y, trying_shit_x->z);
 	
-	t_vec *trying_shit_y = gen_coord(PixelScreeny * cam_up->x, PixelScreeny * cam_up->y, PixelScreeny * cam_up->z);
+	t_vec *trying_shit_y = gen_coord(PixelScreeny * cam_data->cam_up->x, PixelScreeny * cam_data->cam_up->y, PixelScreeny * cam_data->cam_up->z);
 
 	// ft_printf("pix_y:\t%f\n\t%f, %f, %f\n\n", PixelScreeny, trying_shit_y->x, trying_shit_y->y, trying_shit_y->z);
 
 	t_vec *trying_shit1 = add_vectors(trying_shit_x, trying_shit_y);
-	t_vec *trying_shit2 = add_vectors(trying_shit1, orien);
+	t_vec *trying_shit2 = add_vectors(trying_shit1, cam_data->orien_u);
 	t_vec *ray_u = set_vec_len(trying_shit2, 1);
 	return (cast(scene, ray_u, cam_data->cam));
 }
@@ -342,7 +316,7 @@ void get_ndc_coords_save(t_cam_info *cam_data, t_vec *pos, t_rt_scene *scene, do
 
 
 
-t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
+t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam) //init cam data
 {
 	double inc_x;
 	double inc_y;
@@ -364,11 +338,44 @@ t_cam_info	*trace(t_mlx_data *mlx_data, t_camera *cam, int fd) //init cam data
 		pos->y = inc_y / 2;
 		pos->x = inc_x / 2;
 		pos->z = -1;
+		cam_data->screen_intersect = pos;
+		cam_data->increment_x = inc_x;
+		cam_data->increment_y = inc_y;
+		
+		t_vec *orien = set_vec_len(cam_data->cam->orien, 1);
+		if (det_len_vec(orien) != 1.0)
+			ft_printf("will break\n");
 
+		t_vec *cam_right;
+		t_vec *world_up = gen_coord(0,1,0);
+		if (orien->x == 0.0 && orien->z == 0.0) //cam orien must be normalized, otherwise this breaks
+		{
+			if (orien->y == -1.0)
+				cam_right = gen_coord(1,0,0);
+			else
+				cam_right = gen_coord(-1,0,0);
+		}
+		else
+			cam_right = get_cross_product(orien, world_up); //try when cam facing directly up
+		// ft_printf("cam_right: %f, %f, %f\n", cam_right->x, cam_right->y, cam_right->z);
+		t_vec *cam_right_u = set_vec_len(cam_right, 1.0);
+		// t_vec *cam_right_u = cam_right;
+
+		// ft_printf("cam_right_u:\t%f, %f, %f\n", cam_right_u->x, cam_right_u->y, cam_right_u->z);
+
+		t_vec *cam_up = get_cross_product(cam_right_u, orien); //not possible these are the same?
+		// t_vec *cam_up_u = set_vec_len(cam_up, 1);
+		if (cam_right_u->x == orien->x && cam_right_u->y == orien->y && cam_right_u->z == orien->z)
+			ft_printf("cross product fail in remap_coord\n");
+
+		cam_data->cam_right = cam_right_u;
+		cam_data->cam_up = cam_up;
+		cam_data->orien_u = orien;
+		// ft_printf("cam_up:\t\t%f, %f, %f\n", cam_up->x, cam_up->y, cam_up->z);
 	// ft_printf("cam: %p\n", cam);
-		if (fd == -1) //put_img_to_screen
-			get_ndc_coords(cam_data, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, inc_x, inc_y);
-		else //write()
-			get_ndc_coords_save(cam_data, pos, mlx_data->scene, inc_x, inc_y, fd); //if fails, exit??
+		// if (fd == -1) //put_img_to_screen
+			// get_ndc_coords(cam_data, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, inc_x, inc_y);
+		// else //write()
+			// get_ndc_coords_save(cam_data, pos, mlx_data->scene, inc_x, inc_y, fd); //if fails, exit??
 		return (cam_data);
 }

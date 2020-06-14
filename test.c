@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/13 15:53:20 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/14 13:50:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ void print_scene(t_rt_scene *scene)
 
 #include <limits.h>
 
-int	gen_bmp_header(int fd, t_rt_scene *scene)
+int	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
 {
 	char f_header[14];
 	int bpp = 24; //get value from get_img_address or whatever that func is
@@ -269,6 +269,7 @@ int	gen_bmp_header(int fd, t_rt_scene *scene)
 	// ft_putbytes_fd(&i_header, 40, 1);
 	write(fd, f_header, 14);
 	write(fd, i_header, 40);
+	get_ndc_coords_save(mlx_data->cam_info, mlx_data->cam_info->screen_intersect, mlx_data->scene, mlx_data->cam_info->increment_x, mlx_data->cam_info->increment_x, fd); //if fails, exit??
 
 	// fwrite(&f_header, 2, 1, fd);
 	return (1);
@@ -290,9 +291,9 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	ft_printf("%s\n", name_bmp);
 	int fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
 	size_t img_size = 1;
-	gen_bmp_header(fd, mlx_data->scene); //i can move all this to trace em rays to loop over cameras
+	gen_bmp_header(fd, mlx_data->scene, mlx_data); //i can move all this to trace em rays to loop over cameras
 	// append_pixels(fd);
-	t_cam_info *cam_data = trace(mlx_data, mlx_data->scene->cam, fd);
+	// t_cam_info *cam_data = trace(mlx_data, mlx_data->scene->cam, fd);
 	//TODO: Call trace from here, write to img here?
 	// get_ndc_coords_save(cam_data, mlx_data->scene->cam, mlx_data->scene->res, pos, mlx_data->scene, mlx_data->mlx_ptr, mlx_data->win_ptr, base, inc_x, inc_y, fd); //if fails, exit??
 	
@@ -308,6 +309,7 @@ int main(int ac, char **av)
 	{
 		scene = get_scene(av[1]); //make sure anything but .rt works
 		mlx_data = init_mlx_data(scene);
+		mlx_data->cam_info = trace(mlx_data, mlx_data->scene->cam);
 		if (ac == 2)
 		{
 			// init_mlx(scene);
