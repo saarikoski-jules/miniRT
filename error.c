@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 18:29:28 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/05/23 14:37:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/17 14:33:44 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,15 @@ void *e_malloc(size_t size)
 	if (!ptr)
 		error_exit_errno();
 	return (ptr);
+}
+
+void e_write(int fd, const char *buf, size_t size)
+{
+	int ret;
+
+	if (fd <= 0) //is this correct?
+		error_exit_msg(C_INVALID_FILE, E_INVALID_FILE);
+	ret = write(fd, buf, size);
+	if (ret == -1)
+		exit(errno);
 }

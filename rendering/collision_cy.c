@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/31 16:47:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/17 17:49:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_vec *get_turned_ray_start(t_vec *ray_start, t_vec *ray, t_cy *cy)
 	t_vec	*OC_u;
 	t_vec	*turn;
 	t_vec	*p;
-	double	OC_len;
+	double	OC_len; //norme??
 	
 	OC = substract_vectors(ray_start, cy->pos);
 	OC_len = det_len_vec(OC);

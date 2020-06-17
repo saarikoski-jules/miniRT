@@ -6,17 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 16:28:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/17 17:47:39 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "minilibx_linux/mlx.h"//
-// #include "mlx.h"
 #include "error.h"
 #include "libft.h"
-// #include "rt.h"
 #include "render.h"
-// #include <fcntl.h>//
 
 void print_scene(t_rt_scene *scene)
 {
@@ -92,6 +88,7 @@ void print_scene(t_rt_scene *scene)
 	}
 }
 
+
 int main(int ac, char **av)
 {
 	t_rt_scene	*scene;
@@ -102,6 +99,7 @@ int main(int ac, char **av)
 		scene = get_scene(av[1]);
 		mlx_data = init_mlx_data(scene);
 		mlx_data->cam_info = gen_cam_data(mlx_data, mlx_data->scene->cam);
+		
 		if (ac == 2)
 			manage_window(mlx_data);
 		else

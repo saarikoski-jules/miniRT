@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:34:24 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 18:17:29 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/17 17:50:25 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,47 +41,46 @@ t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info
 	return (ray_intersect(scene, ray_u, cam_data->cam));
 }
 
-void cpy_pixel(int i, int j, char **image, int pix_pos, t_cam_info *cam_data, t_rt_scene *scene)
+void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scene *scene)
 {
 	t_color *rgb;
 	double	pixel_x;
 	double	pixel_y;
-	double ndc_y;
-	double ndc_x;
+	double	ndc_y;
+	double	ndc_x;
 
-	ndc_x = cam_data->screen->inc_x / 2 + (cam_data->screen->inc_x * i);
-	ndc_y = cam_data->screen->inc_y / 2 + (cam_data->screen->inc_y * j);
+	ndc_x = cam_data->screen->inc_x / 2 + (cam_data->screen->inc_x * iters->i);
+	ndc_y = cam_data->screen->inc_y / 2 + (cam_data->screen->inc_y * iters->j);
 	pixel_x = ((ndc_x * 2) - 1) * cam_data->screen->aspect_ratio * cam_data->screen->len_x;
 	pixel_y = (1 - (ndc_y * 2)) * cam_data->screen->len_y;
 	rgb = shoot_ray(scene, pixel_x, pixel_y, cam_data);
 	if (rgb == NULL)
 		return ;
-	ft_memcpy((*image) + pix_pos, &rgb->b, 1);
-	ft_memcpy((*image) + pix_pos + 1, &rgb->g, 1);
-	ft_memcpy((*image) + pix_pos + 2, &rgb->r, 1);
-	free(rgb);
+	ft_memcpy((*image) + iters->pix_pos, &rgb->b, 1);
+	ft_memcpy((*image) + iters->pix_pos + 1, &rgb->g, 1);
+	ft_memcpy((*image) + iters->pix_pos + 2, &rgb->r, 1);
+	// free(rgb); //TODO: make sure to free rgb
 }
 
-void gen_image(t_cam_info *cam_data, t_rt_scene *scene, char **image, int size_line, int bpp)
+void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data)
 {
-	size_t	i;
-	size_t	j;
-	int		pix_pos;
+	t_iterators *iters;
 
-	i = 0;
-	j = 0;
-	pix_pos = 0;
-	while (j < scene->res->res_y)
+	iters = (t_iterators *)e_malloc(sizeof(t_iterators));
+	iters->i = 0;
+	iters->j = 0;
+	iters->pix_pos = 0;
+	while (iters->j < scene->res->res_y)
 	{
-		pix_pos = size_line * j * i;
-		while (i < scene->res->res_x)
+		iters->pix_pos = img_data->size_line * iters->j;
+		while (iters->i < scene->res->res_x)
 		{
-			cpy_pixel(i, j, image, pix_pos, cam_data, scene);
-			i++;
-			pix_pos = (j * size_line + (i * (bpp / 8)));
+			cpy_pixel(iters, img_data->image, cam_data, scene);
+			iters->i++;
+			iters->pix_pos = (iters->j * img_data->size_line + (iters->i * (img_data->bpp / 8)));
 		}
-		i = 0;
-		j++;
+		iters->i = 0;
+		iters->j++;
 	}
 	ft_printf("done\n");
 }

@@ -5,8 +5,8 @@
 /*                                                     +:+                    */
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/03/15 18:33:35 by jvisser        #+#    #+#                */
-/*   Updated: 2020/03/18 15:50:10 by jvisser       ########   odam.nl         */
+/*   Created: 2020/03/15 18:33:35 by jvisser       #+#    #+#                 */
+/*   Updated: 2020/06/17 14:31:12 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,6 @@
 void	error_exit_errno(void);
 void	error_exit_msg(const unsigned int e_code, const char *e_msg);
 void	*e_malloc(size_t size);
+void	e_write(int fd, const char *buf, size_t size);
 
 #endif

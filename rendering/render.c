@@ -23,74 +23,58 @@
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 //TODO: is there a random segfault with file breaks_cy.rt
 
+t_color *gen_color(int r, int g, int b) //TODO: move to utils
+{
+	t_color *rgb;
+
+	rgb = (t_color *)e_malloc(sizeof(t_color));
+	rgb->r = r;
+	rgb->g = g;
+	rgb->b = b;
+	return (rgb);
+}
+
+double check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp)
+{
+	if (obj_tmp->id == sp)
+		d_tmp = sp_intersect(pos, ray, obj_tmp->type.sp);
+	else if (obj_tmp->id == sq)
+		d_tmp = sq_intersect(pos, ray, obj_tmp->type.sq);
+	else if (obj_tmp->id == tr)
+		d_tmp = tr_intersect(pos, ray, obj_tmp->type.tr);
+	else if (obj_tmp->id == cy)
+		d_tmp = cy_intersect(pos, ray, obj_tmp->type.cy);
+	else if (obj_tmp->id == pl)
+		d_tmp = pl_intersect(obj_tmp->type.pl->orien, pos, obj_tmp->type.pl->pos, ray);
+	return (d_tmp);
+}
+		
 t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
-	t_obj *tmp;
-	double d;
-	double d_tmp;
-	unsigned int	color;
-	color = 0;
-	d = 1.0/0.0; 
-	d_tmp = -1.0;
-	tmp = scene->obj;
-	t_vec *n;
-	n = gen_coord(0, 0, 0);
-	if (tmp == NULL)
-		return (0);
+	t_obj	*obj_tmp;
+	double	d;
+	double	d_tmp;
 	t_color *rgb;
-	rgb = (t_color *)e_malloc(sizeof(t_color));
-	rgb->r = 0;
-	rgb->g = 0;
-	rgb->b = 0;
-	while(tmp != NULL)
+
+	d = INFINITY;
+	d_tmp = NO_INTERSECT;
+	obj_tmp = scene->obj;
+	rgb = gen_color(0, 0, 0); //TODO: will leak
+	if (obj_tmp == NULL)
+		return (NULL);
+	while (obj_tmp != NULL)
 	{
-
-		if (tmp != NULL)
-		{
-			if (tmp->id == sp)
-			{
-
-				d_tmp = sp_intersect(cam->pos, ray, tmp->type.sp);
-			}
-			else if (tmp->id == sq)
-			{
-				// if (get_dot_product(cam->orien, tmp->type.sq->orien) < 0)
-					// ft_printf("breaks? %f\n", get_dot_product(cam->orien, tmp->type.sq->orien));
-				d_tmp = sq_intersect(cam->pos, ray, tmp->type.sq);
-			}
-			else if (tmp->id == tr)
-			{
-				d_tmp = tr_intersect(cam->pos, ray, tmp->type.tr);
-			}
-			else if (tmp->id == cy)
-			{
-				d_tmp = cy_intersect(cam->pos, ray, tmp->type.cy);
-				// if (d_tmp != 0.0 && d_tmp != NO_INTERSECT)
-			}
-			else if (tmp->id == pl)
-			{
-				d_tmp = pl_intersect(tmp->type.pl->orien, cam->pos, tmp->type.pl->pos, ray);
-			
-			}
-			if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ) //change
-			{
-				return (NULL);
-			}
-		}
-
+		d_tmp = check_obj_intersect(obj_tmp, ray, cam->pos, d_tmp);
+		if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ) //change
+			return (NULL);
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
-			// if (tmp->id == sq)
-				// printf("sq: %f\n", d_tmp);
-			// ft_printf("type: %d\nobj->color (%d, %d, %d)\n", tmp->id, tmp->color->r, tmp->color->g, tmp->color->b);
-			
-			// ft_printf("aa\n");
 			d = d_tmp;
-			rgb = calculate_final_color(scene, ray, tmp->color, d, tmp, n, cam);  //fix this so it's only ran once per pixel??
-			// color = translate_color(rgb);
+			rgb = calculate_final_color(scene, ray, obj_tmp->color, d, obj_tmp, cam);  //fix this so it's only ran once per pixel??
 		}
-		tmp = tmp->next;
+		obj_tmp = obj_tmp->next;
 	}
+	// if (!rgb) //TODO: make sure rgb is always allocated or null
 	return (rgb);
 }
 

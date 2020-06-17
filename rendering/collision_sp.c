@@ -11,9 +11,9 @@
 
 double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
 {	
-	t_vec *len;
-	double b;
-	double c;
+	t_vec	*len;
+	double	b;
+	double	c;
 
 	len = substract_vectors(ray_start, sp->pos);
 	if (det_len_vec(len) <= sp->r)
