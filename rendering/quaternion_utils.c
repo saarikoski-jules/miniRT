@@ -6,15 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/25 13:07:30 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/04 12:18:40 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 15:08:57 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "quaternion.h"
 #include "vec.h"
-
+#include "error.h"
 #include <math.h>
-#include <stdlib.h>
 
 t_qua	*gen_q_conjugate(t_qua *q)
 {
@@ -44,5 +43,18 @@ t_qua	*gen_unit_quaternion(t_qua *q)
 	q_u->vector = gen_coord(q->vector->x / len,
 							q->vector->y / len,
 							q->vector->z / len);
+	return (q_u);
+}
+
+t_qua	*build_unit_q(double w, double x, double y, double z)
+{
+	t_qua *q;
+	t_qua *q_u;
+
+	q = (t_qua *)e_malloc(sizeof(t_qua));
+	q->w = w;
+	q->vector = gen_coord(x, y, z);
+	q_u = gen_unit_quaternion(q);
+	free(q);
 	return (q_u);
 }

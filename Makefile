@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/18 14:40:40 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/18 15:07:08 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ RT_SRCS =	test.c \
 			$(RENDER_DIR)render_utils.c \
 			$(RENDER_DIR)vector_utils.c \
 			$(RENDER_DIR)quaternion.c \
+			$(RENDER_DIR)quaternion_utils.c \
 			$(RENDER_DIR)orient_vec.c \
 			$(RENDER_DIR)collision_2d.c \
 			$(RENDER_DIR)collision_sp.c \
