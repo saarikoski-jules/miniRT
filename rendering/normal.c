@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 12:21:52 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/25 13:45:08 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 18:25:18 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+//TODO: lights leak!
+//TODO: cylinders seem to leak
 static t_vec	*cy_shaft_normal(t_cy *cy, t_vec *intersect, double len)
 {
 	double	len_z;
@@ -57,7 +59,9 @@ static t_vec	*cy_normal(t_cy *cy, t_vec *intersect)
 		free(origin);
 		return (orien_opp);
 	}
-	return (cy_shaft_normal(cy, intersect, len));
+	t_vec *i_dont_even_know = cy_shaft_normal(cy, intersect, len);
+	free(intersect);
+	return (i_dont_even_know);
 }
 
 static t_vec	*pl_normal(t_vec *orien, t_vec *obj_pos, t_camera *cam)

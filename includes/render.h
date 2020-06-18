@@ -70,7 +70,7 @@ double	sq_intersect(t_vec *start, t_vec *ray, t_sq *sq);
 double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 
 //color
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *point, t_obj *obj, t_camera *cam);
+t_color *calculate_final_color(t_rt_scene *scene, t_vec **point, t_obj *obj, t_camera *cam);
 
 //normal
 t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);

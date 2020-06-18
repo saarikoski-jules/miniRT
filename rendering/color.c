@@ -75,6 +75,8 @@ int	check_intersections(t_rt_scene *scene, t_light *light, t_vec *point)
 		}
 		tmp_obj = tmp_obj->next;
 	}
+	free(sec_u);
+	free(point_new);
 	return (0);
 }
 
@@ -133,20 +135,21 @@ t_color *calculate_shading(t_rt_scene *scene, t_vec *normal, t_vec *point)
 	return (light);
 }
 
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *point, t_obj *obj, t_camera *cam)
+t_color *calculate_final_color(t_rt_scene *scene, t_vec **point, t_obj *obj, t_camera *cam)
 {
 	t_color	*final_color;
 	t_color	*light;
 	t_vec	*normal;
 
-	normal = calculate_normal(obj, point, cam); //if normal is to the opposite direction, from light, r
-	light = calculate_shading(scene, normal, point);
+	normal = calculate_normal(obj, *point, cam); //if normal is to the opposite direction, from light, r
+	light = calculate_shading(scene, normal, *point);
 	final_color = (t_color *)e_malloc(sizeof(t_color));
 	final_color->r = sqrt((light->r * obj->color->r));
 	final_color->g = sqrt((light->g * obj->color->g));
 	final_color->b = sqrt((light->b * obj->color->b));
 	free(normal);
-	free(point);
+	free(*point);
+	*point = NULL;
 	free(light);
 	return (final_color);
 }

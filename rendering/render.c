@@ -38,33 +38,33 @@ double check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp)
 		d_tmp = pl_intersect(obj_tmp->type.pl->orien, pos, obj_tmp->type.pl->pos, ray);
 	return (d_tmp);
 }
-		
+
 t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
-	t_obj	*obj_tmp;
-	double	d;
 	double	d_tmp;
+	double	d;
+	t_obj	*obj_tmp;
 	t_color *rgb;
-	t_vec *intersect;
+	t_vec	*intersect;
 
 	d = INFINITY;
-	d_tmp = NO_INTERSECT;
 	obj_tmp = scene->obj;
-	rgb = gen_color(0, 0, 0); //TODO: will leak
+	rgb = NULL;
 	while (obj_tmp != NULL)
 	{
 		d_tmp = check_obj_intersect(obj_tmp, ray, cam->pos, d_tmp);
-		if (d_tmp == -10.0 || d_tmp == INSIDE_OBJ) //change
+		if (d_tmp == INSIDE_OBJ) //TODO: hopefully nothing returns -10 anymore//change
 			return (NULL);
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
 			d = d_tmp;
 			intersect = find_point(cam->pos, ray, d);
-			rgb = calculate_final_color(scene, intersect, obj_tmp, cam);  //fix this so it's only ran once per pixel??
+			rgb = calculate_final_color(scene, &intersect, obj_tmp, cam);  //fix this so it's only ran once per pixel??
 		}
 		obj_tmp = obj_tmp->next;
 	}
-	// if (!rgb) //TODO: make sure rgb is always allocated or null
+	if (rgb == NULL)
+		rgb = gen_color(0, 0, 0);
 	return (rgb);
 }
 

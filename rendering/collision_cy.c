@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 14:48:43 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 17:37:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,9 @@ double get_shaft_intersection(t_vec *ray_start, t_vec *ray, t_cy *cy)
 	c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
 	t = solve_quadratic(a, b, c);
 	if (t <= 0)
-		return (NO_INTERSECT);
-	t = validate_cy_intersect(p, R, t, cy);
+		t = NO_INTERSECT;
+	else
+		t = validate_cy_intersect(p, R, t, cy);
 	free(p);
 	free(R);
 	return (t);

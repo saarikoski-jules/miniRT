@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:34:24 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/17 17:50:25 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 16:38:32 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,14 @@
 #include "libft.h"//
 #include "error.h"
 
-//TODO: Do i actually need rt.h?? edit shit pls
-
-t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info *cam_data)
+t_vec *build_ray(double pixel_x, double pixel_y, t_cam_info *cam_data)
 {
 	t_vec	*pos_x;
 	t_vec	*pos_y;
 	t_vec	*screen_pos;
 	t_vec	*rotated_ray;
 	t_vec	*ray_u;
-
+	
 	pos_x = gen_coord(pixel_x * cam_data->cam_right->x,
 					pixel_x * cam_data->cam_right->y,
 					pixel_x * cam_data->cam_right->z);
@@ -38,7 +36,18 @@ t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info
 	free(pos_y);
 	free(screen_pos);
 	free(rotated_ray);
-	return (ray_intersect(scene, ray_u, cam_data->cam));
+	return (ray_u);
+}
+
+t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info *cam_data)
+{
+	t_color	*color;
+	t_vec	*ray;
+
+	ray = build_ray(pixel_x, pixel_y, cam_data);
+	color = ray_intersect(scene, ray, cam_data->cam);
+	free(ray);
+	return (color);
 }
 
 void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scene *scene)
@@ -59,7 +68,7 @@ void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scen
 	ft_memcpy((*image) + iters->pix_pos, &rgb->b, 1);
 	ft_memcpy((*image) + iters->pix_pos + 1, &rgb->g, 1);
 	ft_memcpy((*image) + iters->pix_pos + 2, &rgb->r, 1);
-	// free(rgb); //TODO: make sure to free rgb
+	free(rgb);
 }
 
 void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data)
@@ -82,5 +91,6 @@ void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data)
 		iters->i = 0;
 		iters->j++;
 	}
-	ft_printf("done\n");
+	free(iters);
+	ft_printf("done\n");//
 }

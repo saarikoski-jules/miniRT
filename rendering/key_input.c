@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 12:35:40 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/13 14:49:46 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 17:24:23 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 
 //TODO: make sure window doesnt break when moving, resizing, closing or exposing from behind other window
 
+int close_program(void *mlx_data)
+{
+	(void)mlx_data;
+	exit(0);//exit success??
+}
 
 int	deal_key(int key, void *mlx_data)
 {
@@ -28,14 +33,9 @@ int	deal_key(int key, void *mlx_data)
 	if (key == KEYCODE_RIGHT || key == KEYCODE_LEFT)
 		(*data)->i = select_cam(key, *data); //TODO if return -1, exit, or see if this isnt possible
 	else if (key == KEYCODE_ESC)
-		exit(0); //uhm??
+		close_program(mlx_data);
 	else
-		ft_printf("invalid key\n");
+		ft_printf("invalid key\n");//
 	return (0);
 }
 
-int close_program(void *mlx_data)
-{
-	(void)mlx_data;
-	exit(0);//exit success??
-}

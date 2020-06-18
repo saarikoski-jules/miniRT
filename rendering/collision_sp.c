@@ -17,7 +17,10 @@ double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
 
 	len = substract_vectors(ray_start, sp->pos);
 	if (det_len_vec(len) <= sp->r)
+	{	
+		free(len);
 		return (INSIDE_OBJ); //You're inside the circle
+	}
 	b = 2.0 * get_dot_product(ray, len);
 	c = get_dot_product(len, len) - pow(sp->r, 2);
 	free(len);

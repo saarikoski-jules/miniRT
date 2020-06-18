@@ -6,17 +6,14 @@
 #include <math.h>
 #include <stdio.h>
 
-int translate_color(t_color *color) // COLOR MIGHT NOT ALWAYS EXIST, PLEASE FIX WITH TEST.RT
+int translate_color(t_color *color)
 {
 	int rgb;
-	// ft_printf("not broken?? %p\n", color);
-	// ft_printf("%d,", color->g);
-	// ft_printf("not broken?? %d, %d, %d\n", color->r, color->g, color->b);
 	rgb = (color->r * pow(16, 4)) + (color->g * pow(16, 2)) + (color->b);
 	return (rgb);
 }
 
-t_color *gen_color(int r, int g, int b) //TODO: move to utils
+t_color *gen_color(int r, int g, int b)
 {
 	t_color *rgb;
 
@@ -66,17 +63,10 @@ double	point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien)
 	edge = substract_vectors(point2, point1);
 	to_p = substract_vectors(p, point1);
 	cross = get_cross_product(edge, to_p);
-	// ft_printf("cross: (%f, %f, %f)\n", cross->x, cross->y, cross->z);
 	dot = get_dot_product(orien, cross);
-	// if (dot < 0)
-	// {
-		// t_vec *orien_2 = gen_coord(-orien->x, -orien->y, -orien->z);
-		// dot = get_dot_product(orien_2, cross);
-	// }
 	free(edge);
 	free(to_p);
 	free(cross);
-	// ft_printf("point_within_line: %f\n", dot);
 	return (dot);
 }
 

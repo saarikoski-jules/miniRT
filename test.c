@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/17 17:47:39 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 17:03:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,10 @@ void print_scene(t_rt_scene *scene)
 	}
 }
 
+// void free_scene(t_rt_scene *scene)
+// {
+	
+// }
 
 int main(int ac, char **av)
 {
@@ -99,11 +103,12 @@ int main(int ac, char **av)
 		scene = get_scene(av[1]);
 		mlx_data = init_mlx_data(scene);
 		mlx_data->cam_info = gen_cam_data(mlx_data, mlx_data->scene->cam);
-		
 		if (ac == 2)
 			manage_window(mlx_data);
 		else
 			save_img(mlx_data, av[1]);
+		//TODO: destroy mlx_data, cam info and scene
+		// free_scene(scene);
 	}
 	else
 		error_exit_msg(C_MAIN_FEW_ARGUMENTS, E_MAIN_FEW_ARGUMENTS);

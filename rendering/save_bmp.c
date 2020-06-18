@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 14:43:55 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 17:32:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
 	gen_i_header(scene, fd, img_data->bpp, i_header_size);
 	gen_image(mlx_data->cam_info, mlx_data->scene, img_data); //if fails, exit??
 	e_write(fd, image, amt_bytes); //check for bad return value
+	free(image);
 }
 
 void	save_img(t_mlx_data *mlx_data, const char *path)
@@ -85,4 +86,6 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	close(fd);
 	free(name);
 	free(name_bmp);
+	system("leaks a.out");
+	exit(0); //
 }
