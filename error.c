@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 18:29:28 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/06/17 14:33:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 13:55:33 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void *e_malloc(size_t size)
 	ptr = malloc(size);
 	if (!ptr)
 		error_exit_errno();
+	ft_bzero(ptr, size);
 	return (ptr);
 }
 

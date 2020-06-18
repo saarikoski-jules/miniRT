@@ -9,101 +9,144 @@
 
 //TODO: remember to take into account opposite orientation (should work now)
 
-
-
-int check_intersections(t_rt_scene *scene, t_light *light, t_vec *point)
+t_vec *apply_epsilon(t_vec *point, t_vec *ray)
 {
-	double hit_tmp;
-	t_obj *tmp_obj;
+	t_vec *new;
+	t_vec *eps;
 
-	hit_tmp = -1;
+    eps = set_vec_len(ray, EPSILON); //to not intersect self
+    new = add_vectors(point, eps); //to not intersect self
+	free(eps);
+	return (new);
+}
+
+t_vec	*find_len_and_get_u(double *len, t_vec *from, t_vec *to)
+{
+	t_vec *vec;
+	t_vec *vec_u;
+	
+	vec = substract_vectors(from, to);//actually other way around?
+	*len = det_len_vec(vec); //sec is vector from point to light
+	vec_u = set_vec_len(vec, 1);
+	free(vec);
+	return (vec_u);
+}
+
+t_color_int *init_color_int(int r, int g, int b)
+{
+	t_color_int *color;
+
+	color = (t_color_int *)e_malloc(sizeof(t_color_int));
+	color->r = r;
+	color->g = g;
+	color->b = b;
+	return (color);
+}
+
+void	add_color_and_free(t_color_int **color_prev, t_color_int **color_new)
+{
+	(*color_prev)->r += (*color_new)->r;
+	(*color_prev)->g += (*color_new)->g;
+	(*color_prev)->b += (*color_new)->b;
+	free(*color_new);
+	*color_new = NULL;
+}
+
+int	check_intersections(t_rt_scene *scene, t_light *light, t_vec *point)
+{
+	double	hit_tmp;
+	t_obj	*tmp_obj;
+	t_vec	*sec_u;
+	double	sec_len;
+	t_vec	*point_new;
+
+	hit_tmp = NO_INTERSECT;
 	tmp_obj = scene->obj;
 	if (tmp_obj == NULL)
 		return (0);
-	t_vec *sec = substract_vectors(light->pos, point);
-	t_vec *sec_u = set_vec_len(sec, 1);
-	double sec_len = det_len_vec(sec); //sec is vector from point to light
-    t_vec *eps = set_vec_len(sec, EPSILON); //to not intersect self
-    t_vec *point_new = add_vectors(point, eps); //to not intersect self
+	sec_u = find_len_and_get_u(&sec_len, light->pos, point);
+	point_new = apply_epsilon(point, sec_u);
 	while (tmp_obj != NULL)
 	{
 		hit_tmp = check_obj_intersect(tmp_obj, sec_u, point_new, hit_tmp);
 		if ((hit_tmp > 0 && hit_tmp < sec_len) || hit_tmp == INSIDE_OBJ)
+		{
 			return (1);
+		}
 		tmp_obj = tmp_obj->next;
 	}
 	return (0);
 }
 
-t_color *calculate_shading(t_rt_scene *scene, t_obj *obj, t_camera *cam, t_vec *point, t_color *amb_base)
+t_color_int **build_color(t_vec *point, t_vec *normal, t_rt_scene *scene, t_light *light)
 {
-	t_light *tmp;
-	t_vec *R;
-	t_vec *R_u;
-	t_color *final_color;
-	t_vec *normal;
-	double dot;
-	int i;
+	t_vec		*R;
+	t_vec		*R_u;
+	double		dot;
+	t_color_int *new_color;
+	t_color_int **col;
 
-	tmp = scene->light;
-	i = 0;
-	int tmp_red = 0;
-	int tmp_green = 0;
-	int tmp_blue = 0;
-	if (tmp == NULL) //change this shit
-		return (amb_base);
-	final_color = (t_color *)e_malloc(sizeof(t_color));
-	normal = calculate_normal(obj, point, cam); //if normal is to the opposite direction, from light, r
-	while (tmp != NULL)
+	R = substract_vectors(light->pos, point); //ray from hit point to light
+	R_u = set_vec_len(R, 1); //ray from hit point to light
+	new_color = init_color_int(0, 0, 0);
+	if (check_intersections(scene, light, point) == 0)
 	{
-		if (tmp != NULL)
-		{
-			R = substract_vectors(tmp->pos, point); //ray from hit point to light
-			R_u = set_vec_len(R, 1); //ray from hit point to light
-			if (check_intersections(scene, tmp, point))
-			{
-				i++;
-			}
-			else
-			{
-				dot = get_dot_product(normal, R_u);
-				if (dot < 0)
-					dot = 0;
-				tmp_red += tmp->brightness * tmp->color->r * dot; //instead of one use 0.18 or equivalent
-				tmp_green += tmp->brightness * tmp->color->g * dot;
-				tmp_blue += tmp->brightness * tmp->color->b * dot;
-				i++;
-			}
-			tmp = tmp->next;
-		}
+		dot = get_dot_product(normal, R_u);
+		if (dot < 0)
+			dot = 0;
+		new_color->r += light->brightness * light->color->r * dot; //instead of one use 0.18 or equivalent
+		new_color->g += light->brightness * light->color->g * dot;
+		new_color->b += light->brightness * light->color->b * dot;
 	}
-	if (i == 0)
-		return (amb_base);
-	int light_r = (tmp_red + amb_base->r) / (i + 1);
-	int light_g = (tmp_green + amb_base->g) / (i + 1);
-	int light_b = (tmp_blue + amb_base->b) / (i + 1);
-
-		final_color->r = sqrt((light_r * obj->color->r));
-		final_color->g = sqrt((light_g * obj->color->g));
-		final_color->b = sqrt((light_b * obj->color->b));
-
-	return (final_color);
+	free(R);
+	free(R_u);
+	col = &new_color;
+	return (col);
 }
 
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_camera *cam)
+t_color *calculate_shading(t_rt_scene *scene, t_vec *normal, t_vec *point)
 {
+	t_light *tmp;
 	t_color *amb_base;
-	t_color *final_color;
-	t_vec *point;
+	t_color *light;
+	int i;
+	t_color_int *color_tmp;
 
-	amb_base = (t_color *)e_malloc(sizeof(t_color));
-	amb_base->r = sqrt(color->r * scene->amb->color->r) * scene->amb->ratio;
-	amb_base->g = sqrt(color->g * scene->amb->color->g) * scene->amb->ratio;
-	amb_base->b = sqrt(color->b * scene->amb->color->b) * scene->amb->ratio;
-	amb_base = 
-	point = find_point(cam->pos, ray, d); //pass this to check_intersections
-	final_color = calculate_shading(scene, obj, cam, point, amb_base);
-	free(point);
+	color_tmp = init_color_int(0, 0, 0);
+	amb_base = gen_color(scene->amb->color->r * scene->amb->ratio,
+						scene->amb->color->g * scene->amb->ratio,
+						scene->amb->color->b * scene->amb->ratio);
+	tmp = scene->light;
+	i = 0;
+	while (tmp != NULL)
+	{
+		add_color_and_free(&color_tmp,
+			build_color(point, normal, scene, tmp));
+		i++;
+		tmp = tmp->next;
+	}
+	light =	gen_color((color_tmp->r + amb_base->r) / (i + 1),
+						(color_tmp->g + amb_base->g) / (i + 1),
+						(color_tmp->b + amb_base->b) / (i + 1));
 	free(amb_base);
+	free(color_tmp);
+	return (light);
+}
+
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *point, t_obj *obj, t_camera *cam)
+{
+	t_color	*final_color;
+	t_color	*light;
+	t_vec	*normal;
+
+	normal = calculate_normal(obj, point, cam); //if normal is to the opposite direction, from light, r
+	light = calculate_shading(scene, normal, point);
+	final_color = (t_color *)e_malloc(sizeof(t_color));
+	final_color->r = sqrt((light->r * obj->color->r));
+	final_color->g = sqrt((light->g * obj->color->g));
+	final_color->b = sqrt((light->b * obj->color->b));
+	free(normal);
+	free(point);
+	free(light);
 	return (final_color);
 }

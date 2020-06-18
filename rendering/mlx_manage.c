@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/17 17:40:04 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 14:43:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 
 void manage_window(t_mlx_data *mlx_data)
 {
-	void *image;
-	
 	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr,
 										mlx_data->scene->res->res_x,
 										mlx_data->scene->res->res_y, "miniRT");
@@ -64,9 +62,9 @@ t_mlx_data *init_mlx_data(t_rt_scene *scene)
 	if (!mlx_data->mlx_ptr)
 		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
 	mlx_get_screen_size(mlx_data->mlx_ptr, &screen_max_x, &screen_max_y);
-	if (scene->res->res_x > screen_max_x) //TODO: save breaks with huge sizes
+	if ((int)scene->res->res_x > screen_max_x) //TODO: save breaks with huge sizes
 		scene->res->res_x = screen_max_x;
-	if (scene->res->res_y > screen_max_y)
+	if ((int)scene->res->res_y > screen_max_y)
 		scene->res->res_y = screen_max_y;
 	mlx_data->scene = scene;
 	mlx_data->cam_amt = get_cam_amt(scene->cam);

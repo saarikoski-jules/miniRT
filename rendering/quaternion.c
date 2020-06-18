@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/04 16:56:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 14:47:29 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 //   }
 // }
 
-t_qua	*determine_quaternion_matrix(t_vec *orien, t_vec *base)
+t_qua	*determine_quaternion_matrix(t_vec *orien) //TODO: not used
 {
 	//F = orien
 	t_vec *up = gen_coord(0, 1, 0);

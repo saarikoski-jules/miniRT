@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/14 16:36:11 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/18 14:40:40 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,11 +42,12 @@ RT_SRCS =	test.c \
 MLXFLAGS_W = -lmlx -lXext -lX11
 MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread
 MLXFLAGS_M = -lmlx -framework OpenGL -framework AppKit
+ERROR_FLAGS = -Wall -Wextra -Werror
 
 
 all:
 	@make -C libft
-	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
+	@gcc -Iincludes $(RT_SRCS) $(ERROR_FLAGS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
 
 windows:
 	@make -C libft

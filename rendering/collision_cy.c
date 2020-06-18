@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/17 17:49:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 14:48:43 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ double get_cy_endcap(t_vec *pos, t_vec *ray_start, t_vec *ray, t_cy *cy)
 	return (NO_INTERSECT);
 }
 
-t_vec *get_turned_ray_start(t_vec *ray_start, t_vec *ray, t_cy *cy)
+t_vec *get_turned_ray_start(t_vec *ray_start, t_cy *cy)
 {
 	t_vec	*OC;
 	t_vec	*OC_u;
@@ -91,7 +91,7 @@ double get_shaft_intersection(t_vec *ray_start, t_vec *ray, t_cy *cy)
 	double c;
 	double t;
 
-	p = get_turned_ray_start(ray_start, ray, cy);
+	p = get_turned_ray_start(ray_start, cy);
 	if (p == NULL)
 		return (INSIDE_OBJ);
 	R = orient_vector(cy->q, ray);

@@ -16,6 +16,21 @@ int translate_color(t_color *color) // COLOR MIGHT NOT ALWAYS EXIST, PLEASE FIX 
 	return (rgb);
 }
 
+t_color *gen_color(int r, int g, int b) //TODO: move to utils
+{
+	t_color *rgb;
+
+	rgb = (t_color *)e_malloc(sizeof(t_color));
+	if ((r > 255 || r < 0) &&
+		(g > 255 || g < 0) &&
+		(b > 255 || b < 0))
+		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
+	rgb->r = (unsigned char)r;
+	rgb->g = (unsigned char)g;
+	rgb->b = (unsigned char)b;
+	return (rgb);
+}
+
 t_vec	*find_point(t_vec *start, t_vec *dir, double t)
 {
 	t_vec *dist;
@@ -73,6 +88,7 @@ double	solve_quadratic(double a, double b, double c)
 	double t2;
 
 	disc = pow(b, 2) - 4 * a * c;
+	t = NO_INTERSECT; //TODO: test if quadratic still works
 	if (disc < 0)
 		return (NO_INTERSECT);
 	if (disc > 0)
@@ -86,7 +102,5 @@ double	solve_quadratic(double a, double b, double c)
 	}
 	else if (disc == 0)
 		t = -b / (2 * a);
-	if (t < 0)
-		return (NO_INTERSECT);
 	return (t);
 }

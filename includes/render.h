@@ -54,21 +54,23 @@ typedef struct	s_iterators
 	size_t pix_pos;
 }				t_iterators;
 
+typedef struct	s_color_int
+{
+	int r;
+	int g;
+	int b;
+}				t_color_int;
+
 int		translate_color(t_color *color);
-// double	circle(t_rt_scene *scene, t_sp *sp, t_vec *ray, t_vec **n);
-// double	square(t_rt_scene *scene, t_sq *sq, t_vec *ray, t_vec **n);
-// double	triangle(t_rt_scene *scene, t_tr *tr, t_vec *ray, t_vec **n);
+t_color *gen_color(int r, int g, int b);
 double	cy_intersect(t_vec *start, t_vec *ray, t_cy *cy);
 double	sp_intersect(t_vec *start, t_vec *ray, t_sp *sp);
 double	tr_intersect(t_vec *start, t_vec *ray, t_tr *tr);
 double	sq_intersect(t_vec *start, t_vec *ray, t_sq *sq);
 double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 
-// double	plane_intersect(t_rt_scene *scene, t_vec *start, t_vec *ray, t_pl *pl, t_vec **n);
-// double	plane_intersect(t_rt_scene *scene, t_pl *pl, t_vec *ray, t_vec **n);
-
 //color
-t_color *calculate_final_color(t_rt_scene *scene, t_vec *ray, t_color *color, double d, t_obj *obj, t_camera *cam);
+t_color *calculate_final_color(t_rt_scene *scene, t_vec *point, t_obj *obj, t_camera *cam);
 
 //normal
 t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
@@ -80,7 +82,6 @@ t_cam_info	*gen_cam_data(t_mlx_data *mlx_data, t_camera *cam);
 void	save_img(t_mlx_data *mlx_data, const char *path);
 
 
-// get_ndc_coords_save(tcam_info, mlx_data->cam_info->screen_intersect, mlx_data->scene, mlx_data->cam_info->increment_x, mlx_data->cam_info->increment_x, fd); //if fails, exit??
 char *save_image(t_cam_info *cam_data, t_rt_scene *scene); // if write fails, exit instead of bad return
 void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data);
 t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam);

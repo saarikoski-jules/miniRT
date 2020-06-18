@@ -108,6 +108,7 @@ t_camera	*get_camera(char *line)
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
 	cam->next = NULL;
 	return (cam);
+	/*
 	// ft_printf("Camera:\n\
 	Pos:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
 	Orient:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
@@ -115,6 +116,7 @@ t_camera	*get_camera(char *line)
 	// cam->pos->x, cam->pos->y, cam->pos->z,
 	// cam->orien->x, cam->orien->y, cam->orien->z,
 	// cam->fov);
+	*/
 }
 
 t_camera		*add_camera(char *line, t_camera *first_camera)

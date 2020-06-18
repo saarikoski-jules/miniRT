@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/17 17:48:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/18 14:43:55 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "error.h"
 #include <fcntl.h>
 
-void	gen_f_header(t_rt_scene *scene, int fd, int i_header_size, int amt_bytes)
+void	gen_f_header(int fd, int i_header_size, int amt_bytes)
 {
 	char	f_header[14];
 	int		f_header_size;
@@ -64,7 +64,7 @@ void	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
 	image = (char *)e_malloc(amt_bytes);
 	img_data->image = &image;
 	ft_bzero(image, amt_bytes);
-	gen_f_header(scene, fd, i_header_size, amt_bytes);
+	gen_f_header(fd, i_header_size, amt_bytes);
 	gen_i_header(scene, fd, img_data->bpp, i_header_size);
 	gen_image(mlx_data->cam_info, mlx_data->scene, img_data); //if fails, exit??
 	e_write(fd, image, amt_bytes); //check for bad return value

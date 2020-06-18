@@ -23,16 +23,6 @@
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 //TODO: is there a random segfault with file breaks_cy.rt
 
-t_color *gen_color(int r, int g, int b) //TODO: move to utils
-{
-	t_color *rgb;
-
-	rgb = (t_color *)e_malloc(sizeof(t_color));
-	rgb->r = r;
-	rgb->g = g;
-	rgb->b = b;
-	return (rgb);
-}
 
 double check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp)
 {
@@ -55,13 +45,12 @@ t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	double	d;
 	double	d_tmp;
 	t_color *rgb;
+	t_vec *intersect;
 
 	d = INFINITY;
 	d_tmp = NO_INTERSECT;
 	obj_tmp = scene->obj;
 	rgb = gen_color(0, 0, 0); //TODO: will leak
-	if (obj_tmp == NULL)
-		return (NULL);
 	while (obj_tmp != NULL)
 	{
 		d_tmp = check_obj_intersect(obj_tmp, ray, cam->pos, d_tmp);
@@ -70,7 +59,8 @@ t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
 			d = d_tmp;
-			rgb = calculate_final_color(scene, ray, obj_tmp->color, d, obj_tmp, cam);  //fix this so it's only ran once per pixel??
+			intersect = find_point(cam->pos, ray, d);
+			rgb = calculate_final_color(scene, intersect, obj_tmp, cam);  //fix this so it's only ran once per pixel??
 		}
 		obj_tmp = obj_tmp->next;
 	}
@@ -78,3 +68,4 @@ t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	return (rgb);
 }
 
+//TODO: test with no objects (*obj == null)
