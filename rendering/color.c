@@ -71,6 +71,8 @@ int	check_intersections(t_rt_scene *scene, t_light *light, t_vec *point)
 		hit_tmp = check_obj_intersect(tmp_obj, sec_u, point_new, hit_tmp);
 		if ((hit_tmp > 0 && hit_tmp < sec_len) || hit_tmp == INSIDE_OBJ)
 		{
+			free(sec_u);
+			free(point_new);
 			return (1);
 		}
 		tmp_obj = tmp_obj->next;

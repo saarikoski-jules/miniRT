@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 17:03:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:37:50 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,9 @@ int main(int ac, char **av)
 		if (ac == 2)
 			manage_window(mlx_data);
 		else
+		{
 			save_img(mlx_data, av[1]);
+		}
 		//TODO: destroy mlx_data, cam info and scene
 		// free_scene(scene);
 	}

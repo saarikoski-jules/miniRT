@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 17:32:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:47:52 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
 	gen_image(mlx_data->cam_info, mlx_data->scene, img_data); //if fails, exit??
 	e_write(fd, image, amt_bytes); //check for bad return value
 	free(image);
+	free(img_data);
 }
 
 void	save_img(t_mlx_data *mlx_data, const char *path)
@@ -83,9 +84,11 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	name_bmp = ft_strjoin(name, ".bmp");
 	fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
 	gen_bmp_header(fd, mlx_data->scene, mlx_data); //i can move all this to trace em rays to loop over cameras
-	close(fd);
-	free(name);
-	free(name_bmp);
+	close(fd);//i dont really even need to close this
+	// free(name);
+	// free(name_bmp);
+	// free(path);
 	system("leaks a.out");
-	exit(0); //
+	// ft_printf("gets here??");
+	exit(0);
 }

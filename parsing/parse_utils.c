@@ -17,7 +17,7 @@ int get_int(char *line, size_t *i)
 	*i += ft_strmatch(line + *i, "0123456789");
 	if (val > INT_MAX || val < INT_MIN)
 	{
-		ft_printf("%d\n", val);
+		ft_printf("%d\n", val);//NUP
 		error_exit_msg(C_PARSE_INVALID_INT, E_PARSE_INVALID_INT);
 	}
 	//error check
@@ -84,9 +84,7 @@ t_vec	*get_vec(char *line, size_t *i)
 	t_vec	*vec;
 
 	// ft_printf("getting the shit out of this vec '%s', %d\n", line, *i);
-	vec = (t_vec*)ft_calloc(1, sizeof(t_vec));
-	if (vec == NULL)
-		error_exit_errno();
+	vec = (t_vec*)e_malloc(sizeof(t_vec));
 	(*i) += ft_strmatch(&line[*i], " ");
 	// ft_printf("*i: %d\n", *i);
 	vec->x = get_float(line, i);

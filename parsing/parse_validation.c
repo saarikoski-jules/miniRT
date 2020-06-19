@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 12:19:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 14:21:36 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:22:27 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@
 #include "vec.h"
 
 void	validate_orien(t_vec **orien)
-{
+{ //TODO: this dont look right
 	t_vec *orien_u;
+
 	if ((*orien)->x < -1 || (*orien)->x > 1
 	|| (*orien)->y < -1 || (*orien)->y > 1
 	|| (*orien)->z < -1 || (*orien)->z > 1)
@@ -58,4 +59,11 @@ void	validate_file(char *path)
 	}
 	if (ft_strncmp(extension, "rt", 3) != 0)
 		error_exit_msg(C_INVALID_FILE, E_INVALID_FILE);
+	i = 0;
+	while (split[i] != NULL)
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
 }

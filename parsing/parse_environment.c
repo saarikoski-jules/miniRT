@@ -14,7 +14,7 @@ t_resolution	*get_resolution(char *line)
 	size_t			i;
 
 	i = 0;
-	res = (t_resolution*)malloc(sizeof(t_resolution));
+	res = (t_resolution*)e_malloc(sizeof(t_resolution));
 	// ft_printf("resolution: '%s'\n", line);
 	res->res_x = get_int(line, &i);
 	res->res_y = get_int(line, &i);
@@ -37,7 +37,7 @@ t_ambiance	*get_ambiance(char *line)
 	t_ambiance	*amb;
 	size_t		i;
 
-	amb = (t_ambiance*)malloc(sizeof(t_ambiance));
+	amb = (t_ambiance*)e_malloc(sizeof(t_ambiance));
 	i = 0;
 	amb->ratio = get_float(line, &i);
 	if (amb->ratio > 1.0 || amb->ratio < 0.0)
@@ -51,10 +51,10 @@ t_ambiance	*get_ambiance(char *line)
 
 t_light *get_light(char *line)
 {
-	size_t		i;
+	size_t	i;
 	t_light	*light;
 
-	light = malloc(sizeof(t_camera));
+	light = (t_light *)e_malloc(sizeof(t_camera));
 	if (light == NULL)
 		error_exit_errno();
 	i = 0;
@@ -95,7 +95,7 @@ t_camera	*get_camera(char *line)
 	size_t		i;
 	t_camera	*cam;
 
-	cam = ft_calloc(1, sizeof(t_camera));
+	cam = (t_camera *)e_malloc(sizeof(t_camera));
 	if (cam == NULL)
 		error_exit_errno();
 	i = 0;

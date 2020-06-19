@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 17:26:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:53:06 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 	ft_bzero(img_addr, img_data->size_line * mlx_data->scene->res->res_y);
 	gen_image(cam_info, mlx_data->scene, img_data);
 	mlx_put_image_to_window(mlx_data->mlx_ptr, mlx_data->win_ptr, image, 0, 0);
-	
+	// free(image);
+	// free(img_data);//TODO: aa??
 }
 
 void manage_window(t_mlx_data *mlx_data)

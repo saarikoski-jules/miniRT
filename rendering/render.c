@@ -39,32 +39,59 @@ double check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp)
 	return (d_tmp);
 }
 
+t_color *pixel_color(t_camera *cam, t_vec *ray, double d, t_rt_scene *scene, t_obj **obj_head, int obj_index)
+{
+	t_vec *intersect;
+	t_color *rgb;
+	t_obj *obj;
+	int i;
+
+	rgb = NULL;
+	i = 0;
+	obj = *obj_head;
+	if (obj_index == -1)
+		return (gen_color(0,0,0));
+	while (i < obj_index)
+	{
+		obj = obj->next;
+		i++;
+	}
+	intersect = find_point(cam->pos, ray, d);
+	rgb = calculate_final_color(scene, &intersect, obj, cam);  //fix this so it's only ran once per pixel??
+	// if (rgb == NULL)
+		// rgb = gen_color(0, 0, 0);
+	return (rgb);
+}
+
 t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 {
 	double	d_tmp;
 	double	d;
 	t_obj	*obj_tmp;
 	t_color *rgb;
-	t_vec	*intersect;
+	// t_vec	*intersect;
+	int		obj_index;
+	int		i;
 
 	d = INFINITY;
 	obj_tmp = scene->obj;
 	rgb = NULL;
+	obj_index = -1;
+	i = -1;
 	while (obj_tmp != NULL)
 	{
+		i++;
 		d_tmp = check_obj_intersect(obj_tmp, ray, cam->pos, d_tmp);
 		if (d_tmp == INSIDE_OBJ) //TODO: hopefully nothing returns -10 anymore//change
 			return (NULL);
 		if (d_tmp < d && d_tmp > EPSILON)
 		{
 			d = d_tmp;
-			intersect = find_point(cam->pos, ray, d);
-			rgb = calculate_final_color(scene, &intersect, obj_tmp, cam);  //fix this so it's only ran once per pixel??
+			obj_index = i;
 		}
 		obj_tmp = obj_tmp->next;
 	}
-	if (rgb == NULL)
-		rgb = gen_color(0, 0, 0);
+	rgb = pixel_color(cam, ray, d, scene, &scene->obj, obj_index);
 	return (rgb);
 }
 

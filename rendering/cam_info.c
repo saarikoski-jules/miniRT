@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:14:27 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/14 18:16:58 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:37:03 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,7 @@ t_cam_info				*gen_cam_data(t_mlx_data *mlx_data, t_camera *cam)
 		&& cam_data->cam_right->y == cam->orien->y
 		&& cam_data->cam_right->z == cam->orien->z) //cross product fail??
 		ft_printf("cross product fail in remap_coord\n");
+	free(cam_right);
+	free(world_up);
 	return (cam_data);
 }

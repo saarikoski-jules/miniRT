@@ -65,7 +65,16 @@ void find_square_corners(t_sq **square)
 	(*square)->point3 = add_vectors((*square)->pos, p3);
 	(*square)->point4 = add_vectors((*square)->pos, p4); //lets hope this is correct
 
-
+	free(c1);
+	free(c2);
+	free(c3);
+	free(c4);
+	free(base);
+	free(q);
+	free(p1);
+	free(p2);
+	free(p3);
+	free(p4); //TODO: refactor this garb, im sure this will leak like hell
 
 	ft_printf("c1: (%f, %f, %f)\nc2: (%f, %f, %f)\nc3: (%f, %f, %f)\nc4: (%f, %f, %f)\n", (*square)->point1->x, (*square)->point1->y, (*square)->point1->z, (*square)->point2->x, (*square)->point2->y, (*square)->point2->z, (*square)->point3->x, (*square)->point3->y, (*square)->point3->z, (*square)->point4->x, (*square)->point4->y, (*square)->point4->z);
 
@@ -102,6 +111,7 @@ void	det_cy_data(t_cy **cy)
 	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
 	// printf("get cylinder: \n");
 	(*cy)->q = determine_quaternion(gen_coord(0,0,-1), (*cy)->orien);
+	free(mov);
 }
 
 t_cy	*get_cylinder(char *line, size_t *i)
@@ -139,7 +149,11 @@ t_tr	*get_triangle(char *line, size_t *i)
 	t_vec *BA = substract_vectors(triangle->point2, triangle->point1);
 	t_vec *CA = substract_vectors(triangle->point3, triangle->point1);
 	t_vec *normal = get_cross_product(BA, CA);
+	
 	triangle->orien = set_vec_len(normal, 1.0);
+	free(BA);
+	free(CA);
+	free(normal);
 
 	return (triangle);
 }

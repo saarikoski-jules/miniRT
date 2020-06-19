@@ -6,7 +6,7 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 18:29:28 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/06/18 13:55:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 11:23:40 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	validate_float(char *line)
 	if (ft_strchr("0123456789", (int)line[i]) == NULL)
 		error_exit_msg(C_PARSE_INVALID_FLOAT, E_PARSE_INVALID_FLOAT);
 }
-
+//TODO: move validation outta here
 void	error_exit_msg(const unsigned int e_code, const char *e_msg)
 {
 	ft_printf("Error\n");
