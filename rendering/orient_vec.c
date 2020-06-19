@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 16:29:01 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 12:28:09 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 	t_qua *tmp;
 	t_qua *q_c;
 	t_qua *final;
+	t_vec *vec_oriented;
 
 	v_u = set_vec_len(v, 1.0);
 	q_v = (t_qua *)e_malloc(sizeof(t_qua));
@@ -72,5 +73,11 @@ t_vec			*orient_vector(t_qua *q, t_vec *v)
 	tmp = multiply_quats(q, q_v);
 	q_c = gen_q_conjugate(q);
 	final = multiply_quats(tmp, q_c);
-	return (final->vector);
+	vec_oriented = final->vector;
+	free_quaternion(&q_v);
+	free_quaternion(&tmp);
+	free_quaternion(&q_c);
+	free(v_u);
+	free(final);
+	return (vec_oriented);
 }

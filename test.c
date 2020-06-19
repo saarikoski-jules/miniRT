@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/14 14:09:53 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 11:37:50 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 12:33:00 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ int main(int ac, char **av)
 	if (ac == 2 || (ac == 3 && ft_strncmp("--save", av[2], 7) == 0))
 	{
 		scene = get_scene(av[1]);
+		// system("leaks a.out");
+		// exit(0);
 		mlx_data = init_mlx_data(scene);
 		mlx_data->cam_info = gen_cam_data(mlx_data, mlx_data->scene->cam);
 		if (ac == 2)

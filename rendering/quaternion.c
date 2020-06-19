@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 15:08:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 12:31:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static t_qua	*parallel_vecs(t_vec *base_u, t_vec *orien_u)
 	return (q);
 }
 
+#include "libft.h"//
+
 t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 {
 	t_vec *orien_u;
@@ -53,15 +55,19 @@ t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 	t_vec *axis_u;
 	t_qua *q;
 
+
 	if (det_len_vec(orien) == 0.0 || det_len_vec(base) == 0.0)
 		 error_exit_msg(C_R_INVALID_ARG_Q, E_R_INVALID_ARG_Q);
 	orien_u = set_vec_len(orien, 1.0);
 	base_u = set_vec_len(base, 1.0);
 	axis = get_cross_product(base_u, orien_u);
 	if (axis->x == 0.0 && axis->y == 0.0 && axis->z == 0.0)
+	{
 		q = parallel_vecs(base_u, orien_u);
+	}
 	else
 	{
+		// ft_printf("aa\n");
 		axis_u = set_vec_len(axis, 1.0);
 		q = calculate_q_values(base_u, orien_u, axis_u);
 		free(axis_u);
@@ -69,5 +75,7 @@ t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 	free(orien_u);
 	free(base_u);
 	free(axis);
+	// system("leaks a.out");
+	// exit(0);
 	return (q);
 }

@@ -105,22 +105,24 @@ t_sq	*get_square(char *line, size_t *i)
 
 void	det_cy_data(t_cy **cy)
 {
+	t_vec *mov;
+	t_vec *base;
+
+	base = gen_coord(0, 0, -1);
 	(*cy)->r = (*cy)->dia * 0.5;
-	t_vec *mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
+	mov = set_vec_len((*cy)->orien, (*cy)->h * 0.5);
 	(*cy)->end2 = add_vectors((*cy)->pos, mov);
 	(*cy)->end1 = substract_vectors((*cy)->pos, mov);
-	// printf("get cylinder: \n");
-	(*cy)->q = determine_quaternion(gen_coord(0,0,-1), (*cy)->orien);
 	free(mov);
+	(*cy)->q = determine_quaternion(base, (*cy)->orien);
+	free(base);
 }
 
 t_cy	*get_cylinder(char *line, size_t *i)
 {
 	t_cy	*cylinder;
 
-	cylinder = (t_cy*)malloc(sizeof(t_cy));
-	if (!cylinder)
-		error_exit_errno();
+	cylinder = (t_cy *)e_malloc(sizeof(t_cy));
 	cylinder->pos = get_vec(line, i);
 	cylinder->orien = get_vec(line, i);
 	validate_orien(&cylinder->orien);
@@ -129,6 +131,10 @@ t_cy	*get_cylinder(char *line, size_t *i)
 	if (cylinder->dia < 0.0 || cylinder->h < 0.0)
 		error_exit_msg(C_INVALID_CY, E_INVALID_CY);
 	det_cy_data(&cylinder);
+	// system("leaks a.out");
+	// exit(0);
+	// system("leaks a.out");
+	// exit(0);
 
 	// ft_printf("cy info:\n\tdiameter: %f\n\tr: %f\n\tend1: (%f, %f, %f)\n\tend2: (%f, %f, %f)\n\tq: %f, (%f, %f, %f)\n", cylinder->dia, cylinder->r, cylinder->end1->x, cylinder->end1->y, cylinder->end1->z, cylinder->end2->x, cylinder->end2->y, cylinder->end2->z, cylinder->q->w, cylinder->q->vector->x, cylinder->q->vector->y, cylinder->q->vector->z);
 

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/25 13:07:30 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 15:08:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 12:24:32 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ t_qua	*gen_unit_quaternion(t_qua *q)
 	return (q_u);
 }
 
+void	free_quaternion(t_qua **q)
+{
+	free((*q)->vector);
+	free(*q);
+	(*q) = NULL;
+}
+
 t_qua	*build_unit_q(double w, double x, double y, double z)
 {
 	t_qua *q;
@@ -55,6 +62,8 @@ t_qua	*build_unit_q(double w, double x, double y, double z)
 	q->w = w;
 	q->vector = gen_coord(x, y, z);
 	q_u = gen_unit_quaternion(q);
-	free(q);
+	free_quaternion(&q);
+	// free(q->vector);
+	// free(q);
 	return (q_u);
 }
