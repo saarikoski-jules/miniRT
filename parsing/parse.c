@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 11:12:57 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/20 12:44:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 
 void parse_line(char *line, t_rt_scene **scene)
 {
-	// ft_printf("IN PARSE LINE: %s\n", line);
 	if (line[0] == '#')
 		return ;
 	else if (line[0] == 'R')
@@ -72,7 +71,6 @@ void	get_input(char *path, t_rt_scene **scene)
 	while (ret > 0)
 	{
 		ret = get_next_line(fd, &line);
-		//if ret == -1 panic
 		if (ft_strncmp(line, "\0", 1) != 0)
 			parse_line(line, scene);
 		free(line);
@@ -85,8 +83,6 @@ t_rt_scene *get_scene(char *path)
 	t_rt_scene *scene;
 
 	scene = (t_rt_scene*)e_malloc(sizeof(t_rt_scene));
-	// if (!scene)
-		// error_exit_errno();
 	scene->res = NULL;
 	scene->amb = NULL;
 	scene->light = NULL;

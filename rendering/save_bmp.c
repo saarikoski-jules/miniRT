@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 12:34:11 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/20 12:58:12 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	// free(name);
 	// free(name_bmp);
 	// free(path);
-	system("leaks a.out");
+	// system("leaks a.out");
 	// ft_printf("gets here??");
 	exit(0);
 }

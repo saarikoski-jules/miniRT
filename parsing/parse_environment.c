@@ -1,12 +1,19 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   parse_environment.c                                :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/06/19 13:41:56 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/06/19 13:45:36 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "error.h"
 #include "parse.h"//
-#include "rt.h"//
 #include "libft.h"
 #include <stdio.h>
-
-// #include <stdlib.h>
 
 t_resolution	*get_resolution(char *line)
 {
@@ -15,7 +22,6 @@ t_resolution	*get_resolution(char *line)
 
 	i = 0;
 	res = (t_resolution*)e_malloc(sizeof(t_resolution));
-	// ft_printf("resolution: '%s'\n", line);
 	res->res_x = get_int(line, &i);
 	res->res_y = get_int(line, &i);
 	if (res->res_x < 0 || res->res_y < 0)
@@ -28,7 +34,6 @@ t_resolution	*get_resolution(char *line)
 		printf("%d\n", line[i]);
 		error_exit_msg(C_INVALID_RES, E_INVALID_RES);
 	}
-	// ft_printf("Resolution:\nres_x %d, res_y %d\n\n", res->res_x, res->res_y);
 	return (res);
 }
 
@@ -45,7 +50,6 @@ t_ambiance	*get_ambiance(char *line)
 	amb->color = get_color(line, &i);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_AMB, E_INVALID_AMB);
-	// ft_printf("Ambiance:\nratio: %f\nr: %d\ng: %d\nb: %d\n\n", amb->ratio, amb->color->r, amb->color->g, amb->color->b);
 	return (amb);
 }
 
@@ -67,7 +71,6 @@ t_light *get_light(char *line)
 		error_exit_msg(C_INVALID_LIGHT, E_INVALID_LIGHT);
 	light->next = NULL;
 	return (light);
-	// ft_printf("Light:\ncoords, x: %f, y: %f, z: %f\nbrightness: %f\ncolor: r: %d, g: %d, b: %d\n\n", light->pos->x, light->pos->y,  light->pos->z, light->brightness, light->color->r, light->color->g, light->color->b);
 }
 
 t_light		*add_light(char *line, t_light *first_light)
@@ -82,9 +85,7 @@ t_light		*add_light(char *line, t_light *first_light)
 	else
 	{
 		while (cur->next != NULL)
-		{
 			cur = cur->next;
-		}
 		cur->next = new_light;
 	}
 	return (first_light);
@@ -101,25 +102,17 @@ t_camera	*get_camera(char *line)
 	i = 0;
 	cam->pos = get_vec(line, &i);
 	cam->orien = get_vec(line, &i);
-	//if orientation 0,0,0, fail
-	validate_orien(&cam->orien); //should always be a unit vector?
+	validate_orien(&cam->orien);
 	cam->fov = get_int(line, &i);
+	if (cam->fov <= 0 || cam->fov >= 180)
+		error_exit_msg(C_INVALID_FOV, E_INVALID_FOV);
 	if (line[i] != '\0')
 		error_exit_msg(C_INVALID_CAM, E_INVALID_CAM);
 	cam->next = NULL;
 	return (cam);
-	/*
-	// ft_printf("Camera:\n\
-	Pos:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
-	Orient:\n\t\tx: %f\n\t\ty: %f\n\t\tz: %f\n\
-	Fov: %d\n\n",
-	// cam->pos->x, cam->pos->y, cam->pos->z,
-	// cam->orien->x, cam->orien->y, cam->orien->z,
-	// cam->fov);
-	*/
 }
 
-t_camera		*add_camera(char *line, t_camera *first_camera)
+t_camera	*add_camera(char *line, t_camera *first_camera)
 {
 	t_camera *new_cam;
 	t_camera *cur;
@@ -131,9 +124,7 @@ t_camera		*add_camera(char *line, t_camera *first_camera)
 	else
 	{
 		while (cur->next != NULL)
-		{
 			cur = cur->next;
-		}
 		cur->next = new_cam;
 	}
 	return (first_camera);

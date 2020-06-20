@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 17:04:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/20 14:09:54 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,11 @@ int			select_cam(int key, t_mlx_data *data)
 	}
 	cam_cur = find_cam(cam_orig, i);
 	t_cam_info *cam_data = gen_cam_data(data, cam_cur);
-	// void *image = gen_image(cam_data, data->scene, data->mlx_ptr, data->win_ptr);
 	render_image(data, cam_data);
-	//TODO: destroy cam_data
-
-	// gen_image(mlx_data->cam_info, mlx_data->scene, &img_addr, size_line, bpp);
-	// mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, image, 0, 0);
+	free(cam_data->cam_right);
+	free(cam_data->cam_up);
+	free(cam_data->screen);
+	free(cam_data);
+	
 	return (i);
 }

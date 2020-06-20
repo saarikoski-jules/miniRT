@@ -78,10 +78,11 @@ double	solve_quadratic(double a, double b, double c)
 	double t2;
 
 	disc = pow(b, 2) - 4 * a * c;
-	t = NO_INTERSECT; //TODO: test if quadratic still works
+	// printf("b %f, a %f, c %f\n", b, a, c);
+	// t = NO_INTERSECT; //TODO: test if quadratic still works
 	if (disc < 0)
 		return (NO_INTERSECT);
-	if (disc > 0)
+	else if (disc > 0)
 	{
 		t1 = ((-b - sqrt(disc)) / (2 * a));
 		t2 = ((-b + sqrt(disc)) / (2 * a));
@@ -90,7 +91,11 @@ double	solve_quadratic(double a, double b, double c)
 		else
 			t = t2;
 	}
-	else if (disc == 0)
+	else
+	{
+		// printf("disc: %f\n", disc);
 		t = -b / (2 * a);
+		// printf("t: %f\n", t);
+	}
 	return (t);
 }

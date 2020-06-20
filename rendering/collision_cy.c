@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/18 17:37:06 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/20 11:40:41 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,13 @@ double validate_cy_intersect(t_vec *p, t_vec *R, double t, t_cy *cy)
 	}
 	point = find_point(p, R, t);
 	point_dist = sqrt(pow(point->x, 2) + pow(point->y, 2));
-	free(point);
 	if (point_dist - EPSILON > cy->r ||
 		point->z > cy->h / 2 || point->z < -cy->h / 2)
 	{
+		free(point);
 		return (NO_INTERSECT);
 	}
+	free(point);
 	return (t);
 }
 
@@ -94,13 +95,20 @@ double get_shaft_intersection(t_vec *ray_start, t_vec *ray, t_cy *cy)
 	p = get_turned_ray_start(ray_start, cy);
 	if (p == NULL)
 		return (INSIDE_OBJ);
-	R = orient_vector(cy->q, ray);
+	R = orient_vector(cy->q, ray); //TODO: ORIENT VECTOR BREAKS WITH PARALLEL VECTORS, PROLLY CROSS PRODUCT
+
+	
+	// printf("%p: (%f, %f, %f)\n", R, R->x, R->y, R->z);
 	a = pow(R->x, 2) + pow(R->y, 2);
+	// printf("%f\n", pow(0, 2));
 	b = R->x * p->x * 2 + R->y * p->y * 2;
 	c = pow(p->x, 2) + pow(p->y, 2) - pow(cy->r, 2);
 	t = solve_quadratic(a, b, c);
 	if (t <= 0)
+	{
+		// ft_printf("t: %f\n", t);
 		t = NO_INTERSECT;
+	}
 	else
 		t = validate_cy_intersect(p, R, t, cy);
 	free(p);

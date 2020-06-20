@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/18 15:07:08 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/19 14:49:34 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ ERROR_FLAGS = -Wall -Wextra -Werror
 
 all:
 	@make -C libft
-	@gcc -Iincludes $(RT_SRCS) $(ERROR_FLAGS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
+	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
 
 windows:
 	@make -C libft

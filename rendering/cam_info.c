@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:14:27 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 11:37:03 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/19 14:57:14 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,21 @@
 #include <math.h>
 #include "libft.h"//
 
-#define FOV_VERT 60 //TODO: change FOV_VERT
+// #include <stdio.h>//
 
 static t_screen_details	*screen_details(t_mlx_data *mlx_data, t_camera *cam)
 {
 	t_screen_details *screen;
+	int fov_vert;
 
+	fov_vert = 60; //TODO: this??
 	screen = (t_screen_details *)e_malloc(sizeof(t_screen_details));
 	screen->aspect_ratio = (double)mlx_data->scene->res->res_x / (double)mlx_data->scene->res->res_y;
-	screen->len_x = tan(cam->fov / 2 * M_PI / 180);
-	screen->len_y = tan(FOV_VERT / 2 * M_PI / 180); //TODO: calculate new FOV_VERT
+	// screen->len_x = tan((cam->fov / 2) * (M_PI / 180));
+	screen->len_x = tan((cam->fov / 2) * (M_PI / 180));
+	screen->len_y = tan((fov_vert / 2) * (M_PI / 180)); //TODO: calculate new FOV_VERT
+	ft_printf("len_y: %f\n", screen->len_y);
+	ft_printf("len_x: %f\n", screen->len_x);
 	screen->inc_x = 1.0/mlx_data->scene->res->res_x;
 	screen->inc_y = 1.0/mlx_data->scene->res->res_y;
 	return (screen);

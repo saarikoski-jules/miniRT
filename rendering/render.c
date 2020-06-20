@@ -56,7 +56,9 @@ t_color *pixel_color(t_camera *cam, t_vec *ray, double d, t_rt_scene *scene, t_o
 		obj = obj->next;
 		i++;
 	}
+	// ft_printf("ray: (%f, %f, %f), d: %f\n", d);
 	intersect = find_point(cam->pos, ray, d);
+	// ft_printf("intersection: (%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
 	rgb = calculate_final_color(scene, &intersect, obj, cam);  //fix this so it's only ran once per pixel??
 	// if (rgb == NULL)
 		// rgb = gen_color(0, 0, 0);

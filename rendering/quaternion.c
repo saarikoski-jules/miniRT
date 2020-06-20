@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:33:34 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 12:31:02 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/20 13:56:08 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 	}
 	else
 	{
-		// ft_printf("aa\n");
 		axis_u = set_vec_len(axis, 1.0);
 		q = calculate_q_values(base_u, orien_u, axis_u);
 		free(axis_u);
@@ -75,7 +74,5 @@ t_qua			*determine_quaternion(t_vec *orien, t_vec *base)
 	free(orien_u);
 	free(base_u);
 	free(axis);
-	// system("leaks a.out");
-	// exit(0);
 	return (q);
 }
