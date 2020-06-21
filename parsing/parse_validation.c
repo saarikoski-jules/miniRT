@@ -6,28 +6,26 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 12:19:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 11:22:27 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 18:27:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 
 #include "error.h"
 #include "rt.h"
 #include "libft.h"
-#include "vec.h"
 
 void	validate_orien(t_vec **orien)
-{ //TODO: this dont look right
+{
 	t_vec *orien_u;
 
 	if ((*orien)->x < -1 || (*orien)->x > 1
 	|| (*orien)->y < -1 || (*orien)->y > 1
 	|| (*orien)->z < -1 || (*orien)->z > 1)
 		error_exit_msg(C_INVALID_ORIEN_VEC, E_INVALID_ORIEN_VEC);
-	orien_u = set_vec_len(*orien, 1.0);//will leak
+	orien_u = set_vec_len(*orien, 1.0);
 	free(*orien);
 	*orien = orien_u;
+	//TODO: check if unit vector
 }
 
 void	validate_fov(int fov)
@@ -36,19 +34,11 @@ void	validate_fov(int fov)
 		error_exit_msg(C_INVALID_FOV, E_INVALID_FOV);
 }
 
-// void	validate_color(t_color *color)
-// {
-// 	if ((color->r > 255 || color->r < 0)
-// 	||	(color->g > 255 || color->g < 0)
-// 	||	(color->b > 255 || color->b < 0))
-// 		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
-// }
-
 void	validate_file(char *path)
 {
-	char **split;
-	char *extension;
-	size_t i;
+	char	**split;
+	char	*extension;
+	size_t	i;
 
 	i = 0;
 	split = ft_split(path, '.');

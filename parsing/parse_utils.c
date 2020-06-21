@@ -1,52 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   parse_utils.c                                      :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/06/21 18:09:59 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/06/21 18:24:44 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 #include "error.h"
-#include "rt.h"
 #include "parse.h"
 #include <limits.h>
-#include <stdio.h>//
 
-int get_int(char *line, size_t *i)
+void			skip_comma(char *line, size_t *i)
 {
-	long long val;
-
-	*i += ft_strmatch(line + *i, " ");
-	validate_int(line + *i);
-	val = ft_atoll(line + *i);
-	if (ft_strchr("-+", (int)line[*i]) != NULL)
-		(*i)++;
-	*i += ft_strmatch(line + *i, "0123456789");
-	if (val > INT_MAX || val < INT_MIN)
-	{
-		ft_printf("%d\n", val);//NUP
-		error_exit_msg(C_PARSE_INVALID_INT, E_PARSE_INVALID_INT);
-	}
-	//error check
-	return ((int)val);
-}
-
-double get_float(char *line, size_t *i)
-{
-	double val;
-
-	*i += ft_strmatch(line + *i, " ");
-	validate_float(line + *i);
-	val = ft_atof(line + *i);
-	if (ft_strchr("+-", line[(*i)]))
-		(*i)++;
-	if (line[(*i)] == '.')
-		(*i)++;
-	*i += ft_strmatch(line + *i, "0123456789");
-	*i += ft_strmatch(line + *i, ".");
-	*i += ft_strmatch(line + *i, "0123456789");
-	// ft_printf("'%s'\ni: %d\nline from i: '%s'\nfloat: %f\n\n", line, *i, line + *i, val);
-	// ft_printf("get_flt: %d\n", *i);
-	//error check
-	return (val);
-}
-
-void skip_comma(char *line, size_t *i)
-{
-	// ft_printf("in skip comma: line: '%s', i %d\n", line + *i, *i);
 	if (line[*i] == ',')
 		(*i)++;
 	else
@@ -55,7 +25,7 @@ void skip_comma(char *line, size_t *i)
 		error_exit_msg(C_PARSE_NO_COMMA, E_PARSE_NO_COMMA);
 }
 
-unsigned char validate_color(char *line, size_t *i)
+unsigned char	validate_color(char *line, size_t *i)
 {
 	int val;
 
@@ -65,7 +35,7 @@ unsigned char validate_color(char *line, size_t *i)
 	return ((unsigned char)val);
 }
 
-t_color *get_color(char *line, size_t *i)
+t_color			*get_color(char *line, size_t *i)
 {
 	t_color *color;
 
@@ -79,19 +49,16 @@ t_color *get_color(char *line, size_t *i)
 	return (color);
 }
 
-t_vec	*get_vec(char *line, size_t *i)
+t_vec			*get_vec(char *line, size_t *i)
 {
 	t_vec	*vec;
 
-	// ft_printf("getting the shit out of this vec '%s', %d\n", line, *i);
 	vec = (t_vec*)e_malloc(sizeof(t_vec));
 	(*i) += ft_strmatch(&line[*i], " ");
-	// ft_printf("*i: %d\n", *i);
 	vec->x = get_float(line, i);
 	skip_comma(line, i);
 	vec->y = get_float(line, i);
 	skip_comma(line, i);
 	vec->z = get_float(line, i);
-	// ft_printf("x: %f\ny: %f\nz: %f\n", vec->x, vec->y, vec->z);
 	return (vec);
 }

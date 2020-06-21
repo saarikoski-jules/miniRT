@@ -6,58 +6,36 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 12:44:48 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 18:51:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "rt.h"
 #include "error.h"
 #include "parse.h"
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <math.h>
 
-void parse_line(char *line, t_rt_scene **scene)
+void		parse_line(char *line, t_rt_scene **scene)
 {
 	if (line[0] == '#')
 		return ;
-	else if (line[0] == 'R')
-	{
-		if ((*scene)->res == NULL)
-		{
-			(*scene)->res = get_resolution(line + 1);
-		}
-		else
-			error_exit_msg(C_PARSE, E_PARSE);
-	}
-	else if (line[0] == 'A')
-	{
-		if ((*scene)->amb == NULL)
-			(*scene)->amb = get_ambiance(line + 1);
-		else
-			error_exit_msg(C_PARSE, E_PARSE);
-	}
+	else if (line[0] == 'R' && (*scene)->res == NULL)
+		(*scene)->res = get_resolution(line + 1);
+	else if (line[0] == 'A' && (*scene)->amb == NULL)
+		(*scene)->amb = get_ambiance(line + 1);
 	else if (ft_strncmp(line, "l ", 2) == 0)
 		(*scene)->light = add_light(line + 1, (*scene)->light);
 	else if (ft_strncmp(line, "c ", 2) == 0)
-	{
 		(*scene)->cam = add_camera(line + 1, (*scene)->cam);
-	}
-	else if (ft_strncmp(line, "sp", 2) == 0
-		||	ft_strncmp(line, "pl", 2) == 0
-		||	ft_strncmp(line, "sq", 2) == 0
-		||	ft_strncmp(line, "cy", 2) == 0
-		||	ft_strncmp(line, "tr", 2) == 0)
-	{
+	else if (ft_strncmp(line, "sp", 2) == 0 || ft_strncmp(line, "pl", 2) == 0
+		|| ft_strncmp(line, "sq", 2) == 0 || ft_strncmp(line, "cy", 2) == 0
+		|| ft_strncmp(line, "tr", 2) == 0)
 		(*scene)->obj = add_object(line, (*scene)->obj);
-	}
 	else
 		error_exit_msg(C_PARSE, E_PARSE);
 }
 
-void	get_input(char *path, t_rt_scene **scene)
+void		get_input(char *path, t_rt_scene **scene)
 {
 	int			fd;
 	int			ret;
@@ -78,7 +56,7 @@ void	get_input(char *path, t_rt_scene **scene)
 	close(fd);
 }
 
-t_rt_scene *get_scene(char *path)
+t_rt_scene	*get_scene(char *path)
 {
 	t_rt_scene *scene;
 

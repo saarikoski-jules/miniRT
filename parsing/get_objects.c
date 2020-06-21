@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   get_objects.c                                      :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/06/21 17:53:44 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/06/21 17:55:41 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parse.h"
 #include "error.h"
@@ -24,7 +35,6 @@ void	get_object_type(char *line, size_t *i, t_obj **obj)
 	{
 		(*obj)->id = cy;
 		(*obj)->type.cy = get_cylinder(line, i);
-
 	}
 	else if (ft_strncmp(line, "tr", 2) == 0)
 	{
@@ -35,13 +45,11 @@ void	get_object_type(char *line, size_t *i, t_obj **obj)
 
 t_obj	*get_object(char *line)
 {
-	t_obj *obj;
-	size_t i;
+	t_obj	*obj;
+	size_t	i;
 
 	i = 2;
-	obj = (t_obj*)malloc(sizeof(t_obj));
-	if (!obj)
-		error_exit_errno();
+	obj = (t_obj*)e_malloc(sizeof(t_obj));
 	get_object_type(line, &i, &obj);
 	obj->color = get_color(line, &i);
 	if (line[i] != '\0')
