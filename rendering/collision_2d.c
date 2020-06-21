@@ -6,20 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 11:39:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 17:36:19 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 19:11:15 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "vec.h"
-#include "object.h"
 #include "render.h"
 #include "collision_utils.h"
 #include <stdlib.h>
-
-#include "libft.h"//
-
-// TODO: squares break with some orientations
-// TODO: triangles break in some positions
 
 double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray)
 {
@@ -50,9 +43,9 @@ double	sq_intersect(t_vec *ray_start, t_vec *ray, t_sq *sq)
 		return (NO_INTERSECT);
 	point = find_point(ray_start, ray, t);
 	if (point_within_line(sq->point1, sq->point2, point, sq->orien) > 0
-	&&	point_within_line(sq->point2, sq->point3, point, sq->orien) > 0
-	&&	point_within_line(sq->point3, sq->point4, point, sq->orien) > 0
-	&&	point_within_line(sq->point4, sq->point1, point, sq->orien) > 0)
+	&& point_within_line(sq->point2, sq->point3, point, sq->orien) > 0
+	&& point_within_line(sq->point3, sq->point4, point, sq->orien) > 0
+	&& point_within_line(sq->point4, sq->point1, point, sq->orien) > 0)
 	{
 		free(point);
 		return (t);
@@ -71,8 +64,8 @@ double	tr_intersect(t_vec *ray_start, t_vec *ray, t_tr *tr)
 		return (NO_INTERSECT);
 	point = find_point(ray_start, ray, t);
 	if (point_within_line(tr->point1, tr->point2, point, tr->orien) > 0
-	&&	point_within_line(tr->point2, tr->point3, point, tr->orien) > 0
-	&&	point_within_line(tr->point3, tr->point1, point, tr->orien) > 0)
+	&& point_within_line(tr->point2, tr->point3, point, tr->orien) > 0
+	&& point_within_line(tr->point3, tr->point1, point, tr->orien) > 0)
 	{
 		free(point);
 		return (t);
