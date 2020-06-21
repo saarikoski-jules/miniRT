@@ -6,15 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 14:09:54 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 16:44:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rt.h"
 #include "xevents.h"
 #include "render.h"
 #include <stdlib.h>
-#include "mlx.h"//
 
 int			get_cam_amt(t_camera *cam_head)
 {
@@ -38,8 +36,8 @@ t_camera	*find_cam(t_camera *cam_orig, int i)
 	
 	j = 0;
 	cam_new = cam_orig;
-	if (i < 0) //return error, set to 1 and return first camera
-		i = 0; //return (NULL);
+	if (i < 0)
+		i = 0;
 	if (i == 0)
 		return (cam_orig);
 	while (j < i && cam_new->next != NULL)
@@ -54,30 +52,28 @@ int			select_cam(int key, t_mlx_data *data)
 {
 	t_camera	*cam_orig;
 	t_camera	*cam_cur;
+	t_cam_info	*cam_data;
 	int			i;
-	
+
 	cam_orig = data->scene->cam;
 	cam_cur = NULL;
 	i = data->i;
-	if (cam_orig == NULL)
-		return (-1);
-	if (key == KEYCODE_RIGHT)//65363 for windows //TODO: segfaults hard in any case
+	if (key == KEYCODE_RIGHT)
 	{
 		if (i < data->cam_amt)
-			i++; //only do this if camera is found successfully
+			i++;
 	}
-	else if (key == KEYCODE_LEFT)//65361 for windows
+	else if (key == KEYCODE_LEFT)
 	{
-		if (i > 0) //TODO: segfaults when pressing back first
-			i--; //only do this if camera is found successfully
+		if (i > 0)
+			i--;
 	}
 	cam_cur = find_cam(cam_orig, i);
-	t_cam_info *cam_data = gen_cam_data(data, cam_cur);
+	cam_data = gen_cam_data(data->scene, cam_cur);
 	render_image(data, cam_data);
 	free(cam_data->cam_right);
 	free(cam_data->cam_up);
 	free(cam_data->screen);
 	free(cam_data);
-	
 	return (i);
 }

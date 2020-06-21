@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/19 14:49:34 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/21 18:15:19 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,9 +17,13 @@ RT_SRCS =	test.c \
 			\
 			$(PARSE_DIR)parse.c \
 			$(PARSE_DIR)parse_environment.c \
+			$(PARSE_DIR)parse_camera.c \
 			$(PARSE_DIR)parse_obj.c \
+			$(PARSE_DIR)parse_cy.c \
+			$(PARSE_DIR)parse_sq.c \
 			$(PARSE_DIR)get_objects.c \
 			$(PARSE_DIR)parse_utils.c \
+			$(PARSE_DIR)parse_number.c \
 			$(PARSE_DIR)parse_validation.c \
 			\
 			$(RENDER_DIR)render.c \

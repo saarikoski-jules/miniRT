@@ -6,17 +6,17 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 18:33:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/06/17 14:31:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 17:42:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ERROR_H
 # define ERROR_H
 
-#include <stdlib.h>//for size_t
+#include <stdlib.h>
 
 # define C_MAIN_FEW_ARGUMENTS 132
-# define E_MAIN_FEW_ARGUMENTS "Too few arguments given. 1 needed."
+# define E_MAIN_FEW_ARGUMENTS "Bad arguments."
 # define C_INVALID_FILE 133
 # define E_INVALID_FILE "Not a valid file."
 # define C_PARSE 134
@@ -56,7 +56,7 @@
 # define C_NO_CAM 151
 # define E_NO_CAM "No cameras defined."
 # define C_NO_CONNECT 152
-# define E_NO_CONNECT "Wasn't able to establish connection to graphics server."
+# define E_NO_CONNECT "Can't init mlx"
 # define C_R_INVALID_VEC 153
 # define E_R_INVALID_VEC "Invalid vector"
 # define C_R_INVALID_ARG_Q 154

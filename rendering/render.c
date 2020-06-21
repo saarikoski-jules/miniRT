@@ -1,25 +1,12 @@
 #include "render.h"
-#include "rt.h"
-#include "mlx.h"
-#include "error.h"
-#include "quaternion.h"
-#include "libft.h"//
+#include "collision_utils.h"
 #include <math.h>
-#include <stdio.h>//
-#include <parse.h>
-
 
 // 	// ☺
 
-//TODO: fisheye lens for 180 fov
-//TODO: if two items are on the exact same 2D plane, which one displays? Right now the one mentioned earlier in the .rt file is displayed
 //TODO: square is not visible if your camera and square orientation are the same
 //TODO: cylinders break when seen more from the direction of the endcaps
-//TODO: cylinder is rendered slightly wider than it's meant to
 //TODO: what happens when any object is on top of me
-//TODO: make sure any invalid arguments aren't accepted. Make sure --saved is the only extra thing that works
-//TODO: image flipped when looking behind. Is this bad?
-//TODO: quaternions break when camera pointing directly into 0,0,-1 or 0,0,1.
 //TODO: Bugfixes -> squares break with specific orientation (0,0,-1)
 //TODO: is there a random segfault with file breaks_cy.rt
 
@@ -56,12 +43,8 @@ t_color *pixel_color(t_camera *cam, t_vec *ray, double d, t_rt_scene *scene, t_o
 		obj = obj->next;
 		i++;
 	}
-	// ft_printf("ray: (%f, %f, %f), d: %f\n", d);
 	intersect = find_point(cam->pos, ray, d);
-	// ft_printf("intersection: (%f, %f, %f)\n", intersect->x, intersect->y, intersect->z);
-	rgb = calculate_final_color(scene, &intersect, obj, cam);  //fix this so it's only ran once per pixel??
-	// if (rgb == NULL)
-		// rgb = gen_color(0, 0, 0);
+	rgb = calculate_final_color(scene, &intersect, obj, cam);
 	return (rgb);
 }
 
@@ -71,7 +54,6 @@ t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam)
 	double	d;
 	t_obj	*obj_tmp;
 	t_color *rgb;
-	// t_vec	*intersect;
 	int		obj_index;
 	int		i;
 

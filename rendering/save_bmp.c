@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 12:58:12 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 17:49:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	gen_i_header(t_rt_scene *scene, int fd, int bpp, int i_header_size)
 	e_write(fd, i_header, 40);	
 }
 
-void	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
+void	gen_bmp_header(int fd, t_rt_scene *scene, t_cam_info *cam_info)
 {
 	int		i_header_size;
 	int		amt_bytes;
@@ -66,13 +66,13 @@ void	gen_bmp_header(int fd, t_rt_scene *scene, t_mlx_data *mlx_data)
 	ft_bzero(image, amt_bytes);
 	gen_f_header(fd, i_header_size, amt_bytes);
 	gen_i_header(scene, fd, img_data->bpp, i_header_size);
-	gen_image(mlx_data->cam_info, mlx_data->scene, img_data); //if fails, exit??
-	e_write(fd, image, amt_bytes); //check for bad return value
+	gen_image(cam_info, scene, img_data);
+	e_write(fd, image, amt_bytes);
 	free(image);
 	free(img_data);
 }
 
-void	save_img(t_mlx_data *mlx_data, const char *path)
+void	save_img(t_rt_scene *scene, t_cam_info *cam_info, const char *path)
 {
 	size_t	len;
 	char	*name;
@@ -82,13 +82,9 @@ void	save_img(t_mlx_data *mlx_data, const char *path)
 	len = ft_strlen(path);
 	name = ft_substr(path, 0, len - 3);
 	name_bmp = ft_strjoin(name, ".bmp");
-	fd = open(name_bmp, O_RDWR | O_CREAT | O_APPEND, 0666); //will not overwrite with new .bmp.
-	gen_bmp_header(fd, mlx_data->scene, mlx_data); //i can move all this to trace em rays to loop over cameras
-	close(fd);//i dont really even need to close this
-	// free(name);
-	// free(name_bmp);
-	// free(path);
-	// system("leaks a.out");
-	// ft_printf("gets here??");
+	fd = open(name_bmp, O_RDWR | O_CREAT | O_TRUNC, 0666);
+	gen_bmp_header(fd, scene, cam_info);
+	close(fd);
+	system("leaks a.out"); //
 	exit(0);
 }

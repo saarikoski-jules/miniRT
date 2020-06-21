@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/13 19:11:39 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 11:40:41 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 17:03:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <math.h>
 #include "render.h"
 #include "libft.h"
+#include "collision_utils.h"
+
 
 //TODO: If cylinder is barely touching camera, epsilon issues
 

@@ -54,51 +54,29 @@ typedef struct	s_iterators
 	size_t pix_pos;
 }				t_iterators;
 
-typedef struct	s_color_int
-{
-	int r;
-	int g;
-	int b;
-}				t_color_int;
-
-int		translate_color(t_color *color);
-t_color *gen_color(int r, int g, int b);
-double	cy_intersect(t_vec *start, t_vec *ray, t_cy *cy);
-double	sp_intersect(t_vec *start, t_vec *ray, t_sp *sp);
-double	tr_intersect(t_vec *start, t_vec *ray, t_tr *tr);
-double	sq_intersect(t_vec *start, t_vec *ray, t_sq *sq);
-double	pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
-
-//color
-t_color *calculate_final_color(t_rt_scene *scene, t_vec **point, t_obj *obj, t_camera *cam);
-
-//normal
-t_vec *calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
+double		cy_intersect(t_vec *start, t_vec *ray, t_cy *cy);
+double		sp_intersect(t_vec *start, t_vec *ray, t_sp *sp);
+double		tr_intersect(t_vec *start, t_vec *ray, t_tr *tr);
+double		sq_intersect(t_vec *start, t_vec *ray, t_sq *sq);
+double		pl_intersect(t_vec *orien, t_vec *ray_start, t_vec *pos, t_vec *ray);
 
 //maybe put these elsewhere
 void		manage_window(t_mlx_data *mlx_data);
 t_mlx_data *init_mlx_data(t_rt_scene *scene);
-t_cam_info	*gen_cam_data(t_mlx_data *mlx_data, t_camera *cam);
-void	save_img(t_mlx_data *mlx_data, const char *path);
+t_cam_info	*gen_cam_data(t_rt_scene *scene, t_camera *cam);
+void		save_img(t_rt_scene *scene, t_cam_info *cam_info, const char *path);
+
+char		*save_image(t_cam_info *cam_data, t_rt_scene *scene);
+void		gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data);
 
 
-char *save_image(t_cam_info *cam_data, t_rt_scene *scene); // if write fails, exit instead of bad return
-void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data);
-t_color *ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam);
-void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info);
-double check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp);
+t_color 	*calculate_final_color(t_rt_scene *scene, t_vec **point, t_obj *obj, t_camera *cam);
+t_vec 		*calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam);
+t_color		*ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam);
 
-//
-
-
-
-
-//utils
-double solve_quadratic(double a, double b, double c);
-t_vec *find_point(t_vec *start, t_vec *dir, double t);
-double get_distance(t_vec *point1, t_vec *point2);
-double point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien);
-
+// t_color		*ray_intersect(t_rt_scene *scene, t_vec *ray, t_camera *cam);
+void		render_image(t_mlx_data *mlx_data, t_cam_info *cam_info);
+double		check_obj_intersect(t_obj *obj_tmp, t_vec *ray, t_vec *pos, double d_tmp);
 
 
 #endif

@@ -1,13 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   collision_sp.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/06/21 17:06:59 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/06/21 17:07:00 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "vec.h"
 #include "render.h"
+#include "collision_utils.h"
 #include <math.h>
 #include <stdlib.h>
-
-// TODO: Use defines for out of bounds, behind camera and inside obj
-// TODO: multiple cameras
-// TODO: Save pixels to img and use put_img instead of put_pixel
-// TODO: --save to bmp
-// TODO: keybinds for rotating cameras 
 
 double sp_intersect(t_vec *ray_start, t_vec *ray, t_sp *sp)
 {	

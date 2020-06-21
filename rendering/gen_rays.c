@@ -6,23 +6,24 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:34:24 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 12:56:52 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 17:52:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "render.h"
-#include <stdlib.h>
-#include "libft.h"//
+#include "libft.h"
 #include "error.h"
+#include "color.h"
+#include <stdlib.h>
 
-t_vec *build_ray(double pixel_x, double pixel_y, t_cam_info *cam_data)
+t_vec	*build_ray(double pixel_x, double pixel_y, t_cam_info *cam_data)
 {
 	t_vec	*pos_x;
 	t_vec	*pos_y;
 	t_vec	*screen_pos;
 	t_vec	*rotated_ray;
 	t_vec	*ray_u;
-	
+
 	pos_x = gen_coord(pixel_x * cam_data->cam_right->x,
 					pixel_x * cam_data->cam_right->y,
 					pixel_x * cam_data->cam_right->z);
@@ -39,7 +40,8 @@ t_vec *build_ray(double pixel_x, double pixel_y, t_cam_info *cam_data)
 	return (ray_u);
 }
 
-t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info *cam_data)
+t_color	*shoot_ray(t_rt_scene *scene, t_cam_info *cam_data,
+					double pixel_x, double pixel_y)
 {
 	t_color	*color;
 	t_vec	*ray;
@@ -50,9 +52,10 @@ t_color *shoot_ray(t_rt_scene *scene, double pixel_x, double pixel_y, t_cam_info
 	return (color);
 }
 
-void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scene *scene)
+void	cpy_pixel(t_iterators *iters, char **image,
+					t_cam_info *cam_data, t_rt_scene *scene)
 {
-	t_color *rgb;
+	t_color	*rgb;
 	double	pixel_x;
 	double	pixel_y;
 	double	ndc_y;
@@ -60,9 +63,10 @@ void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scen
 
 	ndc_x = cam_data->screen->inc_x / 2 + (cam_data->screen->inc_x * iters->i);
 	ndc_y = cam_data->screen->inc_y / 2 + (cam_data->screen->inc_y * iters->j);
-	pixel_x = ((ndc_x * 2) - 1) * cam_data->screen->aspect_ratio * cam_data->screen->len_x;
+	pixel_x = (((ndc_x * 2) - 1) *
+				cam_data->screen->aspect_ratio * cam_data->screen->len_x);
 	pixel_y = (1 - (ndc_y * 2)) * cam_data->screen->len_y;
-	rgb = shoot_ray(scene, pixel_x, pixel_y, cam_data);
+	rgb = shoot_ray(scene, cam_data, pixel_x, pixel_y);
 	if (rgb == NULL)
 		return ;
 	ft_memcpy((*image) + iters->pix_pos, &rgb->b, 1);
@@ -71,7 +75,8 @@ void cpy_pixel(t_iterators *iters, char **image, t_cam_info *cam_data, t_rt_scen
 	free(rgb);
 }
 
-void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data)
+void	gen_image(t_cam_info *cam_data, t_rt_scene *scene,
+					t_image_data *img_data)
 {
 	t_iterators *iters;
 
@@ -86,7 +91,8 @@ void gen_image(t_cam_info *cam_data, t_rt_scene *scene, t_image_data *img_data)
 		{
 			cpy_pixel(iters, img_data->image, cam_data, scene);
 			iters->i++;
-			iters->pix_pos = (iters->j * img_data->size_line + (iters->i * (img_data->bpp / 8)));
+			iters->pix_pos = (iters->j * img_data->size_line +
+							(iters->i * (img_data->bpp / 8)));
 		}
 		iters->i = 0;
 		iters->j++;

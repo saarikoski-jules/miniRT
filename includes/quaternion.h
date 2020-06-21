@@ -16,5 +16,6 @@ t_vec	*orient_vector(t_qua *q, t_vec *v);
 t_qua	*gen_unit_quaternion(t_qua *q);
 t_qua	*build_unit_q(double w, double x, double y, double z);
 void	free_quaternion(t_qua **q);
+t_qua	*multiply_quats(t_qua *q1, t_qua *q2);
 
 #endif

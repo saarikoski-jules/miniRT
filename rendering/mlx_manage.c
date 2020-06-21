@@ -6,24 +6,22 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/20 13:56:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 16:20:48 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "xevents.h"
 #include "mlx.h"
-#include "rt.h"//
-#include "render.h"//
-#include <stdlib.h>//
-#include "libft.h"//
-#include "error.h"//
-#include "key_functions.h"//
-#include "manage_cameras.h"//
+#include "libft.h"
+#include "error.h"
+#include "key_functions.h"
+#include "manage_cameras.h"
+#include <stdlib.h>
 
 void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 {
 	void			*image;
-	int				endian; // 0 little endian, 1 big endian
+	int				endian;
 	char			*img_addr;
 	t_image_data	*img_data;
 
@@ -49,6 +47,7 @@ void manage_window(t_mlx_data *mlx_data)
 	render_image(mlx_data, mlx_data->cam_info);
 	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 	mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, SUBSTRUCTURE_NOTIFY_MASK, close_program, &mlx_data);
+	system("leaks a.out");//
 	mlx_loop(mlx_data->mlx_ptr);
 }
 
@@ -61,9 +60,9 @@ t_mlx_data *init_mlx_data(t_rt_scene *scene)
 	mlx_data = (t_mlx_data *)e_malloc(sizeof(t_mlx_data));
 	mlx_data->mlx_ptr = mlx_init();
 	if (!mlx_data->mlx_ptr)
-		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT); //TODO: check if error msg is alright
+		error_exit_msg(C_NO_CONNECT, E_NO_CONNECT);
 	mlx_get_screen_size(mlx_data->mlx_ptr, &screen_max_x, &screen_max_y);
-	if ((int)scene->res->res_x > screen_max_x) //TODO: save breaks with huge sizes
+	if ((int)scene->res->res_x > screen_max_x)
 		scene->res->res_x = screen_max_x;
 	if ((int)scene->res->res_y > screen_max_y)
 		scene->res->res_y = screen_max_y;
