@@ -6,35 +6,30 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 13:07:10 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/17 12:12:09 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 19:32:32 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef OBJECT_H
 # define OBJECT_H
 
-# include "vec.h"
-# include "quaternion.h"//
+# include "quaternion.h"
 # include "color.h"
-/*
-** OBJECT STRUCTS
-*/
 
-typedef struct	s_sp
+typedef struct		s_sp
 {
 	t_vec			*pos;
 	double			dia;
 	double			r;
-}				t_sp;
+}					t_sp;
 
-typedef struct	s_pl
+typedef struct		s_pl
 {
 	t_vec			*pos;
 	t_vec			*orien;
-}				t_pl;
+}					t_pl;
 
-typedef struct	s_sq
+typedef struct		s_sq
 {
 	t_vec			*pos;
 	t_vec			*orien;
@@ -43,9 +38,9 @@ typedef struct	s_sq
 	t_vec			*point2;
 	t_vec			*point3;
 	t_vec			*point4;
-}				t_sq;
+}					t_sq;
 
-typedef struct	s_cy
+typedef struct		s_cy
 {
 	t_vec			*pos;
 	t_vec			*orien;
@@ -55,48 +50,40 @@ typedef struct	s_cy
 	t_vec			*end2;
 	double			r;
 	t_qua			*q;
-}				t_cy;
+}					t_cy;
 
-typedef struct	s_tr
+typedef struct		s_tr
 {
-	t_vec	*point1;	
-	t_vec	*point2;	
-	t_vec	*point3;
-	t_vec	*orien;
-}				t_tr;
+	t_vec			*point1;
+	t_vec			*point2;
+	t_vec			*point3;
+	t_vec			*orien;
+}					t_tr;
 
-/*
-** ORGANIZE
-*/
-
-typedef union	u_type
+typedef union		u_type
 {
-	t_sp	*sp;
-	t_pl	*pl;
-	t_sq	*sq;
-	t_cy	*cy;
-	t_tr	*tr;
-}				t_type;
+	t_sp			*sp;
+	t_pl			*pl;
+	t_sq			*sq;
+	t_cy			*cy;
+	t_tr			*tr;
+}					t_type;
 
-typedef enum	e_identifier
+typedef enum		e_identifier
 {
 	sp,
 	pl,
 	sq,
 	cy,
 	tr,
-}				t_identifier;
+}					t_identifier;
 
-/*
-** MAIN OBJECT LIST
-*/
-
-typedef struct	s_obj
+typedef struct		s_obj
 {
 	t_identifier	id;
 	t_color			*color;
 	t_type			type;
 	struct s_obj	*next;
-}				t_obj;
+}					t_obj;
 
 #endif

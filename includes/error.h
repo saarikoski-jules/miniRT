@@ -6,14 +6,14 @@
 /*   By: jvisser <jvisser@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 18:33:35 by jvisser       #+#    #+#                 */
-/*   Updated: 2020/06/21 17:42:56 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/21 19:27:44 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ERROR_H
 # define ERROR_H
 
-#include <stdlib.h>
+# include <stdlib.h>
 
 # define C_MAIN_FEW_ARGUMENTS 132
 # define E_MAIN_FEW_ARGUMENTS "Bad arguments."
