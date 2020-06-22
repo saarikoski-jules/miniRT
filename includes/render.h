@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 19:34:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 15:46:37 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 16:20:34 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ typedef struct			s_mlx_data
 	void				*win_ptr;
 	void				*img_ptr;
 	int					i;
-	t_vec				*cur_orien;
 	int					cam_amt;
 	t_rt_scene			*scene;
 	t_cam_info			*cam_info;

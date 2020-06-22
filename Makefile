@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/22 16:16:48 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/22 16:19:50 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,6 @@ RT_SRCS =	$(SRCS_DIR)main.c \
 			$(SRCS_DIR)$(RENDER_DIR)collision_cy.c \
 			$(SRCS_DIR)$(RENDER_DIR)color.c \
 			$(SRCS_DIR)$(RENDER_DIR)normal.c \
-			$(SRCS_DIR)$(RENDER_DIR)slerp.c \
 
 RT_O_FILES = $(RT_SRCS:%.c=%.o)
 MLXFLAGS_M = -Lmlx -lmlx -framework OpenGL -framework AppKit
