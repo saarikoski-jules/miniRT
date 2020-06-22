@@ -6,7 +6,7 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/22 11:19:01 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/22 16:07:18 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ PARSE_DIR = parsing/
 RENDER_DIR = rendering/
 NAME = miniRT
 LIBFT = libft/libft.a
-RT_SRCS =	$(SRCS_DIR)test.c \
+RT_SRCS =	$(SRCS_DIR)main.c \
 			$(SRCS_DIR)error.c \
 			\
 			$(SRCS_DIR)$(PARSE_DIR)parse.c \
