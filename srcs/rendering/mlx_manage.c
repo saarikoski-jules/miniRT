@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 10:40:37 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 12:13:10 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "manage_cameras.h"
 #include <stdlib.h>
 
-void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
+void		render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 {
 	void			*image;
 	int				endian;
@@ -31,7 +31,8 @@ void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 						mlx_data->scene->res->res_y);
 	if (image == NULL)
 		error_exit_errno();
-	img_addr = mlx_get_data_addr(image, &img_data->bpp, &img_data->size_line, &endian);
+	img_addr = mlx_get_data_addr(image, &img_data->bpp,
+								&img_data->size_line, &endian);
 	img_data->image = &img_addr;
 	ft_bzero(img_addr, img_data->size_line * mlx_data->scene->res->res_y);
 	gen_image(cam_info, mlx_data->scene, img_data);
@@ -39,19 +40,20 @@ void render_image(t_mlx_data *mlx_data, t_cam_info *cam_info)
 	free(img_data);
 }
 
-void manage_window(t_mlx_data *mlx_data)
+void		manage_window(t_mlx_data *mlx_data)
 {
 	mlx_data->win_ptr = mlx_new_window(mlx_data->mlx_ptr,
 										mlx_data->scene->res->res_x,
 										mlx_data->scene->res->res_y, "miniRT");
 	render_image(mlx_data, mlx_data->cam_info);
 	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
-	mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, 1L<<19, close_program, &mlx_data);
+	mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, 1L << 19,
+			close_program, &mlx_data);
 	system("leaks miniRT");//
 	mlx_loop(mlx_data->mlx_ptr);
 }
 
-t_mlx_data *init_mlx_data(t_rt_scene *scene)
+t_mlx_data	*init_mlx_data(t_rt_scene *scene)
 {
 	t_mlx_data	*mlx_data;
 	int			screen_max_x;

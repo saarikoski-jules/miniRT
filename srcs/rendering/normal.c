@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/16 12:21:52 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/19 10:47:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 12:14:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-//TODO: cylinders seem to leak
 static t_vec	*cy_shaft_normal(t_cy *cy, t_vec *intersect, double len)
 {
 	double	len_z;
@@ -64,17 +63,17 @@ static t_vec	*cy_normal(t_cy *cy, t_vec *intersect)
 static t_vec	*pl_normal(t_vec *orien, t_vec *obj_pos, t_camera *cam)
 {
 	t_vec	*normal;
-	t_vec	*OC;
-	t_vec	*OC_u;
-	
-	OC = substract_vectors(cam->pos, obj_pos);
-	OC_u = set_vec_len(OC, 1.0);
-	if (get_dot_product(OC_u, orien) < 0)
+	t_vec	*oc;
+	t_vec	*oc_u;
+
+	oc = substract_vectors(cam->pos, obj_pos);
+	oc_u = set_vec_len(oc, 1.0);
+	if (get_dot_product(oc_u, orien) < 0)
 		normal = gen_coord(-orien->x, -orien->y, -orien->z);
 	else
 		normal = gen_coord(orien->x, orien->y, orien->z);
-	free(OC);
-	free(OC_u);
+	free(oc);
+	free(oc_u);
 	return (normal);
 }
 
@@ -82,7 +81,7 @@ t_vec			*calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam)
 {
 	t_vec	*normal;
 	t_vec	*normal_u;
-	
+
 	if (obj->id == cy)
 		normal = cy_normal(obj->type.cy, intersect);
 	else if (obj->id == sp)
@@ -97,4 +96,3 @@ t_vec			*calculate_normal(t_obj *obj, t_vec *intersect, t_camera *cam)
 	free(normal);
 	return (normal_u);
 }
-

@@ -6,13 +6,14 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 16:44:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 15:19:13 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "xevents.h"
 #include "render.h"
 #include <stdlib.h>
+#include "libft.h"//
 
 int			get_cam_amt(t_camera *cam_head)
 {
@@ -55,6 +56,7 @@ int			select_cam(int key, t_mlx_data *data)
 	t_cam_info	*cam_data;
 	int			i;
 
+	ft_printf("here\n");
 	cam_orig = data->scene->cam;
 	cam_cur = NULL;
 	i = data->i;

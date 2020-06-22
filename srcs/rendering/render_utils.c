@@ -6,28 +6,6 @@
 #include <math.h>
 #include <stdio.h>
 
-int translate_color(t_color *color)
-{
-	int rgb;
-	rgb = (color->r * pow(16, 4)) + (color->g * pow(16, 2)) + (color->b);
-	return (rgb);
-}
-
-t_color *gen_color(int r, int g, int b)
-{
-	t_color *rgb;
-
-	rgb = (t_color *)e_malloc(sizeof(t_color));
-	if ((r > 255 || r < 0) &&
-		(g > 255 || g < 0) &&
-		(b > 255 || b < 0))
-		error_exit_msg(C_INVALID_COLOR, E_INVALID_COLOR);
-	rgb->r = (unsigned char)r;
-	rgb->g = (unsigned char)g;
-	rgb->b = (unsigned char)b;
-	return (rgb);
-}
-
 t_vec	*find_point(t_vec *start, t_vec *dir, double t)
 {
 	t_vec *dist;
@@ -68,34 +46,4 @@ double	point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien)
 	free(to_p);
 	free(cross);
 	return (dot);
-}
-
-double	solve_quadratic(double a, double b, double c)
-{
-	double disc;
-	double t;
-	double t1;
-	double t2;
-
-	disc = pow(b, 2) - 4 * a * c;
-	// printf("b %f, a %f, c %f\n", b, a, c);
-	// t = NO_INTERSECT; //TODO: test if quadratic still works
-	if (disc < 0)
-		return (NO_INTERSECT);
-	else if (disc > 0)
-	{
-		t1 = ((-b - sqrt(disc)) / (2 * a));
-		t2 = ((-b + sqrt(disc)) / (2 * a));
-		if (t1 < t2)
-			t = t1;
-		else
-			t = t2;
-	}
-	else
-	{
-		// printf("disc: %f\n", disc);
-		t = -b / (2 * a);
-		// printf("t: %f\n", t);
-	}
-	return (t);
 }
