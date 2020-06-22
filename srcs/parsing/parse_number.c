@@ -6,14 +6,40 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 18:13:38 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 18:24:55 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 11:28:58 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parse.h"
 #include "libft.h"
 #include "error.h"
 #include <limits.h>
+
+void	validate_int(char *line)
+{
+	int i;
+
+	i = 0;
+	if (ft_strchr("-+", (int)line[i]) != NULL)
+		i++;
+	if (ft_strchr("0123456789", (int)line[i]) == NULL)
+	{
+		ft_printf("error: '%d'\n", line[i]);
+		error_exit_msg(C_PARSE_INVALID_INT, E_PARSE_INVALID_INT);
+	}
+}
+
+void	validate_float(char *line)
+{
+	int i;
+
+	i = 0;
+	if (ft_strchr("-+", (int)line[i]) != NULL)
+		i++;
+	if ((int)line[i] == '.')
+		i++;
+	if (ft_strchr("0123456789", (int)line[i]) == NULL)
+		error_exit_msg(C_PARSE_INVALID_FLOAT, E_PARSE_INVALID_FLOAT);
+}
 
 int			get_int(char *line, size_t *i)
 {

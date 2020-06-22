@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 18:09:59 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 18:24:44 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 11:32:21 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_color			*get_color(char *line, size_t *i)
 	t_color *color;
 
 	*i += ft_strmatch(line + *i, " ");
-	color = (t_color *)malloc(sizeof(t_color));
+	color = (t_color *)e_malloc(sizeof(t_color));
 	color->r = validate_color(line, i);
 	skip_comma(line, i);
 	color->g = validate_color(line, i);

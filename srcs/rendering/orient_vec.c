@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/15 17:17:13 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 15:03:28 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 12:15:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ static t_vec	*parallel_vecs(t_qua *q, t_vec *v)
 {
 	if (q->w == 0.0)
 		return (gen_coord(-v->x, -v->y, -v->z));
-	return (gen_coord(v->x, v->y, v->z));	
+	return (gen_coord(v->x, v->y, v->z));
 }
 
 static t_qua	*gen_pure_quat(t_vec *v)
 {
 	t_vec	*v_u;
 	t_qua	*q;
-	
+
 	v_u = set_vec_len(v, 1.0);
 	q = (t_qua *)e_malloc(sizeof(t_qua));
 	q->w = 0.0;

@@ -6,13 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/14 17:08:07 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/05/14 17:08:08 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 12:09:37 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "vec.h"
-#include <math.h>
 #include "error.h"
+#include "render.h"
+#include <math.h>
 
 t_vec	*gen_coord(double x, double y, double z)
 {
@@ -23,51 +23,6 @@ t_vec	*gen_coord(double x, double y, double z)
 	vector->y = y;
 	vector->z = z;
 	return (vector);
-}
-
-t_vec	*add_vectors(t_vec *vec1, t_vec *vec2)
-{
-	t_vec *vector;
-
-	vector = gen_coord(vec1->x + vec2->x,
-						vec1->y + vec2->y,
-						vec1->z + vec2->z);
-	return (vector);
-}
-
-t_vec	*substract_vectors(t_vec *vec1, t_vec *vec2)
-{
-	t_vec *vector;
-
-	vector = gen_coord(vec1->x - vec2->x,
-					vec1->y - vec2->y,
-					vec1->z - vec2->z);
-	return (vector);
-}
-
-t_vec	*get_cross_product(t_vec *vec1, t_vec *vec2)
-{
-	t_vec *cross;
-
-	cross = (t_vec*)e_malloc(sizeof(t_vec));
-	cross->x = (vec1->y * vec2->z) - (vec1->z * vec2->y);
-	cross->y = (vec1->z * vec2->x) - (vec1->x * vec2->z);
-	cross->z = (vec1->x * vec2->y) - (vec1->y * vec2->x);
-	return (cross);
-}
-
-double	get_dot_product(t_vec *vec1, t_vec *vec2)
-{
-	double x;
-	double y;
-	double z;
-	double sum;
-
-	x = vec1->x * vec2->x;
-	y = vec1->y * vec2->y;
-	z = vec1->z * vec2->z;
-	sum = x + y + z;
-	return (sum);
 }
 
 double	det_len_vec(t_vec *vector)
@@ -95,4 +50,27 @@ t_vec	*set_vec_len(t_vec *vector, double len)
 	new_vec->y = (vector->y / vec_len) * len;
 	new_vec->z = (vector->z / vec_len) * len;
 	return (new_vec);
+}
+
+t_vec		*apply_epsilon(t_vec *point, t_vec *ray)
+{
+	t_vec *new;
+	t_vec *eps;
+
+	eps = set_vec_len(ray, EPSILON);
+	new = add_vectors(point, eps);
+	free(eps);
+	return (new);
+}
+
+t_vec		*find_len_and_get_u(double *len, t_vec *from, t_vec *to)
+{
+	t_vec *vec;
+	t_vec *vec_u;
+
+	vec = substract_vectors(from, to);
+	*len = det_len_vec(vec);
+	vec_u = set_vec_len(vec, 1);
+	free(vec);
+	return (vec_u);
 }
