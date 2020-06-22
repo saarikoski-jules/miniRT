@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 17:49:02 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 10:40:42 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,6 @@ void	save_img(t_rt_scene *scene, t_cam_info *cam_info, const char *path)
 	fd = open(name_bmp, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	gen_bmp_header(fd, scene, cam_info);
 	close(fd);
-	system("leaks a.out"); //
+	system("leaks miniRT"); //
 	exit(0);
 }

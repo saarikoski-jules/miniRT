@@ -6,60 +6,80 @@
 #    By: jsaariko <jsaariko@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2020/03/14 14:09:55 by jsaariko      #+#    #+#                  #
-#    Updated: 2020/06/21 18:15:19 by jsaariko      ########   odam.nl          #
+#    Updated: 2020/06/22 11:19:01 by jsaariko      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
+SRCS_DIR = srcs/
 PARSE_DIR = parsing/
 RENDER_DIR = rendering/
-RT_SRCS =	test.c \
-			error.c \
+NAME = miniRT
+LIBFT = libft/libft.a
+RT_SRCS =	$(SRCS_DIR)test.c \
+			$(SRCS_DIR)error.c \
 			\
-			$(PARSE_DIR)parse.c \
-			$(PARSE_DIR)parse_environment.c \
-			$(PARSE_DIR)parse_camera.c \
-			$(PARSE_DIR)parse_obj.c \
-			$(PARSE_DIR)parse_cy.c \
-			$(PARSE_DIR)parse_sq.c \
-			$(PARSE_DIR)get_objects.c \
-			$(PARSE_DIR)parse_utils.c \
-			$(PARSE_DIR)parse_number.c \
-			$(PARSE_DIR)parse_validation.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_environment.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_camera.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_obj.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_cy.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_sq.c \
+			$(SRCS_DIR)$(PARSE_DIR)get_objects.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_utils.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_number.c \
+			$(SRCS_DIR)$(PARSE_DIR)parse_validation.c \
 			\
-			$(RENDER_DIR)render.c \
-			$(RENDER_DIR)mlx_manage.c \
-			$(RENDER_DIR)save_bmp.c \
-			$(RENDER_DIR)key_input.c \
-			$(RENDER_DIR)select_cam.c \
-			$(RENDER_DIR)cam_info.c \
-			$(RENDER_DIR)gen_rays.c \
-			$(RENDER_DIR)render_utils.c \
-			$(RENDER_DIR)vector_utils.c \
-			$(RENDER_DIR)quaternion.c \
-			$(RENDER_DIR)quaternion_utils.c \
-			$(RENDER_DIR)orient_vec.c \
-			$(RENDER_DIR)collision_2d.c \
-			$(RENDER_DIR)collision_sp.c \
-			$(RENDER_DIR)collision_cy.c \
-			$(RENDER_DIR)color.c \
-			$(RENDER_DIR)normal.c \
+			$(SRCS_DIR)$(RENDER_DIR)render.c \
+			$(SRCS_DIR)$(RENDER_DIR)mlx_manage.c \
+			$(SRCS_DIR)$(RENDER_DIR)save_bmp.c \
+			$(SRCS_DIR)$(RENDER_DIR)key_input.c \
+			$(SRCS_DIR)$(RENDER_DIR)select_cam.c \
+			$(SRCS_DIR)$(RENDER_DIR)cam_info.c \
+			$(SRCS_DIR)$(RENDER_DIR)gen_rays.c \
+			$(SRCS_DIR)$(RENDER_DIR)render_utils.c \
+			$(SRCS_DIR)$(RENDER_DIR)vector_utils.c \
+			$(SRCS_DIR)$(RENDER_DIR)quaternion.c \
+			$(SRCS_DIR)$(RENDER_DIR)quaternion_utils.c \
+			$(SRCS_DIR)$(RENDER_DIR)orient_vec.c \
+			$(SRCS_DIR)$(RENDER_DIR)collision_2d.c \
+			$(SRCS_DIR)$(RENDER_DIR)collision_sp.c \
+			$(SRCS_DIR)$(RENDER_DIR)collision_cy.c \
+			$(SRCS_DIR)$(RENDER_DIR)color.c \
+			$(SRCS_DIR)$(RENDER_DIR)normal.c \
 
-MLXFLAGS_W = -lmlx -lXext -lX11
-MLX_FLAGS_W = -lm -lmlx -lXext -lX11 -L ./libft -lft -lpthread
-MLXFLAGS_M = -lmlx -framework OpenGL -framework AppKit
+RT_O_FILES = $(RT_SRCS:%.c=%.o)
+MLXFLAGS_M = -Lmlx -lmlx -framework OpenGL -framework AppKit
+INCLUDE = -Iincludes -Ilibft -Imlx
 ERROR_FLAGS = -Wall -Wextra -Werror
 
+all: $(NAME)
 
-all:
+%.o: %.c
+	@echo "compiled $@"
+	@gcc $(INCLUDE) $(ERROR_FLAGS) -c $< -o $@
+
+$(NAME): $(RT_O_FILES)
 	@make -C libft
-	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx -Lmlx -lmlx -framework OpenGL -framework AppKit
+	@make -C mlx
+	@cp mlx/libmlx.dylib .
+	@gcc $(MLXFLAGS_M) $(RT_O_FILES) $(LIBFT) -o $(NAME)
+	@echo "Compiled miniRT"
 
 windows:
 	@make -C libft
-	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft -Imlx_linux/minilibx-master -Lmlx_linux/minilibx-master $(MLX_FLAGS_W)
+	@gcc -Iincludes $(RT_SRCS) libft/libft.a -Ilibft \
+		 -Imlx_linux/minilibx-master -Lmlx_linux/minilibx-master $(MLX_FLAGS_W)
 
-fclean:
-	@rm -rf a.out
-	@make -C libft fclean
+clean: 
+	@make -C libft clean > /dev/null
+	@make -C mlx clean > /dev/null
+	@rm -f $(RT_O_FILES)
+	@echo "Cleared object files"
+
+fclean: clean
+	@make -C libft fclean > /dev/null
+	@rm -f libmlx.dylib
+	@rm -f miniRT
+	@echo "All clean!"
 
 re: fclean all
