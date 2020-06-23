@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 19:34:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 17:35:59 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/23 10:21:20 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,6 @@ void					render_image(t_mlx_data *mlx_data,
 							t_cam_info *cam_info);
 double					check_obj_intersect(t_obj *obj_tmp, t_vec *ray,
 							t_vec *pos, double d_tmp);
-void					rotate_camera(int key, t_mlx_data **data, int cam_index);
+void					rotate_camera(int key, t_mlx_data **data, int cam_i);
 
 #endif

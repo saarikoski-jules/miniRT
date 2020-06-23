@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 17:01:12 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 12:06:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/23 10:21:05 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,5 @@ int					translate_color(t_color *color);
 t_color				*gen_color(int r, int g, int b);
 void				add_color_and_free(t_color_int **col1, t_color_int **col2);
 t_color_int			*init_color_int(int r, int g, int b);
-
 
 #endif
