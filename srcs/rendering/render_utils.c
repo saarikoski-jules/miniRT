@@ -1,10 +1,18 @@
-#include "color.h"
-#include "libft.h"//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   render_utils.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2020/06/22 16:39:04 by jsaariko      #+#    #+#                 */
+/*   Updated: 2020/06/22 16:39:39 by jsaariko      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
-#include <stdlib.h>//
 #include "render.h"
 #include <math.h>
-#include <stdio.h>
 
 t_vec	*find_point(t_vec *start, t_vec *dir, double t)
 {
@@ -23,7 +31,7 @@ double	get_distance(t_vec *point1, t_vec *point2)
 	double y;
 	double z;
 	double d;
-	
+
 	x = pow(point1->x - point2->x, 2);
 	y = pow(point1->y - point2->y, 2);
 	z = pow(point1->z - point2->z, 2);
@@ -33,10 +41,10 @@ double	get_distance(t_vec *point1, t_vec *point2)
 
 double	point_within_line(t_vec *point1, t_vec *point2, t_vec *p, t_vec *orien)
 {
-	t_vec *edge;
-	t_vec *to_p;
-	t_vec *cross;
-	double dot;
+	t_vec	*edge;
+	t_vec	*to_p;
+	t_vec	*cross;
+	double	dot;
 
 	edge = substract_vectors(point2, point1);
 	to_p = substract_vectors(p, point1);

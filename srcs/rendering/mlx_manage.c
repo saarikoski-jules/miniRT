@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 11:13:01 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 12:13:10 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:49:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void		manage_window(t_mlx_data *mlx_data)
 	mlx_key_hook(mlx_data->win_ptr, deal_key, &mlx_data);
 	mlx_hook(mlx_data->win_ptr, DESTROY_NOTIFY, 1L << 19,
 			close_program, &mlx_data);
-	system("leaks miniRT");//
 	mlx_loop(mlx_data->mlx_ptr);
 }
 

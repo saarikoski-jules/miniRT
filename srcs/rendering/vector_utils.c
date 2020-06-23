@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/14 17:08:07 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 12:09:37 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 16:56:16 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ double	det_len_vec(t_vec *vector)
 
 t_vec	*set_vec_len(t_vec *vector, double len)
 {
-	double vec_len;
-	t_vec *new_vec;
+	double	vec_len;
+	t_vec	*new_vec;
 
 	new_vec = (t_vec*)e_malloc(sizeof(t_vec));
 	vec_len = det_len_vec(vector);
@@ -52,7 +52,7 @@ t_vec	*set_vec_len(t_vec *vector, double len)
 	return (new_vec);
 }
 
-t_vec		*apply_epsilon(t_vec *point, t_vec *ray)
+t_vec	*apply_epsilon(t_vec *point, t_vec *ray)
 {
 	t_vec *new;
 	t_vec *eps;
@@ -63,7 +63,7 @@ t_vec		*apply_epsilon(t_vec *point, t_vec *ray)
 	return (new);
 }
 
-t_vec		*find_len_and_get_u(double *len, t_vec *from, t_vec *to)
+t_vec	*find_len_and_get_u(double *len, t_vec *from, t_vec *to)
 {
 	t_vec *vec;
 	t_vec *vec_u;

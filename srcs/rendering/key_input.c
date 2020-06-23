@@ -6,17 +6,17 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 12:35:40 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 16:20:49 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:47:33 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "xevents.h"
 #include "manage_cameras.h"
-#include "libft.h"//
 
 int	close_program(void *mlx_data)
 {
 	(void)mlx_data;
+	system("leaks miniRT");
 	exit(0);
 }
 
@@ -25,7 +25,6 @@ int	deal_key(int key, void *mlx_data)
 	t_mlx_data **data;
 
 	data = (t_mlx_data **)mlx_data;
-	ft_printf("%d\n", key);
 	if (key == KEYCODE_RIGHT || key == KEYCODE_LEFT)
 		(*data)->i = select_cam(key, *data);
 	else if (key == KEYCODE_ESC)

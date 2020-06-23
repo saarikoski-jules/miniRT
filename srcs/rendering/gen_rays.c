@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:34:24 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 15:50:45 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:49:03 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,5 +98,4 @@ void	gen_image(t_cam_info *cam_data, t_rt_scene *scene,
 		iters->j++;
 	}
 	free(iters);
-	ft_printf("done\n");//
 }

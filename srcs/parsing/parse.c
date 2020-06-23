@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/03/15 16:02:26 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 18:51:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:45:56 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,9 +75,3 @@ t_rt_scene	*get_scene(char *path)
 		error_exit_msg(C_NO_CAM, E_NO_CAM);
 	return (scene);
 }
-
-//TODO color validation for commas, spaces and overflow
-//TODO vector validation for commas, spaces and overflow
-//TODO check if im getting resolution or ambiance twice
-//TODO overflow for values
-//TODO if resolution/ambiance/camera aren't set at all, assign default values?

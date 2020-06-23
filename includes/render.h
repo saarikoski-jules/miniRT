@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 19:34:48 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 16:20:34 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:35:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,12 @@ typedef struct			s_iterators
 	size_t				j;
 	size_t				pix_pos;
 }						t_iterators;
+
+typedef struct			s_less_vars
+{
+	int					i;
+	double				dist;
+}						t_less_vars;
 
 double					cy_intersect(t_vec *start, t_vec *ray, t_cy *cy);
 double					sp_intersect(t_vec *start, t_vec *ray, t_sp *sp);

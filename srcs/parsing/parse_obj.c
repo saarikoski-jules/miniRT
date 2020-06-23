@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 18:03:38 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 18:08:15 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:48:24 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,3 @@ t_tr	*get_triangle(char *line, size_t *i)
 	free(normal);
 	return (triangle);
 }
-
-//TODO: change all uppercase variables to lowercase

@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/21 18:13:38 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 11:28:58 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:46:31 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	validate_float(char *line)
 		error_exit_msg(C_PARSE_INVALID_FLOAT, E_PARSE_INVALID_FLOAT);
 }
 
-int			get_int(char *line, size_t *i)
+int		get_int(char *line, size_t *i)
 {
 	long long val;
 
@@ -56,7 +56,7 @@ int			get_int(char *line, size_t *i)
 	return ((int)val);
 }
 
-double		get_float(char *line, size_t *i)
+double	get_float(char *line, size_t *i)
 {
 	double val;
 

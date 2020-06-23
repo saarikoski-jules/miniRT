@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/05/11 12:19:51 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/21 18:27:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:46:43 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void	validate_orien(t_vec **orien)
 	orien_u = set_vec_len(*orien, 1.0);
 	free(*orien);
 	*orien = orien_u;
-	//TODO: check if unit vector
 }
 
 void	validate_fov(int fov)

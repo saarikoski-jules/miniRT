@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/14 16:24:03 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 10:40:42 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 17:54:02 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,24 @@ void	gen_i_header(t_rt_scene *scene, int fd, int bpp, int i_header_size)
 {
 	char	i_header[40];
 	int		height;
+	int		planes;
 
+	planes = 1;
 	height = -scene->res->res_y;
 	ft_bzero(i_header, 40);
 	ft_memcpy(i_header, &i_header_size, 4);
 	ft_memcpy(i_header + 4, &scene->res->res_x, 4);
 	ft_memcpy(i_header + 8, &height, 4);
-	i_header[12] = (uint16_t)1;
+	ft_memcpy(i_header + 12, &planes, 2);
 	ft_memcpy(i_header + 14, &bpp, 2);
-	e_write(fd, i_header, 40);	
+	e_write(fd, i_header, 40);
 }
 
 void	gen_bmp_header(int fd, t_rt_scene *scene, t_cam_info *cam_info)
 {
-	int		i_header_size;
-	int		amt_bytes;
-	char	*image;
+	int				i_header_size;
+	int				amt_bytes;
+	char			*image;
 	t_image_data	*img_data;
 
 	img_data = (t_image_data *)e_malloc(sizeof(t_image_data));
@@ -85,6 +87,5 @@ void	save_img(t_rt_scene *scene, t_cam_info *cam_info, const char *path)
 	fd = open(name_bmp, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	gen_bmp_header(fd, scene, cam_info);
 	close(fd);
-	system("leaks miniRT"); //
 	exit(0);
 }

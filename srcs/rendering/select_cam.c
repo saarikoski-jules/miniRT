@@ -6,14 +6,13 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 13:08:54 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 15:19:13 by jsaariko      ########   odam.nl         */
+/*   Updated: 2020/06/22 16:56:46 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "xevents.h"
 #include "render.h"
 #include <stdlib.h>
-#include "libft.h"//
 
 int			get_cam_amt(t_camera *cam_head)
 {
@@ -34,7 +33,7 @@ t_camera	*find_cam(t_camera *cam_orig, int i)
 {
 	t_camera	*cam_new;
 	int			j;
-	
+
 	j = 0;
 	cam_new = cam_orig;
 	if (i < 0)
@@ -49,6 +48,14 @@ t_camera	*find_cam(t_camera *cam_orig, int i)
 	return (cam_new);
 }
 
+void		free_cam_info(t_cam_info **cam_data)
+{
+	free((*cam_data)->cam_right);
+	free((*cam_data)->cam_up);
+	free((*cam_data)->screen);
+	free(*cam_data);
+}
+
 int			select_cam(int key, t_mlx_data *data)
 {
 	t_camera	*cam_orig;
@@ -56,7 +63,6 @@ int			select_cam(int key, t_mlx_data *data)
 	t_cam_info	*cam_data;
 	int			i;
 
-	ft_printf("here\n");
 	cam_orig = data->scene->cam;
 	cam_cur = NULL;
 	i = data->i;
@@ -73,9 +79,6 @@ int			select_cam(int key, t_mlx_data *data)
 	cam_cur = find_cam(cam_orig, i);
 	cam_data = gen_cam_data(data->scene, cam_cur);
 	render_image(data, cam_data);
-	free(cam_data->cam_right);
-	free(cam_data->cam_up);
-	free(cam_data->screen);
-	free(cam_data);
+	free_cam_info(&cam_data);
 	return (i);
 }
