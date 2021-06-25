@@ -6,7 +6,7 @@
 /*   By: jsaariko <jsaariko@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/06/13 12:35:40 by jsaariko      #+#    #+#                 */
-/*   Updated: 2020/06/22 17:47:33 by jsaariko      ########   odam.nl         */
+/*   Updated: 2021/06/25 17:26:59 by jsaariko      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 int	close_program(void *mlx_data)
 {
 	(void)mlx_data;
-	system("leaks miniRT");
 	exit(0);
 }
 
