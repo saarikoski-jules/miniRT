@@ -4,7 +4,6 @@ A 0 255,255,255
 c 0,10,0 0,-1,0 60
 
 l -5,5,0 1 255,255,255
-# this look like the endcap is larger than the body somehow
 
 pl 0,0,-3 0,0,1 0,0,255
 cy 0,0,0 1,-1,0 2 2 0,255,0
